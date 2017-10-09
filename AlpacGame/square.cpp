@@ -65,7 +65,7 @@ void Square::move(float delta)
             if(direction== Direction::LEFT){
                 rectangle.setFillColor(sf::Color::Blue);
                 std::cout << "Walking Left" << std::endl;
-            } else {
+            } else if (direction== Direction::RIGHT){
                 rectangle.setFillColor(sf::Color::Red);
                 std::cout << "Walking Right" << std::endl;
             }
