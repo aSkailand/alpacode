@@ -1,6 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "StateMachine.h"
+#include "state/StateMachine.h"
 
 int main() {
 

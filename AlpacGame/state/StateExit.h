@@ -5,6 +5,7 @@
 #ifndef ALPACGAME_STATEEXIT_H
 #define ALPACGAME_STATEEXIT_H
 
+// TODO: DELETE, THIS CLASS A TESTER
 
 #include "State.h"
 #include "StateMachine.h"
