@@ -1,7 +1,15 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "StateMachine.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    StateMachine stateMachine;
+
+    while (stateMachine.isRunning){
+        std::cout << "Machine is Proceeding:" << std::endl;
+        stateMachine.proceed();
+    }
+
     return 0;
 }
