@@ -1,7 +1,13 @@
 #include <iostream>
-#include <SFML/Graphics.hpp>
+#include "app.h"
+
+
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    App app;
+
+    // Game loop, run while the window is open
+    while (app.Tick());
+
     return 0;
 }
