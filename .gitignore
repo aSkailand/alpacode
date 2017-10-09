@@ -7,3 +7,4 @@ cmake-build-debug/
 out/
 .DS_Store/
 .DS_Store
+*.log
