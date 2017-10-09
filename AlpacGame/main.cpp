@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 int main() {
-        
+
     plog::init(plog::debug,"Log.log");
     LOGI << "Initiating plog.";
 
