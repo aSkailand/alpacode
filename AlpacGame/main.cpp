@@ -1,7 +1,8 @@
-#include <iostream>
-#include <SFML/Graphics.hpp>
+#include "window.h"
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
+int main()
+{
+    window window;
+
     return 0;
 }
