@@ -3,6 +3,6 @@ project(AlpacGame)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp planet.cpp planet.h)
 add_executable(AlpacGame ${SOURCE_FILES})
 target_link_libraries(AlpacGame sfml-graphics sfml-window sfml-system)
