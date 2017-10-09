@@ -1,6 +1,8 @@
+
 #include <iostream>
 #include <plog\log.h>
 #include <SFML/Graphics.hpp>
+#include "window.h"
 #include "state/StateMachine.h"
 
 int main() {
@@ -14,6 +16,8 @@ int main() {
         std::cout << "Machine is Proceeding:" << std::endl;
         stateMachine.proceed();
     }
+
+    window window;
 
     return 0;
 }
