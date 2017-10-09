@@ -8,8 +8,7 @@ int main() {
 
     plog::init(plog::debug,"Log.log");
     LOGI << "Initiating plog.";
-
-
+    
     StateMachine stateMachine;
 
     while (stateMachine.isRunning){
