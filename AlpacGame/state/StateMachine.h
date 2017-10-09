@@ -4,8 +4,10 @@
 
 #include <map>
 #include "State.h"
+#include "StateInitial.h"
 #include "StateMenu.h"
 #include "StateExit.h"
+#include "../Resources/Config.h"
 
 class State;
 
@@ -38,6 +40,8 @@ public:
      * @param currentState the new state to be in.
      */
     void setCurrentState(stateID currentState);
+
+    Config config;
 
 private:
 

@@ -3,10 +3,11 @@
 
 StateMachine::StateMachine() {
 
+    stateMap.emplace(StateMachine::stateID::INITIAL, new StateInitial);
     stateMap.emplace(StateMachine::stateID::MENU, new StateMenu);
     stateMap.emplace(StateMachine::stateID::EXIT, new StateExit);
 
-    setCurrentState(stateID::MENU);
+    setCurrentState(stateID::INITIAL);
 
     StateMachine::isRunning = true;
 
