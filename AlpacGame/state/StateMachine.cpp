@@ -3,11 +3,12 @@
 
 StateMachine::StateMachine() {
 
-    StateMachine::isRunning = true;
-    setCurrentState(stateID::MENU);
-
     stateMap.emplace(StateMachine::stateID::MENU, new StateMenu);
     stateMap.emplace(StateMachine::stateID::EXIT, new StateExit);
+
+    setCurrentState(stateID::MENU);
+
+    StateMachine::isRunning = true;
 
 }
 
@@ -19,6 +20,4 @@ void StateMachine::proceed() {
     stateMap[currentState] -> goNext(*this);
 }
 
-void StateMachine::setIsRunning(bool isRunning) {
-    StateMachine::isRunning = isRunning;
-}
+

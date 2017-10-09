@@ -6,6 +6,8 @@
 #include "State.h"
 #include "StateMachine.h"
 
+// TODO: DELETE, THIS CLASS A TESTER
+
 class StateMenu : public State{
 public:
     void goNext(StateMachine &stateMachine);

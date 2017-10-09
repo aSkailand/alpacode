@@ -1,7 +1,7 @@
 #include <iostream>
 #include <plog\log.h>
 #include <SFML/Graphics.hpp>
-#include "StateMachine.h"
+#include "state/StateMachine.h"
 
 int main() {
 
