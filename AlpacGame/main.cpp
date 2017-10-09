@@ -3,7 +3,6 @@
 #include <plog\log.h>
 #include <SFML/Graphics.hpp>
 #include "state/StateMachine.h"
-#include "window.h"
 #include "main_menu.h"
 
 int main()
