@@ -67,7 +67,6 @@ int main()
 
         window.clear(sf::Color::Black);
 
-
         window.draw(menu.menu[0]);
         window.draw(menu.menu[1]);
         window.draw(menu.menu[2]);
@@ -75,4 +74,6 @@ int main()
 
         window.display();
     }
+
+    return 0;
 }
