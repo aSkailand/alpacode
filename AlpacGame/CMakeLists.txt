@@ -3,7 +3,7 @@ project(AlpacGame)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp StateMachine.cpp StateMachine.h StateMenu.cpp StateMenu.h State.h StateExit.cpp StateExit.h)
 add_executable(AlpacGame ${SOURCE_FILES})
 target_link_libraries(AlpacGame sfml-graphics sfml-window sfml-system)
 target_include_directories(AlpacGame PUBLIC plog/include)

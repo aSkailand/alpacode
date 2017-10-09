@@ -1,12 +1,21 @@
 #include <iostream>
 #include <plog\log.h>
 #include <SFML/Graphics.hpp>
+#include "StateMachine.h"
 
 int main() {
+
 
     plog::init(plog::debug,"Log.log");
     LOGI << "Initiating plog.";
 
-    std::cout << "Hello, World!" << std::endl;
+
+    StateMachine stateMachine;
+
+    while (stateMachine.isRunning){
+        std::cout << "Machine is Proceeding:" << std::endl;
+        stateMachine.proceed();
+    }
+
     return 0;
 }
