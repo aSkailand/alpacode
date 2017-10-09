@@ -8,6 +8,8 @@ class Config {
 public:
     void run();
 
+    sf::RenderWindow &getWindow();
+
 private:
     sf::RenderWindow window;
     sf::VideoMode windowResolution;
