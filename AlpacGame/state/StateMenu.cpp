@@ -37,7 +37,7 @@ bool StateMenu::pollMenu() {
                             case 0 : {
                                 std::cout << "Play" << std::endl;
                                 // todo: change this into statePlay
-                                machine->setCurrentState(StateMachine::stateID::EXIT);
+                                machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
                                 return false;
                             }
 
@@ -81,10 +81,13 @@ void StateMenu::initMenuStrings() {
 
     fontMenuChoice.loadFromFile("font.ttf");
 
+    menuChoices.clear();    // todo remove if adding constructor
+
     addMenuChoice("Play", 350, 150);
     addMenuChoice("Option", 350, 250);
     addMenuChoice("Exit", 350, 350);
 
+    menuIndex = 0;
     menuChoices[0].setFillColor(colorSelected);
 
 }

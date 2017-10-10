@@ -6,6 +6,7 @@
 #include "State.h"
 #include "StateInitial.h"
 #include "StateMenu.h"
+#include "StateGame.h"
 #include "StateExit.h"
 #include "../Resources/Config.h"
 

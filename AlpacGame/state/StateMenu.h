@@ -60,7 +60,7 @@ private:
     /**
      * Vector containing all possible menu choices.
      */
-    std::vector<sf::Text> menuChoices;
+    std::vector<sf::Text> menuChoices;  // todo: Make this one initialize once only
 
 
     // Menu Choice functions
