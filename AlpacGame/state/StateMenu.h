@@ -7,24 +7,89 @@
 #include "State.h"
 #include "StateMachine.h"
 
-class StateMenu : public State{
+class StateMenu : public State {
 public:
+
+    /**
+     * Draw menu and check for input before moving to next state.
+     * @param stateMachine the StateMachine controlling this state.
+     */
     void goNext(StateMachine &stateMachine);
 
-    sf::Text menu[3];   // todo: make this into vector
+private:
 
+    // Pointers
+
+    /**
+     * Pointer to the one and only StateMachine.
+     */
+    StateMachine *machine;
+
+    /**
+     * Pointer to the one and only Window.
+     */
+    sf::RenderWindow *window;
+
+
+    // Menu functions
+
+    /**
+     * Generate all menu choices.
+     */
     void initMenuStrings();
 
-    // todo: simplify these two into 1 function?
+    /**
+     * Check if menu is still running.
+     * @return true if no meaningful input is given, false if meaningful input is given.
+     */
+    bool pollMenu();
+
+    /**
+     * Draw the menu with all possible menu choices.
+     */
+    void drawMenu();
+
+
+    // Menu Choice Objects
+
+    /**
+     * Current selected menu choice.
+     */
+    int menuIndex = 0;
+
+    /**
+     * Vector containing all possible menu choices.
+     */
+    std::vector<sf::Text> menuChoices;
+
+
+    // Menu Choice functions
+
+    /**
+     * Wrapper for adding new menu choices.
+     * @param choice name of menu choice.
+     * @param x the x-position to draw the added menu choice.
+     * @param y the y-position to draw the added menu choice.
+     */
+    void addMenuChoice(const std::string &choice, int x, int y);
+
+    /**
+     * Change selection accordingly if user switch selection upwards.
+     */
     void moveUp();
+
+    /**
+     * Change selection accordingly if user switch selection downwards.
+     */
     void moveDown();
 
-    int GetPressedItem() { return menuIndex; }
 
-private:
-    sf::Font font;
+    // Menu Choice Cosmetics
 
-    int menuIndex = 0;
+    sf::Font fontMenuChoice;
+    const unsigned int fontSizeMenuChoice = 50;
+    const sf::Color colorSelected = sf::Color::Red;
+    const sf::Color colorDeselected = sf::Color::Green;
 };
 
 
