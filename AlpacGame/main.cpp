@@ -5,6 +5,7 @@
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
-    planetClass::planet_controll();
+    planetClass a;
+    a.planet_control();
     return 0;
 }
