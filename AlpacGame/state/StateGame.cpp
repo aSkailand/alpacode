@@ -1,21 +1,29 @@
 
 #include "StateGame.h"
+#include "../planet/planet.h"
 
 void StateGame::goNext(StateMachine &stateMachine) {
 
+    // Assign pointers
     machine = &stateMachine;
     window = &machine->config.getWindow();
 
-    while(pollGame()){
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-            std::cout << "Right" << std::endl;
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-            std::cout << "Left" << std::endl;
-        }
+    // Clock used to throttle movement softly
+    sf::Clock ticker;
 
+    // Instantiating Entities
+    planetClass planet(*window);    // todo: throw in config instead
+
+    // Check if game is ongoing
+    while(pollGame()){
+
+        float delta = ticker.restart().asSeconds();
+
+        // Drawing Phase
         window->clear(sf::Color::Blue);
 
-
+        planet.control(delta);
+        planet.draw();
 
         window->display();
     }

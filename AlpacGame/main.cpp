@@ -3,7 +3,6 @@
 #include <plog\log.h>
 #include <SFML/Graphics.hpp>
 #include "state/StateMachine.h"
-#include "planet.h"
 
 int main()
 {
@@ -11,7 +10,6 @@ int main()
     // Initiating Plog
     plog::init(plog::debug,"Log.log");
     LOGI << "Initiating plog.";
-
 
     // Initiating StateMachine
     StateMachine stateMachine;
@@ -22,8 +20,7 @@ int main()
         stateMachine.proceed();
     }
 
-    planetClass a;
-    a.planet_control();
+
 
     return 0;
 }
