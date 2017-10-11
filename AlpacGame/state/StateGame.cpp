@@ -14,6 +14,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
         }
 
         window->clear(sf::Color::Blue);
+
+
+
         window->display();
     }
 }

@@ -3,6 +3,7 @@
 #include <plog\log.h>
 #include <SFML/Graphics.hpp>
 #include "state/StateMachine.h"
+#include "planet.h"
 
 int main()
 {
@@ -20,6 +21,9 @@ int main()
         std::cout << "Machine is Proceeding:" << std::endl;
         stateMachine.proceed();
     }
+
+    planetClass a;
+    a.planet_control();
 
     return 0;
 }
