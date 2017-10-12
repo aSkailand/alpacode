@@ -9,7 +9,16 @@
 
 class StateGame : public State{
 public:
+
+    enum class Direction{ LEFT, RIGHT };
+
+    Direction rotationDir = Direction::RIGHT;
+
     void goNext(StateMachine &stateMachine);
+
+    float rotationDelta;
+    int rotationSpeed;
+
 private:
 
     // Pointers

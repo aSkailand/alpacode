@@ -4,13 +4,16 @@
 #include <iostream>
 #include <cmath>
 #include <SFML/Graphics.hpp>
+#include "../state/StateGame.h"
 
 
 class planetClass {
 public:
     planetClass(sf::RenderWindow &renderWindow);
-    void control(float deltaTime);
+    void control(float rotationDelta, StateGame::Direction rotationDir);
     void draw();
+
+    StateGame::Direction currentDir = StateGame::Direction::RIGHT;
 
 private:
     sf::RenderWindow *window;
@@ -26,7 +29,6 @@ private:
 
     sf::Texture backgroundTexture;
     const int radius = 300;
-    const int rotationSpeed = 100;
     const int offset = -100; // Change this to change planet's y-pos
     double xpos = 0;
     double ypos = 0;

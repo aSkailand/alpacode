@@ -1,23 +1,30 @@
 #include "planet.h"
 
 
-void planetClass::control(float deltaTime) {
+void planetClass::control(float rotationDelta, StateGame::Direction rotationDir) {
 
     // Check if any of the arrow keys are pressed
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        planet.rotate(rotationSpeed * deltaTime);
-        alpaca.rotate(rotationSpeed * deltaTime);
-        std::cout << planet.getRotation() << std::endl;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        planet.rotate(rotationSpeed * deltaTime * (-1));
-        alpaca.rotate(rotationSpeed * deltaTime * (-1));
-        std::cout << planet.getRotation() << std::endl;
-    }
-    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::I)){
-        std::cout << "Information: " << std::endl;
-        std::cout << "The radius is: " << planet.getRadius() << std::endl;
-        std::cout << "XPOS is: " << xpos << std::endl;
-        std::cout << "YPOS is: " << ypos << std::endl;
+//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+//        planet.rotate(rotationDelta);
+//        alpaca.rotate(rotationDelta);
+//        std::cout << planet.getRotation() << std::endl;
+//    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+//        planet.rotate(rotationDelta * (-1));
+//        alpaca.rotate(rotationDelta * (-1));
+//        std::cout << planet.getRotation() << std::endl;
+//    }
+//    else if(sf::Keyboard::isKeyPressed(sf::Keyboard::I)){
+//        std::cout << "Information: " << std::endl;
+//        std::cout << "The radius is: " << planet.getRadius() << std::endl;
+//        std::cout << "XPOS is: " << xpos << std::endl;
+//        std::cout << "YPOS is: " << ypos << std::endl;
+//    }
+    if(rotationDir == StateGame::Direction::LEFT){
+        planet.rotate(rotationDelta);
+        alpaca.rotate(rotationDelta);
+    } else{
+        planet.rotate(-rotationDelta);
+        alpaca.rotate(-rotationDelta);
     }
 
     // Calculate X and Y position
@@ -26,6 +33,10 @@ void planetClass::control(float deltaTime) {
 
     alpaca.setPosition(xpos, ypos);
 
+    if(currentDir != rotationDir){
+        alpaca2.scale(-1.f,1.f);
+        currentDir = rotationDir;
+    }
 }
 
 

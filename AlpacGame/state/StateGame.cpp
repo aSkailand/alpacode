@@ -12,17 +12,32 @@ void StateGame::goNext(StateMachine &stateMachine) {
     sf::Clock ticker;
 
     // Instantiating Entities
-    planetClass planet(*window);    // todo: throw in config instead
+    planetClass planet(*window);    // todo: throw in config instead?
+
+    rotationSpeed = 100;
 
     // Check if game is ongoing
     while(pollGame()){
 
+        // todo: Add common rotation calculation here?
+
         float delta = ticker.restart().asSeconds();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            rotationDelta = delta * rotationSpeed;
+            rotationDir = Direction::RIGHT;
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            rotationDelta = delta * rotationSpeed;
+            rotationDir = Direction::LEFT;
+        } else{
+            rotationDelta = 0;
+        }
 
         // Drawing Phase
         window->clear(sf::Color::Blue);
 
-        planet.control(delta);
+        planet.control(rotationDelta, rotationDir);
         planet.draw();
 
         window->display();
