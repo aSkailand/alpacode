@@ -20,7 +20,5 @@ int main()
         stateMachine.proceed();
     }
 
-
-
     return 0;
 }
