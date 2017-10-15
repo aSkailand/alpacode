@@ -4,15 +4,17 @@
 
 
 #include <SFML/Graphics/RenderWindow.hpp>
+
 #include "State.h"
 #include "StateMachine.h"
+
+#include "../planet/planet.h"
+#include "../entity/player/Farmer.h"
 
 class StateGame : public State{
 public:
 
     enum class Direction{ LEFT, RIGHT };
-
-    Direction rotationDir = Direction::RIGHT;
 
     void goNext(StateMachine &stateMachine);
 

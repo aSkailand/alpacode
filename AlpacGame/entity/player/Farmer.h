@@ -1,20 +1,40 @@
-//
-// Created by Trong on 12/10/2017.
-//
 
 #ifndef ALPACGAME_FARMER_H
 #define ALPACGAME_FARMER_H
 
-#include <SFML/Graphics/RectangleShape.hpp>
+#include <iostream>
+#include <SFML/Graphics.hpp>
 
 class Farmer {
 public:
 
-    Farmer();
+    enum class Action{IDLE, WALKING, JUMP};
+    enum class Status{GROUNDED, AIRBORNE};
+    enum class Direction{RIGHT, LEFT};
+
+    Farmer(sf::RenderWindow &renderWindow);
 
     sf::RectangleShape rectangle;
 
+    float velocity_y;
+    float y;
+    float gravity = 3;
+
+    void control(float rotationDelta);
+
+    void draw();
+
+    Action action;
+    Status status;
+    Direction direction;
+
+
 private:
+    const int size = 100;
+
+    sf::RenderWindow *window;
+    sf::VideoMode windowSize;
+    sf::Texture farmerTexture;
 };
 
 

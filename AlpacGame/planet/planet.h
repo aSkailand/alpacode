@@ -1,19 +1,21 @@
+
 #ifndef ALPACGAME_PLANET_H
 #define ALPACGAME_PLANET_H
 
 #include <iostream>
 #include <cmath>
+
 #include <SFML/Graphics.hpp>
+
 #include "../state/StateGame.h"
 
 
-class planetClass {
+class Planet {
 public:
-    planetClass(sf::RenderWindow &renderWindow);
-    void control(float rotationDelta, StateGame::Direction rotationDir);
+    Planet(sf::RenderWindow &renderWindow);
+    void control(float rotationDelta);
     void draw();
 
-    StateGame::Direction currentDir = StateGame::Direction::RIGHT;
 
 private:
     sf::RenderWindow *window;
@@ -21,7 +23,6 @@ private:
 
     sf::CircleShape planet;
     sf::RectangleShape alpaca;
-    sf::RectangleShape alpaca2;
 
     sf::Sprite backgroundSprite;
     sf::Texture planetTexture;
