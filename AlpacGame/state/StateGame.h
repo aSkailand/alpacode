@@ -6,6 +6,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "State.h"
 #include "StateMachine.h"
+#include "../wolf/WolfState.h"
 
 class StateGame : public State{
 public:
