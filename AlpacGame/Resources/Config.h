@@ -6,6 +6,8 @@
 
 class Config {
 public:
+    const int windowWidth = 800;
+    const int windowHeight = 600;
     void run();
 
     sf::RenderWindow &getWindow();

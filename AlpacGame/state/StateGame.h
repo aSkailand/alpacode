@@ -4,8 +4,13 @@
 
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
+#define ENUM_TO_STR(ENUM) std::string(#ENUM)
 #include "State.h"
 #include "StateMachine.h"
+#include "../../entity/alpaca/alpaca.h"
+
 
 class StateGame : public State{
 public:
@@ -15,6 +20,12 @@ private:
     // Pointers
     StateMachine *machine;
     sf::RenderWindow *window;
+
+    Config config;
+
+    sf::Clock clock;
+    sf::Time currentTime;
+
 
     // Game State Functions
     /**

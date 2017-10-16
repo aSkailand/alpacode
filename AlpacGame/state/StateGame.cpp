@@ -6,14 +6,30 @@ void StateGame::goNext(StateMachine &stateMachine) {
     machine = &stateMachine;
     window = &machine->config.getWindow();
 
+    Alpaca Alpa(300, 200, config, *window);
+    int times = 1;
+
+
     while(pollGame()){
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-            std::cout << "Right" << std::endl;
-        } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-            std::cout << "Left" << std::endl;
+        currentTime = clock.getElapsedTime();
+        int cT = (int)clock.getElapsedTime().asSeconds();
+
+
+        if (cT == times){
+            std::cout << "Seconds = " << times << std::endl;
+
+            if (times % 3 == 0){
+                Alpa.randomAction();
+            }
+
+            times++;
         }
 
+
+        Alpa.move(0.001);
         window->clear(sf::Color::Blue);
+        Alpa.draw();
+
         window->display();
     }
 }
