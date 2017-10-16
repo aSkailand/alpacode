@@ -11,7 +11,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
 
     //Wolf
-    WolfState wolf;
+    Wolf wolf(*window);
+
     //Clock TODO: use the global clock
     sf::Clock clock;
 
@@ -28,7 +29,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
     rotationSpeed = 100;
 
     // Check if game is ongoing
-    while (pollGame()) {
+
 
         // todo: Add common rotation calculation here?
 
@@ -60,25 +61,26 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
             // Drawing Phase
 
-            //Sends the elapsed time to the WolfState
-            sf::Time elapsed = clock.getElapsedTime();
-            wolf.goWolf((int) elapsed.asSeconds());
-            if ((int) clock.getElapsedTime().asSeconds() == wolf.getTickSecond()) {
-                clock.restart();
-            }//END
+
+
 
 
             window->clear(sf::Color::Blue);
 
             planet.control(rotationDelta);
             farmer.control(rotationDelta);
+
+            wolf.control(rotationDelta); //TODO:: get rotation to work controll the aplaca
+
+
             planet.draw();
             farmer.draw();
+            wolf.draw();
 
             window->display();
         }
     }
-}
+
 bool StateGame::pollGame() {
     sf::Event event;
     while (window->pollEvent(event)) {
