@@ -6,21 +6,16 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     // Assign pointers
     machine = &stateMachine;
-    window = &machine->config.getWindow();
-    window->setFramerateLimit(60);
-
-
-
-
+    window = &machine->configWindow.getWindow();
 
     // Clock used to throttle movement softly
     sf::Clock ticker;
 
     // Instantiating Entities
-    // todo: throw in config instead?
-    Planet planet(*window);
+    // todo: throw in configWindow instead?
+    Planet planet(*machine);
     Farmer farmer(*window);
-    Alpaca alpaca(*window);
+    Alpaca alpaca(45,*machine);
     WolfState wolf;
     //Clock TODO: use the global clock
     sf::Clock clock;
@@ -28,59 +23,54 @@ void StateGame::goNext(StateMachine &stateMachine) {
     rotationSpeed = 100;
 
     // Check if game is ongoing
+
+    // todo: Add common rotation calculation here?
+
+    float delta = ticker.restart().asSeconds();
+
     while (pollGame()) {
-
-        // todo: Add common rotation calculation here?
-
-        float delta = ticker.restart().asSeconds();
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             std::cout << "Right" << std::endl;
             rotationDelta = delta * rotationSpeed;
-        }
-
-        while (pollGame()) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                std::cout << "Right" << std::endl;
-                rotationDelta = delta * rotationSpeed;
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                std::cout << "Left" << std::endl;
-                rotationDelta = delta * -rotationSpeed;
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                std::cout << "Up" << std::endl;
-                // todo: fix jump
-                if (farmer.status != Farmer::Status::AIRBORNE) {
-                    farmer.status = Farmer::Status::AIRBORNE;
-                    farmer.velocity_y = -10;
-                    farmer.y += 50;
-                }
-            } else {
-                rotationDelta = 0;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            std::cout << "Left" << std::endl;
+            rotationDelta = delta * -rotationSpeed;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            std::cout << "Up" << std::endl;
+            // todo: fix jump
+            if (farmer.status != Farmer::Status::AIRBORNE) {
+                farmer.status = Farmer::Status::AIRBORNE;
+                farmer.velocity_y = -10;
+                farmer.y += 50;
             }
-
-            // Drawing Phase
-
-            //Sends the elapsed time to the WolfState
-            sf::Time elapsed = clock.getElapsedTime();
-            wolf.goWolf((int) elapsed.asSeconds());
-            if ((int) clock.getElapsedTime().asSeconds() == wolf.getTickSecond()) {
-                clock.restart();
-            }//END
-
-
-            window->clear(sf::Color::Blue);
-
-            planet.control(rotationDelta);
-            farmer.control(rotationDelta);
-            alpaca.move();
-            planet.draw();
-            farmer.draw();
-            alpaca.draw();
-
-            window->display();
+        } else {
+            rotationDelta = 0;
         }
+
+        // Drawing Phase
+
+        //Sends the elapsed time to the WolfState
+        sf::Time elapsed = clock.getElapsedTime();
+        wolf.goWolf((int) elapsed.asSeconds());
+        if ((int) clock.getElapsedTime().asSeconds() == wolf.getTickSecond()) {
+            clock.restart();
+        }//END
+
+
+        window->clear(sf::Color::Blue);
+
+        planet.control(rotationDelta);
+        farmer.control(rotationDelta);
+        alpaca.control(rotationDelta);
+        planet.draw();
+        farmer.draw();
+        alpaca.draw();
+
+        window->display();
     }
+
 }
+
 bool StateGame::pollGame() {
     sf::Event event;
     while (window->pollEvent(event)) {

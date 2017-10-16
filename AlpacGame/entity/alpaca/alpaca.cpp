@@ -1,99 +1,90 @@
-#include <chrono>
+
 #include "alpaca.h"
 
-Alpaca::Alpaca(sf::RenderWindow &renderWindow) {
-//    rectangle.setSize(sf::Vector2f(size, size));
-//    rectangle.setFillColor(sf::Color::Red);
-//    this->currentDirection = currentDirection;
-//    this->currentAction = currentAction;
+Alpaca::Alpaca(float initDegree, StateMachine &stateMachine) {
 
-    window = &renderWindow;
+    // Assign window
+    machine = &stateMachine;
+    window = &machine->configWindow.getWindow();
 
-    if (!alpacaTexture.loadFromFile("planet/alpaca.png")) {
+    // Load textures
+    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
         std::cout << "Error!!!" << std::endl;
     }
 
-    // Define moving alpaca
+    // Define the alpaca
     alpaca = sf::RectangleShape(sf::Vector2f(150, 150));
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
     alpaca.rotate(90);
     alpaca.setOutlineThickness(1);
 
-    // Change enums
-    currentDirection = Direction::RIGHT;
-    currentAction = Action::IDLE;
+    x = machine->configGame.calcX(initDegree);
+    y = machine->configGame.calcY(initDegree);
 
-    // Clock
-    currentTime = clock.restart();
+
+    // Change enums
+    currentAction = Action::IDLE;
+    currentDirection = Direction::RIGHT;
+
 }
 
-void Alpaca::move()
-{
-//
-//    currentTime = clock.getElapsedTime();
-//    int cT = (int)clock.getElapsedTime().asSeconds();
+void Alpaca::control(float deltaRotation) {
 
-    if (actionTick < clock.getElapsedTime().asSeconds()){
+    x = machine->configGame.calcX(-machine->configGame.planetRotation);
+    y = machine->configGame.calcY(-machine->configGame.planetRotation);
+    alpaca.rotate(machine->configGame.planetRotation);
+
+    if (actionTick < clock.getElapsedTime().asSeconds()) {
         randomAction();
         clock.restart();
     }
-
-//    // Position the rectangle used to draw the square
-//    rectangle.setPosition(x, y);
-
-//    Action::WALKING;
-//
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-//        x += speed * delta;
-//        Direction::RIGHT;
-//    }
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-//        x -= speed * delta;
-//        Direction::LEFT;
-//    }
-//
-//    // Keep the box within screen borders
-//    x = std::max(x, 0.f);
-//    x = std::min(x, (float)(config.windowWidth - size));
-//    y = std::max(y, 0.f);
-//    y = std::min(y, (float)(config.windowHeight - size));
-//
-//    Action::IDLE;
 }
 
-void Alpaca::draw()
-{
+void Alpaca::draw() {
 
 
     // Draw the square
+    alpaca.setPosition(x,y);
     window->draw(alpaca);
 }
 
 
-void Alpaca::randomAction(){
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+void Alpaca::randomAction() {
+
+    // todo: Combine common random number generator
+    // Random number generator
+    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
-    std::uniform_int_distribution<int> distribution(0,1);
+    std::uniform_int_distribution<int> distribution(0, 1);
     int random = distribution(generator);
 
-    currentAction = (Action)random;
+    currentAction = (Action) random;
 
-    if (currentAction == Action::IDLE){
-        std::cout << "Alpaca is now in IDLE" << std::endl;
-    }
-    else if (currentAction == Action::WALKING){
-
-        std::cout << "Alpaca is now WALKING" << std::endl;
-        random = distribution(generator);
-        currentDirection = (Direction)random;
-
-        if (currentDirection == Direction::RIGHT){
-            std::cout << "Alpaca is going to the RIGHT" << std::endl;
+    switch (currentAction) {
+        case Action::IDLE: {
+            std::cout << "Alpaca is now IDLE." << std::endl;
+            break;
         }
-        else if (currentDirection == Direction::LEFT){
-            std::cout << "Alpaca is going to the LEFT" << std::endl;
+        case Action::WALKING: {
+            std::cout << "Alpaca is now WALKING ";
+            currentDirection = (Direction) distribution(generator);
+            randomDirection();
         }
-
     }
 }
+
+void Alpaca::randomDirection() {
+    switch (currentDirection) {
+        case Direction::RIGHT: {
+            std::cout << "RIGHT." << std::endl;
+            break;
+        }
+        case Direction::LEFT: {
+            std::cout << "LEFT." << std::endl;
+            break;
+        }
+    }
+}
+
+

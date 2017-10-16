@@ -3,17 +3,14 @@
 
 #include <iostream>
 #include <random>
+#include <chrono>
 
 #include <SFML/Graphics.hpp>
-//#include <SFML/System/Export.hpp>
+#include "../../state/StateMachine.h"
 
-//#include "../../Resources/Config.h"
-
-
-struct Alpaca
-{
+struct Alpaca {
 public:
-    Alpaca(sf::RenderWindow& window);
+    Alpaca(float initDegree, StateMachine &stateMachine);
 
     const int size = 50;
     const float speed = 400;
@@ -21,19 +18,28 @@ public:
 
     sf::RectangleShape alpaca;
 
-    enum class Direction{LEFT, RIGHT};
-    enum class Action{IDLE, WALKING};
+    enum class Direction {
+        LEFT, RIGHT
+    };
+    enum class Action {
+        IDLE, WALKING
+    };
 
 
-    void move();
+    void control(float deltaRotation);
+
     void draw();
+
     void randomAction();
+
+    void randomDirection();
 
     //Add what happens when you are direction = LEFT, RIGHT and same for Action
     //Make randomAction happen every 3 sec
 
 private:
 
+    StateMachine *machine;
     sf::RenderWindow *window;
 
     int actionTick = 3;
@@ -44,7 +50,6 @@ private:
     Action currentAction;
 
     sf::Clock clock;
-    sf::Time currentTime;
 };
 
 #endif //ALPACGAME_ALPACA_H

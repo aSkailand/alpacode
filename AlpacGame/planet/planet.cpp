@@ -1,30 +1,27 @@
 
 #include "planet.h"
 
-Planet::Planet(sf::RenderWindow &renderWindow) {
+Planet::Planet(StateMachine &stateMachine) {
 
-    window = &renderWindow;
+    // Assign pointers
+    machine = &stateMachine;
+    window = &machine->configWindow.getWindow();
     windowSize = sf::VideoMode(window->getSize().x, window->getSize().y);
 
-    // Load Textures
-    if (!planetTexture.loadFromFile("planet/wat.png")) {
-        std::cout << "Error!!!" << std::endl;
-    }
-
-
-
-    if (!backgroundTexture.loadFromFile("planet/back.png")) {
-        std::cout << "Error!!!" << std::endl;
-    }
+    // Load textures
+    loadTextures();
 
     // Define Background
     backgroundSprite = sf::Sprite(backgroundTexture);
 
     // Define planet
+    radius = stateMachine.configGame.planetRadius;
+    offset = stateMachine.configGame.offset; // todo: remove in future updates?
+
     planet = sf::CircleShape(radius);
     planet.setTexture(&planetTexture);
     planet.setOrigin(sf::Vector2f(radius, radius));
-    planet.setPosition(windowSize.width / 2, windowSize.height + offset);
+    planet.setPosition(stateMachine.configGame.planetCenter);
 
 //    // Define moving alpaca
 //    alpaca = sf::RectangleShape(sf::Vector2f(150, 150));
@@ -47,18 +44,32 @@ void Planet::control(float rotationDelta) {
     }
 
     planet.rotate(-rotationDelta);
-    alpaca.rotate(-rotationDelta);
+    machine->configGame.planetRotation = planet.getRotation();
+
+//    alpaca.rotate(-rotationDelta);
 
     // Calculate X and Y position
     xpos = windowSize.width / 2 + (radius * std::cos((planet.getRotation() * M_PI / 180)));
     ypos = windowSize.height + offset + (radius * (std::sin((planet.getRotation() * M_PI / 180))));
 
-    alpaca.setPosition(xpos, ypos);
+//    alpaca.setPosition(xpos, ypos);
 
 }
 
 void Planet::draw() {
     window->draw(backgroundSprite);
     window->draw(planet);
-    window->draw(alpaca);
+//    window->draw(alpaca);
+}
+
+void Planet::loadTextures() {
+
+    // Load Textures
+    if (!planetTexture.loadFromFile("planet/wat.png")) {
+        std::cout << "Error!!!" << std::endl;
+    }
+
+    if (!backgroundTexture.loadFromFile("planet/back.png")) {
+        std::cout << "Error!!!" << std::endl;
+    }
 }

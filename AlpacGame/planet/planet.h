@@ -12,25 +12,28 @@
 
 class Planet {
 public:
-    Planet(sf::RenderWindow &renderWindow);
+    Planet(StateMachine &stateMachine
+    );
     void control(float rotationDelta);
     void draw();
 
 
 private:
+
+    void loadTextures();
+
+    StateMachine *machine;
     sf::RenderWindow *window;
     sf::VideoMode windowSize;
 
     sf::CircleShape planet;
-    sf::RectangleShape alpaca;
 
     sf::Sprite backgroundSprite;
     sf::Texture planetTexture;
-
-
     sf::Texture backgroundTexture;
-    const int radius = 300;
-    const int offset = -100; // Change this to change planet's y-pos
+
+    int radius;
+    int offset;
     double xpos = 0;
     double ypos = 0;
 };

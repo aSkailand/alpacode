@@ -1,7 +1,7 @@
 
-#include "Config.h"
+#include "ConfigWindow.h"
 
-void Config::run(){
+void ConfigWindow::run(){
 
     windowResolution = sf::VideoMode(windowWidth,windowHeight);  // todo: place this line another place
     window.create(windowResolution, "AlpaGame");
@@ -9,6 +9,6 @@ void Config::run(){
 
 }
 
-sf::RenderWindow &Config::getWindow() {
+sf::RenderWindow &ConfigWindow::getWindow() {
     return window;
 }

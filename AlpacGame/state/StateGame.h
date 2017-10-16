@@ -29,9 +29,11 @@ private:
 
     // Pointers
     StateMachine *machine;
+
+//    ConfigWindow *configWindow;
+//    ConfigGame *configGame;
+
     sf::RenderWindow *window;
-
-
 
 
     // Game State Functions
