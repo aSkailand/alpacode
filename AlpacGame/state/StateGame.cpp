@@ -10,10 +10,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
     window->setFramerateLimit(60);
 
 
-    //Wolf
-    WolfState wolf;
-    //Clock TODO: use the global clock
-    sf::Clock clock;
 
 
 
@@ -24,6 +20,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
     // todo: throw in config instead?
     Planet planet(*window);
     Farmer farmer(*window);
+    Alpaca alpaca(*window);
+    WolfState wolf;
+    //Clock TODO: use the global clock
+    sf::Clock clock;
 
     rotationSpeed = 100;
 
@@ -72,8 +72,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
             planet.control(rotationDelta);
             farmer.control(rotationDelta);
+            alpaca.move();
             planet.draw();
             farmer.draw();
+            alpaca.draw();
 
             window->display();
         }

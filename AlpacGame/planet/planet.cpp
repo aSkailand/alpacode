@@ -12,10 +12,6 @@ Planet::Planet(sf::RenderWindow &renderWindow) {
     }
 
 
-    if (!alpacaTexture.loadFromFile("planet/alpaca.png")) {
-        std::cout << "Error!!!" << std::endl;
-    }
-
 
     if (!backgroundTexture.loadFromFile("planet/back.png")) {
         std::cout << "Error!!!" << std::endl;
@@ -30,12 +26,12 @@ Planet::Planet(sf::RenderWindow &renderWindow) {
     planet.setOrigin(sf::Vector2f(radius, radius));
     planet.setPosition(windowSize.width / 2, windowSize.height + offset);
 
-    // Define moving alpaca
-    alpaca = sf::RectangleShape(sf::Vector2f(150, 150));
-    alpaca.setTexture(&alpacaTexture);
-    alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
-    alpaca.rotate(90);
-    alpaca.setOutlineThickness(1);
+//    // Define moving alpaca
+//    alpaca = sf::RectangleShape(sf::Vector2f(150, 150));
+//    alpaca.setTexture(&alpacaTexture);
+//    alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
+//    alpaca.rotate(90);
+//    alpaca.setOutlineThickness(1);
 
 }
 

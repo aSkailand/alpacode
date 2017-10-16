@@ -26,7 +26,7 @@ private:
 
     sf::Sprite backgroundSprite;
     sf::Texture planetTexture;
-    sf::Texture alpacaTexture;
+
 
     sf::Texture backgroundTexture;
     const int radius = 300;

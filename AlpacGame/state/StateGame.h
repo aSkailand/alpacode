@@ -3,14 +3,17 @@
 #define ALPACGAME_STATEGAME_H
 
 
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 
 #include "State.h"
 #include "StateMachine.h"
-#include "../wolf/WolfState.h"
 
 #include "../planet/planet.h"
 #include "../entity/player/Farmer.h"
+#include "../wolf/WolfState.h"
+#include "../../entity/alpaca/alpaca.h"
 
 class StateGame : public State{
 public:
@@ -27,6 +30,9 @@ private:
     // Pointers
     StateMachine *machine;
     sf::RenderWindow *window;
+
+
+
 
     // Game State Functions
     /**
