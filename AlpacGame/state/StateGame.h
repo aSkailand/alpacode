@@ -7,6 +7,7 @@
 
 #include "State.h"
 #include "StateMachine.h"
+#include "../wolf/WolfState.h"
 
 #include "../planet/planet.h"
 #include "../entity/player/Farmer.h"

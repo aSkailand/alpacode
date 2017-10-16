@@ -1,11 +1,21 @@
 
 #include "StateGame.h"
 
+
 void StateGame::goNext(StateMachine &stateMachine) {
 
     // Assign pointers
     machine = &stateMachine;
     window = &machine->config.getWindow();
+    window->setFramerateLimit(60);
+
+
+    //Wolf
+    WolfState wolf;
+    //Clock TODO: use the global clock
+    sf::Clock clock;
+
+
 
     // Clock used to throttle movement softly
     sf::Clock ticker;
@@ -27,33 +37,48 @@ void StateGame::goNext(StateMachine &stateMachine) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             std::cout << "Right" << std::endl;
             rotationDelta = delta * rotationSpeed;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            std::cout << "Left" << std::endl;
-            rotationDelta = delta * -rotationSpeed;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            std::cout << "Up" << std::endl;
-            // todo: fix jump
-            if(farmer.status != Farmer::Status::AIRBORNE){
-                farmer.status = Farmer::Status::AIRBORNE;
-                farmer.velocity_y = -10;
-                farmer.y += 50;
-            }
-        } else {
-            rotationDelta = 0;
         }
 
-        // Drawing Phase
-        window->clear(sf::Color::Blue);
+        while (pollGame()) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                std::cout << "Right" << std::endl;
+                rotationDelta = delta * rotationSpeed;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                std::cout << "Left" << std::endl;
+                rotationDelta = delta * -rotationSpeed;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                std::cout << "Up" << std::endl;
+                // todo: fix jump
+                if (farmer.status != Farmer::Status::AIRBORNE) {
+                    farmer.status = Farmer::Status::AIRBORNE;
+                    farmer.velocity_y = -10;
+                    farmer.y += 50;
+                }
+            } else {
+                rotationDelta = 0;
+            }
 
-        planet.control(rotationDelta);
-        farmer.control(rotationDelta);
-        planet.draw();
-        farmer.draw();
+            // Drawing Phase
 
-        window->display();
+            //Sends the elapsed time to the WolfState
+            sf::Time elapsed = clock.getElapsedTime();
+            wolf.goWolf((int) elapsed.asSeconds());
+            if ((int) clock.getElapsedTime().asSeconds() == wolf.getTickSecond()) {
+                clock.restart();
+            }//END
+
+
+            window->clear(sf::Color::Blue);
+
+            planet.control(rotationDelta);
+            farmer.control(rotationDelta);
+            planet.draw();
+            farmer.draw();
+
+            window->display();
+        }
     }
 }
-
 bool StateGame::pollGame() {
     sf::Event event;
     while (window->pollEvent(event)) {
