@@ -1,15 +1,13 @@
 #ifndef ALPACGAME_WOLFSTATE_H
 #define ALPACGAME_WOLFSTATE_H
 
-#include <SFML/Graphics.hpp>
+#include <random>
+#include <chrono>
 #include <iostream>
-
-
+#include <SFML/Graphics.hpp>
 
 class WolfState {
-
 public:
-
     enum class Direction {
         LEFT, RIGHT
     };
@@ -21,24 +19,14 @@ public:
 
     void goWolf(int elapsedTime);
 
-    void setDirectionState(Direction setDirection);
+    int randomNumberGenerator();
 
-    void setActionState(Action setAction);
-
-private:
-
-    Direction currentDirectionState;
-
-    Action currentActionState;
-
-    int tickSecond = 3;
-public:
     int getTickSecond() const;
 
 private:
-    bool moveWolf;
-
+    Direction currentDirectionState;
+    Action currentActionState;
+    int tickSecond = 3;
 };
-
 
 #endif //ALPACGAME_WOLFSTATE_H
