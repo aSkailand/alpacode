@@ -16,7 +16,7 @@ Alpaca::Alpaca(float initDegree, StateMachine &stateMachine) {
     alpaca = sf::RectangleShape(sf::Vector2f(150, 150));
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
-    alpaca.rotate(90);
+//    alpaca.rotate(90);
     alpaca.setOutlineThickness(1);
 
     x = machine->configGame.calcX(initDegree);
@@ -31,9 +31,11 @@ Alpaca::Alpaca(float initDegree, StateMachine &stateMachine) {
 
 void Alpaca::control(float deltaRotation) {
 
-    x = machine->configGame.calcX(-machine->configGame.planetRotation);
-    y = machine->configGame.calcY(-machine->configGame.planetRotation);
-    alpaca.rotate(machine->configGame.planetRotation);
+//    x = machine->configGame.calcX(-machine->configGame.planetRotation);
+//    y = machine->configGame.calcY(-machine->configGame.planetRotation);
+    x = machine->configGame.calcY(-machine->configGame.planetRotation + deltaRotation);
+    y = machine->configGame.calcY(-machine->configGame.planetRotation + deltaRotation);
+
 
     if (actionTick < clock.getElapsedTime().asSeconds()) {
         randomAction();
@@ -43,9 +45,10 @@ void Alpaca::control(float deltaRotation) {
 
 void Alpaca::draw() {
 
+    alpaca.setRotation(machine->configGame.planetRotation + 180);
+    alpaca.setPosition(x, y);
 
     // Draw the square
-    alpaca.setPosition(x,y);
     window->draw(alpaca);
 }
 

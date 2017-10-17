@@ -16,6 +16,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     Planet planet(*machine);
     Farmer farmer(*window);
     Alpaca alpaca(45,*machine);
+    Alpaca alpaca1(90,*machine);
+    Alpaca alpaca2(180,*machine);
     WolfState wolf;
     //Clock TODO: use the global clock
     sf::Clock clock;
@@ -61,10 +63,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         planet.control(rotationDelta);
         farmer.control(rotationDelta);
-        alpaca.control(rotationDelta);
+        alpaca.control(45);
+        alpaca1.control(90);
+        alpaca2.control(180);
         planet.draw();
         farmer.draw();
         alpaca.draw();
+        alpaca1.draw();
+        alpaca2.draw();
 
         window->display();
     }
