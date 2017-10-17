@@ -13,7 +13,7 @@
 #include "../planet/planet.h"
 #include "../entity/player/Farmer.h"
 #include "../wolf/WolfState.h"
-#include "../../entity/alpaca/alpaca.h"
+#include "../entity/alpaca/Alpaca.h"
 
 class StateGame : public State{
 public:
@@ -22,10 +22,10 @@ public:
 
     void goNext(StateMachine &stateMachine);
 
-    float rotationDelta;
-    int rotationSpeed;
-
 private:
+    int rotationSpeed = 50;
+
+    float rotationDelta;
 
     // Pointers
     StateMachine *machine;

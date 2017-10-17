@@ -1,27 +1,23 @@
 
-#include "alpaca.h"
+#include "Alpaca.h"
 
-Alpaca::Alpaca(float initDegree, StateMachine &stateMachine) {
+Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
 
-    // Assign window
-    machine = &stateMachine;
-    window = &machine->configWindow.getWindow();
+    // Assign pointers
+    window = &stateMachine.configWindow.getWindow();
+    configGame = &stateMachine.configGame;
 
     // Load textures
-    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
-        std::cout << "Error!!!" << std::endl;
-    }
+    loadTextures();
 
     // Define the alpaca
-    alpaca = sf::RectangleShape(sf::Vector2f(150, 150));
+    alpaca = sf::RectangleShape(sf::Vector2f(size, size));
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
-//    alpaca.rotate(90);
     alpaca.setOutlineThickness(1);
 
-    x = machine->configGame.calcX(initDegree);
-    y = machine->configGame.calcY(initDegree);
-
+    // Set innate angle
+    angle = initAngle;
 
     // Change enums
     currentAction = Action::IDLE;
@@ -29,14 +25,14 @@ Alpaca::Alpaca(float initDegree, StateMachine &stateMachine) {
 
 }
 
-void Alpaca::control(float deltaRotation) {
+void Alpaca::control() {
 
-//    x = machine->configGame.calcX(-machine->configGame.planetRotation);
-//    y = machine->configGame.calcY(-machine->configGame.planetRotation);
-    x = machine->configGame.calcY(-machine->configGame.planetRotation + deltaRotation);
-    y = machine->configGame.calcY(-machine->configGame.planetRotation + deltaRotation);
+    // Handle alpaca's position relatively to planet's rotation
+    x = configGame->calcX(configGame->planetRotation + angle);
+    y = configGame->calcY(configGame->planetRotation + angle);
 
 
+    // Handle alpaca's position according to its innate movements
     if (actionTick < clock.getElapsedTime().asSeconds()) {
         randomAction();
         clock.restart();
@@ -45,7 +41,14 @@ void Alpaca::control(float deltaRotation) {
 
 void Alpaca::draw() {
 
-    alpaca.setRotation(machine->configGame.planetRotation + 180);
+    /* The reason why setPosition and setRotation is here and not in control() is
+     * because when adding movement to alpacas, the x and y change one more time (First
+     * time being the reposition because of the planet's rotation).
+     * Therefore we don't want setPosition and setRotation in control(), where
+     * this movement will be handled. */
+
+    // Place the alpaca accordingly
+    alpaca.setRotation(configGame->planetRotation + angle);
     alpaca.setPosition(x, y);
 
     // Draw the square
@@ -87,6 +90,12 @@ void Alpaca::randomDirection() {
             std::cout << "LEFT." << std::endl;
             break;
         }
+    }
+}
+
+void Alpaca::loadTextures() {
+    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
+        std::cout << "Error!!!" << std::endl;
     }
 }
 

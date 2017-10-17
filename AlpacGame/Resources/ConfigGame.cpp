@@ -14,6 +14,6 @@ float ConfigGame::calcX(float degree) {
 }
 
 float ConfigGame::calcY(float degree) {
-    float y = planetCenter.y + planetRadius * (float) std::cos(degree*(M_PI/180));
+    float y = planetCenter.y - planetRadius * (float) std::cos(degree*(M_PI/180));
     return y;
 }
