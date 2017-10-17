@@ -1,12 +1,12 @@
 
 #include "StateGame.h"
 
-
 void StateGame::goNext(StateMachine &stateMachine) {
 
     // Assign pointers
     machine = &stateMachine;
     window = &machine->configWindow.getWindow();
+    configGame = &machine->configGame;
 
     // Clock used to throttle movement softly
     sf::Clock ticker;
@@ -16,9 +16,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     // Instantiating Entities
     Planet planet(*machine);
 
-    Farmer farmer(*window);
+    Farmer farmer(*machine, 0);
 
-    Alpaca alpaca0(*machine, 0);
     Alpaca alpaca1(*machine, 90);
     Alpaca alpaca2(*machine, 180);
     Alpaca alpaca3(*machine, 190);
@@ -31,30 +30,23 @@ void StateGame::goNext(StateMachine &stateMachine) {
     //Clock TODO: use the global clock
     sf::Clock clock;
 
-    float delta = ticker.restart().asSeconds();
-
     // Check if game is ongoing
     while (pollGame()) {
 
+        configGame->deltaTime = ticker.restart().asSeconds();
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            std::cout << "Right" << std::endl;
-            rotationDelta = delta * rotationSpeed;
+            configGame->currentInput = sf::Keyboard::Right;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            std::cout << "Left" << std::endl;
-            rotationDelta = delta * rotationSpeed * (-1);
+            configGame->currentInput = sf::Keyboard::Left;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            std::cout << "Up" << std::endl;
-            // todo: fix jump, and add it to farmer and not here
-            if (farmer.status != Farmer::Status::AIRBORNE) {
-                farmer.status = Farmer::Status::AIRBORNE;
-                farmer.velocity_y = -10;
-                farmer.y += 50;
-            }
+            configGame->currentInput = sf::Keyboard::Up;
         } else {
-            rotationDelta = 0;
+            configGame->currentInput = sf::Keyboard::Unknown;
         }
 
 
+        // Todo: Delete when wolf is implemented correctly
         //Sends the elapsed time to the WolfState
         sf::Time elapsed = clock.getElapsedTime();
         wolf.goWolf((int) elapsed.asSeconds());
@@ -63,16 +55,13 @@ void StateGame::goNext(StateMachine &stateMachine) {
         }//END
 
 
-        // todo: Create a drawing function
+        // todo: Create a drawing function?
         // Drawing Phase
 
         window->clear(sf::Color::Blue);
 
-        planet.control(rotationDelta);
+        farmer.control();
 
-        farmer.control(rotationDelta);
-
-        alpaca0.control();
         alpaca1.control();
         alpaca2.control();
         alpaca3.control();
@@ -81,8 +70,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
         alpaca6.control();
 
         planet.draw();
+
         farmer.draw();
-        alpaca0.draw();
+
         alpaca1.draw();
         alpaca2.draw();
         alpaca3.draw();
@@ -91,6 +81,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
         alpaca6.draw();
 
         window->display();
+
+        // todo: Create a function for view?
+        // Update View
+        view = sf::View(window->getDefaultView());
+        view.zoom(viewZoom);
+        view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
+        view.setRotation(farmer.farmer.getRotation());
+        window->setView(view);
     }
 
 }
@@ -109,7 +107,7 @@ bool StateGame::pollGame() {
                     return false;
                 } else if (event.key.code == sf::Keyboard::Space) {
                     // todo: Add actual pause.
-                    machine->setCurrentState(StateMachine::stateID::PAUSE);
+//                    machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
                 }
             }

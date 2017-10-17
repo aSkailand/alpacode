@@ -2,13 +2,14 @@
 #ifndef ALPACGAME_STATEGAME_H
 #define ALPACGAME_STATEGAME_H
 
-
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 
 #include "State.h"
 #include "StateMachine.h"
+#include "../Resources/ConfigWindow.h"
+#include "../Resources/ConfigGame.h"
 
 #include "../planet/planet.h"
 #include "../entity/player/Farmer.h"
@@ -18,23 +19,19 @@
 class StateGame : public State{
 public:
 
-    enum class Direction{ LEFT, RIGHT };
-
     void goNext(StateMachine &stateMachine);
 
 private:
-    int rotationSpeed = 50;
-
-    float rotationDelta;
 
     // Pointers
     StateMachine *machine;
-
-//    ConfigWindow *configWindow;
-//    ConfigGame *configGame;
-
+    ConfigGame *configGame;
     sf::RenderWindow *window;
 
+    // View
+    sf::View view;
+    float viewZoom = 1.0f;  // How much to zoom in
+    int viewOffset = 400;   // How much is the view's offset
 
     // Game State Functions
     /**

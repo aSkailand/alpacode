@@ -15,6 +15,7 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
     alpaca.setOutlineThickness(1);
+    alpaca.setScale(-1.f, 1.f);
 
     // Set innate angle
     angle = initAngle;
@@ -27,10 +28,18 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
 
 void Alpaca::control() {
 
-    // Handle alpaca's position relatively to planet's rotation
-    x = configGame->calcX(configGame->planetRotation + angle);
-    y = configGame->calcY(configGame->planetRotation + angle);
+    // Handle walking
+    if (currentAction == Action::WALKING) {
+        if (currentDirection == Direction::RIGHT) {
+            angle += configGame->deltaTime * speed;
+        } else {
+            angle -= configGame->deltaTime * speed;
+        }
+    }
 
+    // Handle alpaca's position relatively to planet's rotation
+    x = configGame->calcX(angle);
+    y = configGame->calcY(angle);
 
     // Handle alpaca's position according to its innate movements
     if (actionTick < clock.getElapsedTime().asSeconds()) {
@@ -48,7 +57,7 @@ void Alpaca::draw() {
      * this movement will be handled. */
 
     // Place the alpaca accordingly
-    alpaca.setRotation(configGame->planetRotation + angle);
+    alpaca.setRotation(angle);
     alpaca.setPosition(x, y);
 
     // Draw the square

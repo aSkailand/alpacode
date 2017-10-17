@@ -1,67 +1,78 @@
 
 #include "Farmer.h"
 
-Farmer::Farmer(sf::RenderWindow &renderWindow) {
+Farmer::Farmer(StateMachine &stateMachine, float initAngle) {
 
-    // Assigning window
-    window = &renderWindow;
-    windowSize = sf::VideoMode(window->getSize().x, window->getSize().y);
+    // Assigning pointers
+    window = &stateMachine.configWindow.getWindow();
+    configGame = &stateMachine.configGame;
 
-    // Load texture
-    if (!farmerTexture.loadFromFile("entity/player/farmer.png")) { // todo: change path
-        std::cout << "Error!!!" << std::endl;
-    }
+    // Loading textures
+    loadTextures();
 
-    // Assigning variables
-    y = windowSize.height / 2 - 100;    // todo: -100 is magic number, change it to relative!
-    velocity_y = 0;
+    // Create Farmer
+    farmer = sf::RectangleShape(sf::Vector2f(size, size));
+    farmer.setTexture(&farmerTexture);
+    farmer.setOrigin(farmer.getSize().x / 2, farmer.getSize().y);
+    farmer.setOutlineThickness(1);
+    farmer.scale(-1.f, 1.f);
+
+    // Assigning enums
     action = Action::IDLE;
     status = Status::GROUNDED;
     direction = Direction::RIGHT;
 
-    // Create Farmer
-    rectangle = sf::RectangleShape(sf::Vector2f(size, size));
-    rectangle.setTexture(&farmerTexture);
-    rectangle.setOrigin(rectangle.getSize().x / 2, rectangle.getSize().y);
-    rectangle.setPosition(windowSize.width / 2, y);
-    rectangle.setOutlineThickness(1);
+    // Assigning initial position
+    angle = initAngle;
+
+}
+
+void Farmer::control() {
+
+    // Move farmer according to input
+    if(configGame->currentInput == sf::Keyboard::Right){
+        angle += configGame->deltaTime*speed;
+    }
+    else if(configGame->currentInput == sf::Keyboard::Left){
+        angle -= configGame->deltaTime*speed;
+    }
+
+    // todo: Simplify flipping?
+    // Changes which way to flip the farmer
+    if (configGame->currentInput == sf::Keyboard::Unknown) {
+        action = Action::IDLE;
+    } else if (configGame->currentInput == sf::Keyboard::Right) {
+        action = Action::WALKING;
+        if (direction != Direction::RIGHT) {
+            farmer.scale(-1.f, 1.f);
+            direction = Direction::RIGHT;
+        }
+    } else if (configGame->currentInput == sf::Keyboard::Left) {
+        action = Action::WALKING;
+        if (direction != Direction::LEFT) {
+            farmer.scale(-1.f, 1.f);
+            direction = Direction::LEFT;
+        }
+    }
+
+    // Update the position and rotation of farmer
+    x = configGame->calcX(angle);
+    y = configGame->calcY(angle);
+    farmer.setRotation(angle);
 
 }
 
 void Farmer::draw() {
+
+    // Update position
+    farmer.setPosition(x,y);
+
     // Draw the square
-    window->draw(rectangle);
+    window->draw(farmer);
 }
 
-void Farmer::control(float rotationDelta) {
-
-    // Gravity Control
-    if (y < windowSize.height / 2 - 100){
-        velocity_y += gravity;
-    }
-    else if (y>windowSize.height / 2 - 100){
-        y = windowSize.height / 2 - 100;
-        status = Farmer::Status::GROUNDED;
-    }
-
-    y += velocity_y;
-
-    rectangle.setPosition(rectangle.getPosition().x,y);
-
-    // Changes which way to flip the farmer
-    if (rotationDelta == 0) {
-        action = Action::IDLE;
-    } else if (rotationDelta < 0) {
-        action = Action::WALKING;
-        if (direction != Direction::RIGHT) {
-            rectangle.scale(-1.f, 1.f);
-            direction = Direction::RIGHT;
-        }
-    } else if (rotationDelta > 0) {
-        action = Action::WALKING;
-        if (direction != Direction::LEFT) {
-            rectangle.scale(-1.f, 1.f);
-            direction = Direction::LEFT;
-        }
+void Farmer::loadTextures() {
+    if (!farmerTexture.loadFromFile("entity/player/farmer.png")) {
+        std::cout << "Error!!!" << std::endl;
     }
 }

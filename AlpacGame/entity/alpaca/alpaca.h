@@ -21,6 +21,14 @@ public:
         IDLE, WALKING
     };
 
+    // Alpaca properties
+    sf::RectangleShape alpaca;
+    sf::Texture alpacaTexture;
+    float x, y;
+    float angle;
+    const int size = 150;
+    const float speed = 10;
+
     /**
      * CONSTRUCTOR: Creates an alpaca and place it on the planet in the given position.
      * @param stateMachine a reference to the stateMachine, used to access common resources.
@@ -44,13 +52,7 @@ private:
     sf::RenderWindow *window;
     ConfigGame *configGame;
 
-    // Alpaca properties
-    sf::RectangleShape alpaca;
-    sf::Texture alpacaTexture;
-    float x, y;
-    float angle;
-    const int size = 150;
-    const float speed = 400;
+
 
     // Current enum
     Direction currentDirection;
