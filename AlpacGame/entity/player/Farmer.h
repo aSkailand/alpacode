@@ -4,6 +4,9 @@
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "../../state/StateMachine.h"
+#include "../../Resources/ConfigGame.h"
+#include "../../state/StateGame.h"
 
 class Farmer {
 public:
@@ -12,17 +15,20 @@ public:
     enum class Status{GROUNDED, AIRBORNE};
     enum class Direction{RIGHT, LEFT};
 
-    Farmer(sf::RenderWindow &renderWindow);
+    Farmer(StateMachine &stateMachine, float initAngle);
 
-    sf::RectangleShape rectangle;
+    sf::RectangleShape farmer;
 
-    float velocity_y;
-    float y;
-    float gravity = 3;
+    float x,y;
+    float speed = 50;
 
-    void control(float rotationDelta);
+    float angle;
+
+    void control();
 
     void draw();
+
+    void loadTextures();
 
     Action action;
     Status status;
@@ -32,8 +38,8 @@ public:
 private:
     const int size = 100;
 
+    ConfigGame *configGame;
     sf::RenderWindow *window;
-    sf::VideoMode windowSize;
     sf::Texture farmerTexture;
 };
 

@@ -1,9 +1,11 @@
 #include "Wolf.h"
 
 
-Wolf::Wolf(sf::RenderWindow &renderWindow) {
+Wolf::Wolf(StateMachine &stateMachine, float initAngle) {
 
-    window = &renderWindow;
+    configGame = &stateMachine.configGame;
+
+
     windowSize = sf::VideoMode(window->getSize().x, window->getSize().y);
 
     // loads a texutre
@@ -14,30 +16,28 @@ Wolf::Wolf(sf::RenderWindow &renderWindow) {
     currentActionState = Action::IDLE;
     currentDirectionState = Direction::RIGHT;
 
+    //define the wolf
     wolfRectangle = sf::RectangleShape(sf::Vector2f(size,size));
     wolfRectangle.setTexture(&wolfTexture);
     wolfRectangle.setOrigin(wolfRectangle.getSize().x / 2, wolfRectangle.getSize().y);
     wolfRectangle.setPosition(100,100);
 
 
+    angle = initAngle;
 }
 
 void Wolf::draw(){
     window->draw(wolfRectangle);
 }
 
-void Wolf::control(float rotationDelta) {
+void Wolf::control() {
     elapsedTime = clock.getElapsedTime();
     if((int)clock.getElapsedTime().asSeconds() == getTickSecond()){
         clock.restart();
     }
 
-    // TODO: calculate positions
-
-    x =  300 * std::cos(planet.getRotation() * M_PI / 180);
-
-    y = ;
-
+    x = configGame->calcX(angle);
+    y = configGame->calcY(angle);
 
     int direction;
     if ((int)elapsedTime.asSeconds() == tickSecond) {

@@ -4,7 +4,8 @@
 
 void StateInitial::goNext(StateMachine &stateMachine){
 
-    stateMachine.config.run();
+    stateMachine.configWindow.run();
+    stateMachine.configGame.run(stateMachine.configWindow.getWindow());
 
     stateMachine.setCurrentState(StateMachine::stateID::MENU);
 

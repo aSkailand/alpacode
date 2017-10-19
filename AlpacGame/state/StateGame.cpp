@@ -1,85 +1,101 @@
 
 #include "StateGame.h"
 
-
 void StateGame::goNext(StateMachine &stateMachine) {
 
     // Assign pointers
     machine = &stateMachine;
-    window = &machine->config.getWindow();
-    window->setFramerateLimit(60);
 
-
-    //Wolf
-    Wolf wolf(*window);
 
     //Clock TODO: use the global clock
     sf::Clock clock;
 
+    window = &machine->configWindow.getWindow();
+    configGame = &machine->configGame;
 
 
     // Clock used to throttle movement softly
     sf::Clock ticker;
 
+    // todo: *StateMachine too much permission? Perhaps a combo of *configGame and *configWindow?
+    // todo: Add to vector in the future, makes handling entities tenfold simpler.
     // Instantiating Entities
-    // todo: throw in config instead?
-    Planet planet(*window);
-    Farmer farmer(*window);
+    Planet planet(*machine);
 
-    rotationSpeed = 100;
+    Farmer farmer(*machine, 0);
+
+    Alpaca alpaca1(*machine, 90);
+    Alpaca alpaca2(*machine, 180);
+    Alpaca alpaca3(*machine, 190);
+    Alpaca alpaca4(*machine, 273);
+    Alpaca alpaca5(*machine, 23);
+    Alpaca alpaca6(*machine, 65);
+
+//    Wolf wolf1(*machine, 20);
+
+
+
 
     // Check if game is ongoing
 
 
-        // todo: Add common rotation calculation here?
+    configGame->deltaTime = ticker.restart().asSeconds();
 
-        float delta = ticker.restart().asSeconds();
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            std::cout << "Right" << std::endl;
-            rotationDelta = delta * rotationSpeed;
-        }
-
-        while (pollGame()) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-                std::cout << "Right" << std::endl;
-                rotationDelta = delta * rotationSpeed;
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-                std::cout << "Left" << std::endl;
-                rotationDelta = delta * -rotationSpeed;
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                std::cout << "Up" << std::endl;
-                // todo: fix jump
-                if (farmer.status != Farmer::Status::AIRBORNE) {
-                    farmer.status = Farmer::Status::AIRBORNE;
-                    farmer.velocity_y = -10;
-                    farmer.y += 50;
-                }
-            } else {
-                rotationDelta = 0;
-            }
-
-            // Drawing Phase
-
-
-
-
-
-            window->clear(sf::Color::Blue);
-
-            planet.control(rotationDelta);
-            farmer.control(rotationDelta);
-
-            wolf.control(rotationDelta); //TODO:: get rotation to work controll the aplaca
-
-
-            planet.draw();
-            farmer.draw();
-            wolf.draw();
-
-            window->display();
-        }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        configGame->currentInput = sf::Keyboard::Right;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        configGame->currentInput = sf::Keyboard::Left;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        configGame->currentInput = sf::Keyboard::Up;
+    } else {
+        configGame->currentInput = sf::Keyboard::Unknown;
     }
+
+
+
+    // todo: Create a drawing function?
+    // Drawing Phase
+
+    window->clear(sf::Color::Blue);
+
+
+ //   wolf1.control();
+
+
+    farmer.control();
+
+
+    alpaca1.control();
+    alpaca2.control();
+    alpaca3.control();
+    alpaca4.control();
+    alpaca5.control();
+    alpaca6.control();
+
+    planet.draw();
+
+    farmer.draw();
+
+//    wolf1.draw();
+
+    alpaca1.draw();
+    alpaca2.draw();
+    alpaca3.draw();
+    alpaca4.draw();
+    alpaca5.draw();
+    alpaca6.draw();
+
+    window->display();
+
+    // todo: Create a function for view?
+    // Update View
+    view = sf::View(window->getDefaultView());
+    view.zoom(viewZoom);
+    view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
+    view.setRotation(farmer.farmer.getRotation());
+    window->setView(view);
+}
+
 
 bool StateGame::pollGame() {
     sf::Event event;
@@ -95,7 +111,7 @@ bool StateGame::pollGame() {
                     return false;
                 } else if (event.key.code == sf::Keyboard::Space) {
                     // todo: Add actual pause.
-                    machine->setCurrentState(StateMachine::stateID::PAUSE);
+//                    machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
                 }
             }

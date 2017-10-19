@@ -8,8 +8,8 @@
 #include "StateMenu.h"
 #include "StateGame.h"
 #include "StateExit.h"
-#include "../Resources/Config.h"
-
+#include "../Resources/ConfigWindow.h"
+#include "../Resources/ConfigGame.h"
 
 
 class State;
@@ -44,7 +44,8 @@ public:
      */
     void setCurrentState(stateID currentState);
 
-    Config config;
+    ConfigWindow configWindow;
+    ConfigGame configGame;
 
 private:
 

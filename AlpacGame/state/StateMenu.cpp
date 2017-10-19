@@ -4,7 +4,7 @@
 void StateMenu::goNext(StateMachine &stateMachine) {
 
     machine = &stateMachine;
-    window = &machine->config.getWindow();
+    window = &machine->configWindow.getWindow();
 
     initMenuStrings();
 

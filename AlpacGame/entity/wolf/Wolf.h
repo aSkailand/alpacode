@@ -5,11 +5,13 @@
 #include <chrono>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "../../state/StateMachine.h"
+#include "../../Resources/ConfigGame.h"
 
 class Wolf {
 public:
 
-    Wolf(sf::RenderWindow &renderWindow);
+    Wolf(StateMachine &stateMachine, float initAngle);
 
     //constructor dependancy inject render window
     enum class Direction {
@@ -20,13 +22,14 @@ public:
     };
 
     Action getCurrentActionState();
-    void control(float rotationDelta);
+    void control();
     void draw();
     int randomNumberGenerator(int lower, int upper);
     int getTickSecond() const;
 
     float x;
     float y;
+    float angle;
 
     sf::Clock clock;
     sf::Time elapsedTime;
@@ -39,6 +42,8 @@ private:
     Action currentActionState;
     int tickSecond = 3;
 
+
+    ConfigGame *configGame;
     sf::RenderWindow *window;
     sf::VideoMode windowSize;
     sf::Texture wolfTexture;

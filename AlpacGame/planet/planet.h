@@ -9,30 +9,24 @@
 
 #include "../state/StateGame.h"
 
-
 class Planet {
 public:
-    Planet(sf::RenderWindow &renderWindow);
-    void control(float rotationDelta);
+    Planet(StateMachine &stateMachine);
+
     void draw();
 
+    sf::CircleShape planet;
 
 private:
-    sf::RenderWindow *window;
-    sf::VideoMode windowSize;
 
-    sf::CircleShape planet;
-    sf::RectangleShape alpaca;
+    void loadTextures();
+    StateMachine *machine;
+    sf::RenderWindow *window;
 
     sf::Sprite backgroundSprite;
     sf::Texture planetTexture;
-    sf::Texture alpacaTexture;
-
     sf::Texture backgroundTexture;
-    const int radius = 300;
-    const int offset = -100; // Change this to change planet's y-pos
-    double xpos = 0;
-    double ypos = 0;
+
 };
 
 #endif
