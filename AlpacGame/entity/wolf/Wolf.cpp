@@ -57,19 +57,19 @@ void Wolf::control() {
         switch (randomNumber) {
             case (int) Wolf::Action::IDLE:
                 currentActionState = Wolf::Action::IDLE;
-                std::cout << wolfID << " The wolf is idle..." << std::endl;
+                std::cout << " The wolf is idle..." << std::endl;
                 break;
             case (int) Wolf::Action::WALKING:
                 currentActionState = Wolf::Action::WALKING;
                 randomDirection = randomNumberGenerator(0, 1);
                 switch (randomDirection) {
                     case (int) Wolf::Direction::LEFT:
-                        std::cout << wolfID << " The wolf is moving left!" << std::endl;
+                        std::cout << " The wolf is moving left!" << std::endl;
                         wolfSprite.setScale({-0.5f, 0.5f});
                         currentDirectionState = Wolf::Direction::LEFT;
                         break;
                     case (int) Wolf::Direction::RIGHT:
-                        std::cout << wolfID << " The wolf is moving right!" << std::endl;
+                        std::cout << " The wolf is moving right!" << std::endl;
                         wolfSprite.setScale({0.5f, 0.5f});
                         currentDirectionState = Wolf::Direction::RIGHT;
                         break;
@@ -99,13 +99,13 @@ void Wolf::control() {
  * @param upper
  * @return returns a random number between lower and upper
  */
-    int Wolf::randomNumberGenerator(int lower, int upper) {
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::default_random_engine generator(seed);
-        std::uniform_int_distribution<int> distribution(lower, upper);
-        return distribution(generator);
-    }
+int Wolf::randomNumberGenerator(int lower, int upper) {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<int> distribution(lower, upper);
+    return distribution(generator);
+}
 
-    int Wolf::getTickSecond() const {
-        return tickSecond;
-    }
+int Wolf::getTickSecond() const {
+    return tickSecond;
+}
