@@ -14,7 +14,7 @@ Farmer::Farmer(StateMachine &stateMachine, float initAngle) {
     farmer = sf::RectangleShape(sf::Vector2f(size, size));
     farmer.setTexture(&farmerTexture);
     farmer.setOrigin(farmer.getSize().x / 2, farmer.getSize().y);
-    farmer.setOutlineThickness(1);
+    //farmer.setOutlineThickness(1);
     farmer.scale(-1.f, 1.f);
 
     // Assigning enums

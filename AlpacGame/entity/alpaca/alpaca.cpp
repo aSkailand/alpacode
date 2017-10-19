@@ -14,7 +14,7 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     alpaca = sf::RectangleShape(sf::Vector2f(size, size));
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
-    alpaca.setOutlineThickness(1);
+    //alpaca.setOutlineThickness(1);
     alpaca.setScale(-1.f, 1.f);
 
     // Set innate angle

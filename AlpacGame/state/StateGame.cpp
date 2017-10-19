@@ -31,69 +31,81 @@ void StateGame::goNext(StateMachine &stateMachine) {
     Alpaca alpaca5(*machine, 23);
     Alpaca alpaca6(*machine, 65);
 
-//    Wolf wolf1(*machine, 20);
+    Wolf wolf1(*machine, 20);
+    Wolf wolf2(*machine, 200);
+    Wolf wolf3(*machine, 43);
+    Wolf wolf4(*machine, 300);
+
 
 
 
 
     // Check if game is ongoing
 
+    while (pollGame()) {
+        configGame->deltaTime = ticker.restart().asSeconds();
 
-    configGame->deltaTime = ticker.restart().asSeconds();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            configGame->currentInput = sf::Keyboard::Right;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            configGame->currentInput = sf::Keyboard::Left;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            configGame->currentInput = sf::Keyboard::Up;
+        } else {
+            configGame->currentInput = sf::Keyboard::Unknown;
+        }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        configGame->currentInput = sf::Keyboard::Right;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        configGame->currentInput = sf::Keyboard::Left;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        configGame->currentInput = sf::Keyboard::Up;
-    } else {
-        configGame->currentInput = sf::Keyboard::Unknown;
+
+
+        // todo: Create a drawing function?
+        // Drawing Phase
+
+        window->clear(sf::Color::Blue);
+
+
+        wolf1.control();
+        wolf2.control();
+        wolf3.control();
+        wolf4.control();
+
+
+
+        farmer.control();
+
+
+        alpaca1.control();
+        alpaca2.control();
+        alpaca3.control();
+        alpaca4.control();
+        alpaca5.control();
+        alpaca6.control();
+
+        planet.draw();
+
+        farmer.draw();
+
+        wolf1.draw();
+        wolf2.draw();
+        wolf3.draw();
+        wolf4.draw();
+
+        alpaca1.draw();
+        alpaca2.draw();
+        alpaca3.draw();
+        alpaca4.draw();
+        alpaca5.draw();
+        alpaca6.draw();
+
+        window->display();
+
+        // todo: Create a function for view?
+        // Update View
+        view = sf::View(window->getDefaultView());
+        view.zoom(viewZoom);
+        view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
+        view.setRotation(farmer.farmer.getRotation());
+        window->setView(view);
     }
-
-
-
-    // todo: Create a drawing function?
-    // Drawing Phase
-
-    window->clear(sf::Color::Blue);
-
-
- //   wolf1.control();
-
-
-    farmer.control();
-
-
-    alpaca1.control();
-    alpaca2.control();
-    alpaca3.control();
-    alpaca4.control();
-    alpaca5.control();
-    alpaca6.control();
-
-    planet.draw();
-
-    farmer.draw();
-
-//    wolf1.draw();
-
-    alpaca1.draw();
-    alpaca2.draw();
-    alpaca3.draw();
-    alpaca4.draw();
-    alpaca5.draw();
-    alpaca6.draw();
-
-    window->display();
-
-    // todo: Create a function for view?
-    // Update View
-    view = sf::View(window->getDefaultView());
-    view.zoom(viewZoom);
-    view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
-    view.setRotation(farmer.farmer.getRotation());
-    window->setView(view);
 }
 
 
