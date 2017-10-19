@@ -32,9 +32,12 @@ void Wolf::control(float rotationDelta) {
         clock.restart();
     }
 
-    // calculate positions
+    // TODO: calculate positions
 
-    x = windowSize.width / 2 + ()
+    x =  300 * std::cos(planet.getRotation() * M_PI / 180);
+
+    y = ;
+
 
     int direction;
     if ((int)elapsedTime.asSeconds() == tickSecond) {

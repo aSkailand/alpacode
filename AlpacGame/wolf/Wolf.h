@@ -30,7 +30,6 @@ public:
 
     sf::Clock clock;
     sf::Time elapsedTime;
-
     sf::RectangleShape wolfRectangle;
 
 
