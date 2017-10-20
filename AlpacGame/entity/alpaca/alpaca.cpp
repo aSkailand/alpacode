@@ -7,6 +7,9 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     window = &stateMachine.configWindow.getWindow();
     configGame = &stateMachine.configGame;
 
+    // Create first alpaca id
+
+
     // Load textures
     loadTextures();
 
@@ -16,6 +19,7 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
     alpaca.setOutlineThickness(1);
     alpaca.setScale(-1.f, 1.f);
+
 
     // Set innate angle
     angle = initAngle;
@@ -78,11 +82,11 @@ void Alpaca::randomAction() {
 
     switch (currentAction) {
         case Action::IDLE: {
-            std::cout << "Alpaca is now IDLE." << std::endl;
+            std::cout << "Alpaca " << "is now IDLE." << std::endl;
             break;
         }
         case Action::WALKING: {
-            std::cout << "Alpaca is now WALKING ";
+            std::cout << "Alpaca " << "is now WALKING " << std::endl;
             currentDirection = (Direction) distribution(generator);
             randomDirection();
         }
@@ -93,19 +97,24 @@ void Alpaca::randomDirection() {
     switch (currentDirection) {
         case Direction::RIGHT: {
             std::cout << "RIGHT." << std::endl;
+            alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
             break;
         }
         case Direction::LEFT: {
             std::cout << "LEFT." << std::endl;
+            //alpaca.setScale(-1.f, 0.f);
+            alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
             break;
         }
     }
 }
 
 void Alpaca::loadTextures() {
+
     if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
         std::cout << "Error!!!" << std::endl;
     }
+
 }
 
 

@@ -52,7 +52,8 @@ private:
     sf::RenderWindow *window;
     ConfigGame *configGame;
 
-
+    // Incrementing id variable
+    static int nextId;
 
     // Current enum
     Direction currentDirection;
