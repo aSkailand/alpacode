@@ -18,7 +18,7 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
     alpaca.setOutlineThickness(1);
-    alpaca.setScale(-1.f, 1.f);
+    alpaca.setScale({-1.f, 1.f});
 
 
     // Set innate angle
@@ -102,12 +102,13 @@ void Alpaca::randomDirection() {
         }
         case Direction::LEFT: {
             std::cout << "LEFT." << std::endl;
-            //alpaca.setScale(-1.f, 0.f);
+            alpaca.setScale({1.f, 1.f});
             alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
             break;
         }
     }
 }
+
 
 void Alpaca::loadTextures() {
 
