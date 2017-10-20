@@ -3,23 +3,18 @@
 
 void StateGame::goNext(StateMachine &stateMachine) {
 
-    // Assign pointers
+    /// Assign pointers
     machine = &stateMachine;
-
-
-    //Clock TODO: use the global clock
-    sf::Clock clock;
-
     window = &machine->configWindow.getWindow();
     configGame = &machine->configGame;
 
-
-    // Clock used to throttle movement softly
+    /// Clock used to throttle movement softly
     sf::Clock ticker;
 
     // todo: *StateMachine too much permission? Perhaps a combo of *configGame and *configWindow?
     // todo: Add to vector in the future, makes handling entities tenfold simpler.
-    // Instantiating Entities
+    /// Instantiating Entities
+
     Planet planet(*machine);
 
     Farmer farmer(*machine, 0);
@@ -36,12 +31,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
     Wolf wolf3(*machine, 43);
     Wolf wolf4(*machine, 300);
 
-
-
-
-
-    // Check if game is ongoing
-
+    /// Poll game
     while (pollGame()) {
         configGame->deltaTime = ticker.restart().asSeconds();
 
@@ -55,23 +45,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
 
-
-
         // todo: Create a drawing function?
-        // Drawing Phase
-
-        window->clear(sf::Color::Blue);
-
-
-        wolf1.control();
-        wolf2.control();
-        wolf3.control();
-        wolf4.control();
-
-
-
+        /// Calculate positions of entities
         farmer.control();
-
 
         alpaca1.control();
         alpaca2.control();
@@ -80,14 +56,16 @@ void StateGame::goNext(StateMachine &stateMachine) {
         alpaca5.control();
         alpaca6.control();
 
+        wolf1.control();
+        wolf2.control();
+        wolf3.control();
+        wolf4.control();
+
+        window->clear(sf::Color::Blue);
+
         planet.draw();
 
         farmer.draw();
-
-        wolf1.draw();
-        wolf2.draw();
-        wolf3.draw();
-        wolf4.draw();
 
         alpaca1.draw();
         alpaca2.draw();
@@ -95,6 +73,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
         alpaca4.draw();
         alpaca5.draw();
         alpaca6.draw();
+
+        wolf1.draw();
+        wolf2.draw();
+        wolf3.draw();
+        wolf4.draw();
 
         window->display();
 

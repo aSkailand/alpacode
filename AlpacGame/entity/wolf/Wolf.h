@@ -1,9 +1,9 @@
 #ifndef ALPACGAME_WOLFSTATE_H
 #define ALPACGAME_WOLFSTATE_H
 
+#include <iostream>
 #include <random>
 #include <chrono>
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
@@ -11,21 +11,20 @@
 class Wolf {
 public:
 
-    int wolfID = 0;
+    /// Public properties
+    int wolfID = 0; // todo: Add static int ID
 
+    /// Public Functions
+    /**
+      * CONSTRUCTOR: Creates an wolf and gives it an initial position.
+      * @param stateMachine a reference to the stateMachine, used to access common resources.
+      * @param initAngle the angle the alpaca will start at.
+      */
     Wolf(StateMachine &stateMachine, float initAngle);
 
-
-    enum class Direction {
-        LEFT, RIGHT
-    };
-    enum class Action {
-        IDLE, WALKING
-    };
-
-
     /**
-     * Calculate the new position of the alpaca and generates random actions for the wolf
+     * Randomize the wolf's action and direction. Afterwards updates the position and rotation
+     * according to the wolf's current state.
      */
     void control();
 
@@ -34,48 +33,51 @@ public:
      */
     void draw();
 
-    /**
-     * generates a random number for given numbers
-     * @param lower number
-     * @param upper number
-     * @return returns a number between the lower and upper
-     */
-    int randomNumberGenerator(int lower, int upper);
+private:
 
-    int getTickSecond() const;
+    /// Enums
+    enum class Direction {
+        LEFT, RIGHT
+    };
+    enum class Action {
+        IDLE, WALKING
+    };
 
-    // Wolf properties
+    /// Pointers
+    sf::RenderWindow *window;
+    ConfigGame *configGame;
+
+    /// Wolf properties
     float x;
     float y;
     float angle;
-    sf::RectangleShape wolfRectangle;
+    int size = 100;
+    const float speed = 40;
 
-    // Clock and time needed for timing the random actions of the wolf
-    sf::Time elapsedTime;
-    sf::Clock clock;
-
-private:
-
-    // Pointers
-    ConfigGame *configGame;
-    sf::RenderWindow *window;
-
-    const int spriteOffset = 100;
-    // The size for the rectangle of the wolf
-    const int size = 100;
-
-    // Enum
+    /// Enums
     Direction currentDirectionState;
     Action currentActionState;
 
-    // How often the wolf will do random actions
-    int tickSecond = 3;
-    // How fast the wolf runs
-    const float speed = 40;
-
+    /// Visuals
+    /**
+     * Load necessary textures.
+     */
+    void loadTextures();
+    sf::RectangleShape wolfRectangle;
     sf::Texture wolfTexture;
-    sf::Sprite wolfSprite;
 
+    /// Wolf movement randomizer tools
+    sf::Clock clock;
+    int tickSecond = 3; // Amount of seconds before a new, random action is given.
+    std::default_random_engine generator;
+
+    /**
+    * Generates a random number from the generator in the range of given lower and upper.
+    * @param lower the left number in the range.
+    * @param upper the right number in the range.
+    * @return returns a number between the lower and upper.
+    */
+    int randomNumberGenerator(int lower, int upper);
 
 };
 

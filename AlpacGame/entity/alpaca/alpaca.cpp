@@ -68,6 +68,7 @@ void Alpaca::draw() {
 void Alpaca::randomAction() {
 
     // todo: Combine common random number generator
+    // todo: Create it once in constructor
     // Random number generator
     long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
