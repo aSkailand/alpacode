@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "state/StateMachine.h"
 
-
 int main()
 {
 

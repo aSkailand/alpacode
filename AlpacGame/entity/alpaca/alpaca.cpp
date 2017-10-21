@@ -7,6 +7,10 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     window = &stateMachine.configWindow.getWindow();
     configGame = &stateMachine.configGame;
 
+    // Create random number generator
+    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    generator = std::default_random_engine(seed);
+
     // Create first alpaca id
     // todo: Add alpaca ID
 
@@ -17,7 +21,8 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     alpaca = sf::RectangleShape(sf::Vector2f(size, size));
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
-    alpaca.setOutlineThickness(1);
+    alpaca.setOutlineThickness(0);
+
 
     // Set innate angle
     angle = initAngle;
@@ -72,12 +77,8 @@ void Alpaca::randomAction() {
     // todo: Combine common random number generator
     // todo: Create it once in constructor
     // Random number generator
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
-    std::uniform_int_distribution<int> distribution(0, 1);
-    int random = distribution(generator);
 
-    currentAction = (Action) random;
+    currentAction = (Action) randomNumberGenerator(0, 1);
 
     switch (currentAction) {
         case Action::IDLE: {
@@ -86,7 +87,7 @@ void Alpaca::randomAction() {
         }
         case Action::WALKING: {
             std::cout << "Alpaca " << "is now WALKING " << std::endl;
-            currentDirection = (Direction) distribution(generator);
+            currentDirection = (Direction) randomNumberGenerator(0, 1);
             randomDirection();
         }
     }
@@ -117,5 +118,12 @@ void Alpaca::loadTextures() {
     }
 
 }
+
+int Alpaca::randomNumberGenerator(int lower, int upper) {
+    std::uniform_int_distribution<int> distribution(lower, upper);
+    return distribution(generator);
+}
+
+
 
 

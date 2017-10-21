@@ -12,7 +12,6 @@ public:
 
     sf::RenderWindow &getWindow();
 
-
 private:
     sf::RenderWindow window;
     sf::VideoMode windowResolution;

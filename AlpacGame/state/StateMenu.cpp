@@ -6,6 +6,8 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     machine = &stateMachine;
     window = &machine->configWindow.getWindow();
 
+    window->setView(sf::View(window->getDefaultView()));
+
     initMenuStrings();
 
     while (pollMenu()) {

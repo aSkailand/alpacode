@@ -82,6 +82,17 @@ private:
      * Load all the necessary textures.
      */
     void loadTextures();
+
+    // Random Number Generator
+    std::default_random_engine generator;
+
+    /**
+    * Generates a random number from the generator in the range of given lower and upper.
+    * @param lower the left number in the range.
+    * @param upper the right number in the range.
+    * @return returns a number between the lower and upper.
+    */
+    int randomNumberGenerator(int lower, int upper);
 };
 
 #endif //ALPACGAME_ALPACA_H
