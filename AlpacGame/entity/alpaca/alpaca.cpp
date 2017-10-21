@@ -8,7 +8,7 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     configGame = &stateMachine.configGame;
 
     // Create first alpaca id
-
+    // todo: Add alpaca ID
 
     // Load textures
     loadTextures();
@@ -18,8 +18,6 @@ Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
     alpaca.setTexture(&alpacaTexture);
     alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
     alpaca.setOutlineThickness(1);
-    alpaca.setScale({-1.f, 1.f});
-
 
     // Set innate angle
     angle = initAngle;
@@ -97,12 +95,13 @@ void Alpaca::randomDirection() {
     switch (currentDirection) {
         case Direction::RIGHT: {
             std::cout << "RIGHT." << std::endl;
+            alpaca.setScale(1.f, 1.f);
             alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
             break;
         }
         case Direction::LEFT: {
             std::cout << "LEFT." << std::endl;
-            alpaca.setScale({1.f, 1.f});
+            alpaca.setScale(-1.f, 1.f);
             alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
             break;
         }
