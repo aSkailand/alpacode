@@ -35,21 +35,25 @@ bool StateMenu::pollMenu() {
                     case sf::Keyboard::Return : {
                         switch (menuIndex) {
                             case 0 : {
-                                std::cout << "Play" << std::endl;
-                                // todo: change this into statePlay
+                                /**
+                                 * Changes state to game
+                                 */
                                 machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
                                 return false;
                             }
 
                             case 1 : {
-                                std::cout << "Options" << std::endl;
-                                // todo: change this into stateOption
-                                machine->setCurrentState(StateMachine::stateID::EXIT);
+                                /**
+                                 * Changes state to option menu
+                                 */
+                                machine->setCurrentState(StateMachine::stateID::OPTION);
                                 return false;
                             }
 
                             case 2 : {
-                                std::cout << "Exit" << std::endl;
+                                /**
+                                 * Exits the game
+                                 */
                                 machine->setCurrentState(StateMachine::stateID::EXIT);
                                 return false;
                             }

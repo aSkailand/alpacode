@@ -17,13 +17,12 @@ public:
     void goNext(StateMachine &stateMachine);
 
 private:
-
     // Pointers
 
     /**
      * Pointer to the one and only StateMachine.
      */
-    StateMachine *machine;
+     StateMachine *machine;
 
     /**
      * Pointer to the one and only Window.

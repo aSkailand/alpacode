@@ -7,6 +7,7 @@
 #include "StateInitial.h"
 #include "StateMenu.h"
 #include "StateGame.h"
+#include "StateOption.h"
 #include "StateExit.h"
 #include "../Resources/Config.h"
 
@@ -19,7 +20,7 @@ public:
     /**
      * Keeps all the stateIDs for all possible states.
      */
-    enum class stateID { INITIAL, MENU, SINGLEPLAYER, PAUSE, EXIT};
+    enum class stateID { INITIAL, MENU, SINGLEPLAYER, PAUSE, OPTION,EXIT};
 
     /**
      * Initiate starter values for the StateMachine, then turns itself on.
@@ -55,7 +56,6 @@ private:
      * Mappings of stateIDs with corresponding states.
      */
     std::map<stateID, State*> stateMap;
-
 };
 
 

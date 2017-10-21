@@ -10,6 +10,9 @@ public:
 
     sf::RenderWindow &getWindow();
 
+    int unsigned screenWidth = 800;
+    int unsigned screenHeight = 600;
+
 private:
     sf::RenderWindow window;
     sf::VideoMode windowResolution;
