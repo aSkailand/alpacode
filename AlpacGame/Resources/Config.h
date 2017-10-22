@@ -9,9 +9,7 @@ public:
     void run();
 
     sf::RenderWindow &getWindow();
-
-    int unsigned screenWidth = 800;
-    int unsigned screenHeight = 600;
+    void setWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
 
 private:
     sf::RenderWindow window;

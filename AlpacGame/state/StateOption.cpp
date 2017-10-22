@@ -115,13 +115,9 @@ void StateOption::moveDown() {
 }
 
 void StateOption::lowRes() {
-    //TODO make this work
-    machine->config.screenWidth = 800;
-    machine->config.screenHeight = 600;
+    machine->config.setWindowResolution(800, 600);
 }
 
 void StateOption::highRes() {
-    //TODO make this work
-    machine->config.screenWidth = 1280;
-    machine->config.screenHeight = 960;
+    machine->config.setWindowResolution(1280, 960);
 }
