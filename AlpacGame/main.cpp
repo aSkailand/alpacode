@@ -11,7 +11,6 @@ int main()
     plog::init(plog::debug,"Log.log");
     LOGI << "Initiating plog.";
 
-
     // Initiating StateMachine
     StateMachine stateMachine;
 
@@ -19,6 +18,7 @@ int main()
     while (stateMachine.isRunning){
         std::cout << "Machine is Proceeding:" << std::endl;
         stateMachine.proceed();
+
     }
 
     return 0;

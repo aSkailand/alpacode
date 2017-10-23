@@ -11,7 +11,6 @@ public:
 
     void goNext(StateMachine &stateMachine);
 
-
 private:
     // Pointers
     StateMachine *machine;

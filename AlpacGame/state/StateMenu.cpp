@@ -4,7 +4,9 @@
 void StateMenu::goNext(StateMachine &stateMachine) {
 
     machine = &stateMachine;
-    window = &machine->config.getWindow();
+    window = &machine->configWindow.getWindow();
+
+    window->setView(sf::View(window->getDefaultView()));
 
     initMenuStrings();
 
@@ -83,7 +85,7 @@ void StateMenu::drawMenu() {
 
 void StateMenu::initMenuStrings() {
 
-    fontMenuChoice.loadFromFile("font.ttf");
+    fontMenuChoice.loadFromFile("resources/fontMenu.ttf");
 
     menuChoices.clear();    // todo remove if adding constructor
 

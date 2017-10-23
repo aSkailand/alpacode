@@ -4,8 +4,10 @@
 
 #include <SFML/Graphics.hpp>
 
-class Config {
+class ConfigWindow {
 public:
+    const unsigned int windowWidth = 800;
+    const unsigned int windowHeight = 600;
     void run();
 
     sf::RenderWindow &getWindow();

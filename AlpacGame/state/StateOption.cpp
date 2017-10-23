@@ -3,7 +3,7 @@
 void StateOption::goNext(StateMachine &stateMachine) {
 
     machine = &stateMachine;
-    window = &machine->config.getWindow();
+    window = &machine->configWindow.getWindow();
 
     initOptionStrings();
 
@@ -79,7 +79,7 @@ void StateOption::drawOption() {
 }
 
 void StateOption::initOptionStrings() {
-    fontOptionChoice.loadFromFile("font.ttf");
+    fontOptionChoice.loadFromFile("Resources/fontMenu.ttf");
 
     optionChoices.clear();
 
@@ -115,9 +115,9 @@ void StateOption::moveDown() {
 }
 
 void StateOption::lowRes() {
-    machine->config.setWindowResolution(800, 600);
+    machine->configWindow.setWindowResolution(800, 600);
 }
 
 void StateOption::highRes() {
-    machine->config.setWindowResolution(1280, 960);
+    machine->configWindow.setWindowResolution(1280, 960);
 }
