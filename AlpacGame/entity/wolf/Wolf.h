@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+
 #include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
@@ -11,14 +12,11 @@
 class Wolf {
 public:
 
-    /// Public properties
-    int wolfID = 0; // todo: Add static int ID
-
     /// Public Functions
     /**
-      * CONSTRUCTOR: Creates an wolf and gives it an initial position.
+      * CONSTRUCTOR: Creates a wolf and gives it an initial position.
       * @param stateMachine a reference to the stateMachine, used to access common resources.
-      * @param initAngle the angle the alpaca will start at.
+      * @param initAngle the angle the wolf will start at.
       */
     Wolf(StateMachine &stateMachine, float initAngle);
 
@@ -42,29 +40,29 @@ private:
     enum class Action {
         IDLE, WALKING
     };
+    Direction currentDirection;
+    Action currentAction;
 
     /// Pointers
     sf::RenderWindow *window;
     ConfigGame *configGame;
 
     /// Wolf properties
+    sf::RectangleShape wolfshape;
+    sf::Texture wolfTexture;
     float x;
     float y;
     float angle;
     int size = 100;
     const float speed = 40;
-
-    /// Enums
-    Direction currentDirectionState;
-    Action currentActionState;
+    const int id;
+    static int nextId;
 
     /// Visuals
     /**
      * Load necessary textures.
      */
     void loadTextures();
-    sf::RectangleShape wolfRectangle;
-    sf::Texture wolfTexture;
 
     /// Wolf movement randomizer tools
     sf::Clock clock;
@@ -78,7 +76,6 @@ private:
     * @return returns a number between the lower and upper.
     */
     int randomNumberGenerator(int lower, int upper);
-
 };
 
 #endif //ALPACGAME_WOLFSTATE_H

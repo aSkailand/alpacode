@@ -1,59 +1,33 @@
-
 #include "Alpaca.h"
 
-Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) {
+Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) : id(nextId++) {
 
-    // Assign pointers
-    window = &stateMachine.configWindow.getWindow();
+    // Assigning pointers
     configGame = &stateMachine.configGame;
-
-    // Create random number generator
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
-    generator = std::default_random_engine(seed);
-
-    // Create first alpaca id
-    // todo: Add alpaca ID
+    window = &stateMachine.configWindow.getWindow();
 
     // Load textures
     loadTextures();
 
-    // Define the alpaca
-    alpaca = sf::RectangleShape(sf::Vector2f(size, size));
-    alpaca.setTexture(&alpacaTexture);
-    alpaca.setOrigin(alpaca.getSize().x / 2, alpaca.getSize().y);
-    alpaca.setOutlineThickness(0);
-
-
-    // Set innate angle
-    angle = initAngle;
-
-    // Change enums
+    // Assigning default states
     currentAction = Action::IDLE;
     currentDirection = Direction::RIGHT;
 
+    // Generate random number generator
+    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
+    generator = std::default_random_engine(seed);
+
+    // Define the alpaca
+    alpacashape = sf::RectangleShape(sf::Vector2f(size, size));
+    alpacashape.setTexture(&alpacaTexture);
+    alpacashape.setOrigin(alpacashape.getSize().x / 2, alpacashape.getSize().y);
+    alpacashape.setOutlineThickness(1);
+
+    // Assigning initial position
+    angle = initAngle;
 }
 
-void Alpaca::control() {
-
-    // Handle walking
-    if (currentAction == Action::WALKING) {
-        if (currentDirection == Direction::RIGHT) {
-            angle += configGame->deltaTime * speed;
-        } else {
-            angle -= configGame->deltaTime * speed;
-        }
-    }
-
-    // Handle alpaca's position relatively to planet's rotation
-    x = configGame->calcX(angle);
-    y = configGame->calcY(angle);
-
-    // Handle alpaca's position according to its innate movements
-    if (actionTick < clock.getElapsedTime().asSeconds()) {
-        randomAction();
-        clock.restart();
-    }
-}
+int Alpaca::nextId = 0;
 
 void Alpaca::draw() {
 
@@ -64,59 +38,59 @@ void Alpaca::draw() {
      * this movement will be handled. */
 
     // Place the alpaca accordingly
-    alpaca.setRotation(angle);
-    alpaca.setPosition(x, y);
+    alpacashape.setRotation(angle);
+    alpacashape.setPosition(x, y);
 
     // Draw the square
-    window->draw(alpaca);
+    window->draw(alpacashape);
 }
 
+void Alpaca::control() {
 
-void Alpaca::randomAction() {
+    // Check if it is time for randomizing the alpaca's current state
+    if ((int) clock.getElapsedTime().asSeconds() >= tickSecond) {
 
-    // todo: Combine common random number generator
-    // todo: Create it once in constructor
-    // Random number generator
+        currentAction = (Action) randomNumberGenerator(0, 1);
 
-    currentAction = (Action) randomNumberGenerator(0, 1);
-
-    switch (currentAction) {
-        case Action::IDLE: {
-            std::cout << "Alpaca " << "is now IDLE." << std::endl;
-            break;
+        switch (currentAction) {
+            case Alpaca::Action::IDLE:{
+                std::cout << "Alpaca " << id << " is now IDLE." << std::endl;
+                break;
+            }
+            case Alpaca::Action::WALKING: {
+                currentDirection = (Direction) randomNumberGenerator(0, 1);
+                switch (currentDirection) {
+                    case Alpaca::Direction::LEFT: {
+                        std::cout << "Alpaca " << id << " is now WALKING LEFT" << std::endl;
+                        alpacashape.setScale({-1.f, 1.f});
+                        break;
+                    }
+                    case Alpaca::Direction::RIGHT: {
+                        std::cout << "Alpaca " << id << " is now WALKING RIGHT" << std::endl;
+                        alpacashape.setScale({1.f, 1.f});
+                        break;
+                    }
+                }
+                break;
+            }
         }
-        case Action::WALKING: {
-            std::cout << "Alpaca " << "is now WALKING " << std::endl;
-            currentDirection = (Direction) randomNumberGenerator(0, 1);
-            randomDirection();
-        }
-    }
-}
 
-void Alpaca::randomDirection() {
-    switch (currentDirection) {
-        case Direction::RIGHT: {
-            std::cout << "RIGHT." << std::endl;
-            alpaca.setScale(1.f, 1.f);
-            alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
-            break;
-        }
-        case Direction::LEFT: {
-            std::cout << "LEFT." << std::endl;
-            alpaca.setScale(-1.f, 1.f);
-            alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
-            break;
-        }
-    }
-}
+        clock.restart();
 
-
-void Alpaca::loadTextures() {
-
-    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
-        std::cout << "Error!!!" << std::endl;
     }
 
+    // Reposition the alpaca
+    if (currentAction == Action::WALKING) {
+        if (currentDirection == Alpaca::Direction::RIGHT) {
+            angle += configGame->deltaTime * speed;
+        } else if (currentDirection == Alpaca::Direction::LEFT) {
+            angle -= configGame->deltaTime * speed;
+        }
+    }
+
+    // Position calculation
+    x = configGame->calcX(angle);
+    y = configGame->calcY(angle);
 }
 
 int Alpaca::randomNumberGenerator(int lower, int upper) {
@@ -124,6 +98,8 @@ int Alpaca::randomNumberGenerator(int lower, int upper) {
     return distribution(generator);
 }
 
-
-
-
+void Alpaca::loadTextures() {
+    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
+        std::cout << "Error loading file!" << std::endl;
+    }
+}
