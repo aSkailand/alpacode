@@ -10,6 +10,16 @@
 
 class Farmer {
 public:
+
+    /// Farmer properties
+    sf::RectangleShape farmer;
+    sf::Texture farmerTexture;
+    float x;
+    float y;
+    float angle;
+    const int size = 100;
+    float speed = 50;
+
     /// Public Functions
     /**
       * CONSTRUCTOR: Creates a farmer and gives it an initial position.
@@ -49,14 +59,6 @@ private:
     sf::RenderWindow *window;
     ConfigGame *configGame;
 
-    /// Alpaca properties
-    sf::RectangleShape farmer;
-    sf::Texture farmerTexture;
-    float x;
-    float y;
-    float angle;
-    const int size = 100;
-    float speed = 50;
 
     /// Visuals
     /**
