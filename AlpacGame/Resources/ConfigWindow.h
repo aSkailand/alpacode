@@ -1,21 +1,19 @@
-
 #ifndef ALPACGAME_CONFIG_H
 #define ALPACGAME_CONFIG_H
 
-#include <SFML/Graphics.hpp>
+#include <TGUI/TGUI.hpp>
 
 class ConfigWindow {
 public:
-    const unsigned int windowWidth = 800;
-    const unsigned int windowHeight = 600;
     void run();
 
+    tgui::Gui &getGUI();
     sf::RenderWindow &getWindow();
     void setWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
 
 private:
     sf::RenderWindow window;
-    sf::VideoMode windowResolution;
+    tgui::Gui gui{window};
 };
 
 

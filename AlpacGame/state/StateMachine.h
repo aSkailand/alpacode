@@ -49,7 +49,6 @@ public:
 
     ConfigWindow configWindow;
     ConfigGame configGame;
-
 private:
 
     /**

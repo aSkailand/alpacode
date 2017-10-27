@@ -1,8 +1,7 @@
-
 #include "ConfigWindow.h"
 
 void ConfigWindow::run(){
-    windowResolution = sf::VideoMode(windowWidth,windowHeight);  // todo: place this line another place
+    sf::VideoMode windowResolution = sf::VideoMode(800, 600);  // todo: place this line another place
     window.create(windowResolution, "AlpaGame");
     window.setFramerateLimit(144);
 }
@@ -12,6 +11,10 @@ sf::RenderWindow &ConfigWindow::getWindow() {
 }
 
 void ConfigWindow::setWindowResolution(int unsigned screenWidth, int unsigned screenHeight) {
-    windowResolution = sf::VideoMode(screenWidth, screenHeight);
+    sf::VideoMode windowResolution = sf::VideoMode(screenWidth, screenHeight);
     window.create(windowResolution, "Alpagame");
+}
+
+tgui::Gui &ConfigWindow::getGUI() {
+    return gui;
 }

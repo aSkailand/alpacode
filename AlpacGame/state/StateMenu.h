@@ -3,7 +3,7 @@
 #define ALPACGAME_STATEMENU_H
 
 #include <iostream>
-#include <SFML/Graphics.hpp>
+#include <TGUI/TGUI.hpp>
 #include "State.h"
 #include "StateMachine.h"
 
@@ -29,6 +29,10 @@ private:
      */
     sf::RenderWindow *window;
 
+    /**
+     * Pointer to the one and only Gui.
+     */
+    tgui::Gui *gui;
 
     // Menu functions
 

@@ -2,6 +2,7 @@
 #define ALPACGAME_STATEOPTION_H
 
 #include <SFML/Graphics.hpp>
+
 #include "State.h"
 #include "StateMachine.h"
 
@@ -15,7 +16,6 @@ private:
     // Pointers
     StateMachine *machine;
     sf::RenderWindow *window;
-
 
     //Option Functions
     /**
