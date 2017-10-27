@@ -58,7 +58,15 @@ bool StateOption::PollOption() {
                                 machine->setCurrentState(StateMachine::stateID::MENU);
                                 return false;
                             }
+                            default : {
+                                std::cout << "Error: ran default in stateOption.cpp keyboard::return" << std::endl;
+                                break;
                         }
+                        }
+                    }
+                    default : {
+                        std::cout << "Error: switch(event.key.code)" << std::endl;
+                        break;
                     }
                 }
                 break;

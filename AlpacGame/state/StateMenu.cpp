@@ -1,10 +1,11 @@
-
 #include "StateMenu.h"
 
 void StateMenu::goNext(StateMachine &stateMachine) {
 
     machine = &stateMachine;
     window = &machine->configWindow.getWindow();
+    gui = &machine->configWindow.getGUI();
+
 
     window->setView(sf::View(window->getDefaultView()));
 
@@ -12,8 +13,8 @@ void StateMenu::goNext(StateMachine &stateMachine) {
 
     while (pollMenu()) {
         drawMenu();
+        gui->draw();
     }
-
 }
 
 bool StateMenu::pollMenu() {
@@ -67,6 +68,9 @@ bool StateMenu::pollMenu() {
             }
 
         }
+
+        gui->handleEvent(event);
+
 
     }
     return true;
