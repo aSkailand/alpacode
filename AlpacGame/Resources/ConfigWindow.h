@@ -7,13 +7,16 @@ class ConfigWindow {
 public:
     void run();
 
-    tgui::Gui &getGUI();
+    tgui::Gui &getMenuGUI();
     sf::RenderWindow &getWindow();
     void setWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
 
+
+
 private:
     sf::RenderWindow window;
-    tgui::Gui gui{window};
+    tgui::Gui menuGUI;
+
 };
 
 

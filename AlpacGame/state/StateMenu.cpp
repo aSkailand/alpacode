@@ -1,25 +1,70 @@
 #include "StateMenu.h"
 
+
+
 void StateMenu::goNext(StateMachine &stateMachine) {
+
+
 
     machine = &stateMachine;
     window = &machine->configWindow.getWindow();
-    gui = &machine->configWindow.getGUI();
-
-
     window->setView(sf::View(window->getDefaultView()));
+    menuGUI = &machine->configWindow.getMenuGUI();
 
-    initMenuStrings();
+
+    // GUI STUFF TODO: CLEAN THIS UP!
+
+    // Creates a theme
+
+    tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/Black.txt");
+
+    // Creates a layout
+    tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();
+    layout->setSize(window->getSize().x / 2, window->getSize().y / 2);
+    layout->setPosition(window->getSize().x / 4, window->getSize().y / 4);
+
+
+    // Creates a button
+    tgui::Button::Ptr button = theme->load("Button");
+    button->setText("Play Game!");
+    button->setSize(100, 20);
+
+    tgui::Button::Ptr button1 = tgui::Button::copy(button);
+    button1->setText("Settings");
+
+    tgui::Button::Ptr button2 = tgui::Button::copy(button);
+    button2->setText("Quit");
+
+
+
+    button1->connect("pressed", PPrint);
+
+
+
+    layout->add(button);
+    layout->addSpace();
+    layout->add(button1);
+    layout->addSpace();
+    layout->add(button2);
+    layout->addSpace();
+    menuGUI->add(layout);
+
+
+
+
+    //initMenuStrings();
 
     while (pollMenu()) {
         drawMenu();
-        gui->draw();
+
+
     }
 }
 
 bool StateMenu::pollMenu() {
     sf::Event event;
     while (window->pollEvent(event)) {
+        menuGUI->handleEvent(event);
         switch (event.type) {
             case sf::Event::Closed : {
                 machine->setCurrentState(StateMachine::stateID::EXIT);
@@ -69,7 +114,7 @@ bool StateMenu::pollMenu() {
 
         }
 
-        gui->handleEvent(event);
+
 
 
     }
@@ -78,12 +123,16 @@ bool StateMenu::pollMenu() {
 
 void StateMenu::drawMenu() {
 
+
+
     window->clear(sf::Color::Black);
 
-    for (const sf::Text &text : menuChoices) {
-        window->draw(text);
-    }
 
+
+    /*for (const sf::Text &text : menuChoices) {
+        window->draw(text);
+    }*/
+    menuGUI->draw();
     window->display();
 }
 
@@ -123,4 +172,8 @@ void StateMenu::addMenuChoice(const std::string &choice, int x, int y) {
     temp.setPosition(x, y);
     temp.setFillColor(colorDeselected);
     menuChoices.push_back(temp);
+}
+
+void StateMenu::OptionsState() {
+    machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
 }

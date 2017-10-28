@@ -10,6 +10,8 @@
 class StateMenu : public State {
 public:
 
+    void OptionsState();
+
     /**
      * Draw menu and check for input before moving to next state.
      * @param stateMachine the StateMachine controlling this state.
@@ -29,10 +31,8 @@ private:
      */
     sf::RenderWindow *window;
 
-    /**
-     * Pointer to the one and only Gui.
-     */
-    tgui::Gui *gui;
+    tgui::Gui *menuGUI;
+
 
     // Menu functions
 
@@ -85,6 +85,7 @@ private:
      * Change selection accordingly if user switch selection downwards.
      */
     void moveDown();
+
 
 
     // Menu Choice Cosmetics
