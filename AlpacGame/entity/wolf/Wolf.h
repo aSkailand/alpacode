@@ -9,27 +9,22 @@
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
 
-class Wolf {
+class Wolf : public Entity{
 public:
-
-    /// Public Functions
     /**
       * CONSTRUCTOR: Creates a wolf and gives it an initial position.
       * @param stateMachine a reference to the stateMachine, used to access common resources.
       * @param initAngle the angle the wolf will start at.
       */
-    Wolf(StateMachine &stateMachine, float initAngle);
-
+    Wolf(b2World *world, float width, float height, float x, float y);
     /**
      * Randomize the wolf's action and direction. Afterwards updates the position and rotation
      * according to the wolf's current state.
      */
     void control();
 
-    /**
-     * Updates the wolf position and then draws it
-     */
-    void draw();
+    /// Public Functions
+    void adjust() override;
 
 private:
 

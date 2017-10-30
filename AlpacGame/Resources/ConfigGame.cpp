@@ -4,7 +4,7 @@
 
 void ConfigGame::run(sf::RenderWindow &window) {
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
-    planetRadius = 300;
+    planetRadius = 600;
 
 }
 

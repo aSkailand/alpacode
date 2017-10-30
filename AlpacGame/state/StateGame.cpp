@@ -11,30 +11,23 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Clock used to throttle movement softly
     sf::Clock ticker;
 
-    // todo: *StateMachine too much permission? Perhaps a combo of *configGame and *configWindow?
-    // todo: Add to vector in the future, makes handling entities tenfold simpler.
-    /// Instantiating Entities
+    /// Initiating World
+    world = new b2World(b2Vec2(0, 0));
 
-    Planet planet(*machine);
+    /// Instantiating initial entities
+    planet = new Planet(world, configGame->planetRadius, window->getSize().x / 2, 600.f);
+    entities.push_back(planet);
 
-    Farmer farmer(*machine, 0);
-
-    Alpaca alpaca1(*machine, 90);
-    Alpaca alpaca2(*machine, 180);
-    Alpaca alpaca3(*machine, 190);
-    Alpaca alpaca4(*machine, 273);
-    Alpaca alpaca5(*machine, 23);
-    Alpaca alpaca6(*machine, 65);
-
-    Wolf wolf1(*machine, 20);
-    Wolf wolf2(*machine, 200);
-    Wolf wolf3(*machine, 43);
-    Wolf wolf4(*machine, 300);
+    farmer = new Farmer(world, 100, 100, 300, 200);
+    entities.push_back(farmer);
 
     /// Poll game
     while (pollGame()) {
+
+        /// Catch deltaTime
         configGame->deltaTime = ticker.restart().asSeconds();
 
+        /// Save current input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             configGame->currentInput = sf::Keyboard::Right;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -45,48 +38,43 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
 
-        // todo: Create a drawing function?
-        /// Calculate positions of entities
-        farmer.control();
+        /// Box2D Physics Calculations
+        world->Step(timeStep, velocityIterations, positionIterations);
 
-        alpaca1.control();
-        alpaca2.control();
-        alpaca3.control();
-        alpaca4.control();
-        alpaca5.control();
-        alpaca6.control();
+        /// Gravity Calculation
+        for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
+            float force = 10.0f;
+            b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
+            bodyIter->ApplyForce(force * delta, bodyIter->GetWorldPoint(b2Vec2(0, 5)), true);
 
-        wolf1.control();
-        wolf2.control();
-        wolf3.control();
-        wolf4.control();
+            /// Adjust rotation every time
+            float angle = atan2f(-delta.x, delta.y);
+            bodyIter->SetTransform(bodyIter->GetWorldCenter(), angle);
+        }
 
         window->clear(sf::Color::Blue);
 
-        planet.draw();
+//        planet->adjust();
+//        planet->draw(*window);
+//
+//        farmer->adjust();
+//        farmer->draw(*window);
 
-        farmer.draw();
 
-        alpaca1.draw();
-        alpaca2.draw();
-        alpaca3.draw();
-        alpaca4.draw();
-        alpaca5.draw();
-        alpaca6.draw();
-
-        wolf1.draw();
-        wolf2.draw();
-        wolf3.draw();
-        wolf4.draw();
+        for (Entity *e : entities) {
+            e->adjust();
+            e->draw(*window);
+        }
 
         window->display();
 
         // todo: Create a function for view?
-        // Update View
+//         Update View
         view = sf::View(window->getDefaultView());
         view.zoom(viewZoom);
-        view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
-        view.setRotation(farmer.farmer.getRotation());
+//        view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
+        view.setCenter(farmer->x,farmer->y);
+        view.setRotation(farmer->getBody()->GetAngle() * DEGtoRAD);
         window->setView(view);
     }
 }
@@ -108,7 +96,12 @@ bool StateGame::pollGame() {
                     // todo: Add actual pause.
 //                    machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
+                } else {
+                    keyPressedHandler(event);
                 }
+            }
+            case sf::Event::MouseButtonPressed: {
+                mousePressedHandler(event);
             }
             default: {
                 return true;
@@ -116,4 +109,65 @@ bool StateGame::pollGame() {
         }
     }
     return true;
+}
+
+
+void StateGame::keyPressedHandler(sf::Event event) {
+    switch (event.type) {
+        case sf::Event::KeyPressed: {
+            if (event.key.code == sf::Keyboard::W) {
+                std::cout << "W" << std::endl;
+            }
+
+            if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A) {
+                b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
+                farmer->getBody()->ApplyLinearImpulse((farmer->getBody()->GetWorldVector(b2Vec2(-4.0f, 0)) + delta),
+                                                      farmer->getBody()->GetWorldCenter(), true);
+            }
+            if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D) {
+
+                b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
+                farmer->getBody()->ApplyLinearImpulse((farmer->getBody()->GetWorldVector(b2Vec2(4.0f, 0)) + delta),
+                                                      farmer->getBody()->GetWorldCenter(), true);
+            }
+
+            if (event.key.code == sf::Keyboard::Q || event.key.code == sf::Keyboard::W) {
+
+                b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
+                farmer->getBody()->ApplyLinearImpulse(-10.0f * delta, farmer->getBody()->GetWorldCenter(), true);
+
+            }
+        }
+
+            break;
+
+        default: {
+            std::cout << "Random button" << std::endl;
+            break;
+        }
+    }
+}
+
+
+void StateGame::mousePressedHandler(sf::Event event) {
+
+    // Save Mouse Coordinates
+    int mouseX = sf::Mouse::getPosition(*window).x;
+    int mouseY = sf::Mouse::getPosition(*window).y;
+
+
+    switch (event.mouseButton.button) {
+        case sf::Mouse::Left: {
+            entities.push_back(new Alpaca(world, 100, 100, mouseX, mouseY));
+            break;
+        }
+        case sf::Mouse::Right: {
+            entities.push_back(new Wolf(world, 100, 100, mouseX, mouseY));
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+
 }

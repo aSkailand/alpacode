@@ -9,24 +9,24 @@
 
 #include "../state/StateGame.h"
 
-class Planet {
+#include "../entity/Entity.h"
+
+class Planet : public Entity{
 public:
-    Planet(StateMachine &stateMachine);
 
-    void draw();
+    Planet(b2World *world, float radius, float x, float y);
 
-    sf::CircleShape planet;
+    void adjust() override;
 
 private:
 
     void loadTextures();
-    StateMachine *machine;
+
     sf::RenderWindow *window;
 
     sf::Sprite backgroundSprite;
     sf::Texture planetTexture;
     sf::Texture backgroundTexture;
-
 };
 
 #endif

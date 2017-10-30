@@ -8,27 +8,14 @@
 #include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
+#include "../Entity.h"
 
-class Alpaca {
+class Alpaca : public Entity{
 public:
     /// Public Functions
-    /**
-      * CONSTRUCTOR: Creates an alpaca and gives it an initial position.
-      * @param stateMachine a reference to the stateMachine, used to access common resources.
-      * @param initAngle the angle the alpaca will start at.
-      */
-    Alpaca(StateMachine &stateMachine, float initAngle);
+    Alpaca(b2World *world, float width, float height, float x, float y);
 
-    /**
-     * Randomize the alpaca's action and direction. Afterwards updates the position and rotation
-     * according to the alpaca's current state.
-     */
-    void control();
-
-    /**
-     * Updates the alpaca position and then draws it
-     */
-    void draw();
+    void adjust() override;
 
 private:
 

@@ -4,40 +4,46 @@
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
+
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
 #include "../../state/StateGame.h"
 
-class Farmer {
+#include "../Entity.h"
+
+class Farmer : public Entity{
+
 public:
 
+    /// Public Functions
+//    /**
+//      * CONSTRUCTOR: Creates a farmer and gives it an initial position.
+//      * @param stateMachine a reference to the stateMachine, used to access common resources.
+//      * @param initAngle the angle the alpaca will start at.
+//      */
+    Farmer(b2World *world, float width, float height, float x, float y);
     /// Farmer properties
-    sf::RectangleShape farmer;
+//    sf::RectangleShape farmer;
     sf::Texture farmerTexture;
-    float x;
-    float y;
+//    float x;
+//    float y;
     float angle;
     const int size = 100;
+
     float speed = 50;
 
-    /// Public Functions
-    /**
-      * CONSTRUCTOR: Creates a farmer and gives it an initial position.
-      * @param stateMachine a reference to the stateMachine, used to access common resources.
-      * @param initAngle the angle the alpaca will start at.
-      */
-    Farmer(StateMachine &stateMachine, float initAngle);
+//    /**
+//     * Randomize the farmer's action and direction. Afterwards updates the position and rotation
+//     * according to the farmer's current state.
+//     */
+//    void control();
 
-    /**
-     * Randomize the farmer's action and direction. Afterwards updates the position and rotation
-     * according to the farmer's current state.
-     */
-    void control();
+    void adjust() override;
 
-    /**
-     * Updates the farmer position and then draws it
-     */
-    void draw();
+//    /**
+//     * Updates the farmer position and then draws it
+//     */
+//    void draw();
 
 private:
 
