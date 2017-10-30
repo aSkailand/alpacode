@@ -16,6 +16,7 @@ private:
     // Pointers
     StateMachine *machine;
     sf::RenderWindow *window;
+    tgui::Gui *menuGUI;
 
     //Option Functions
     /**

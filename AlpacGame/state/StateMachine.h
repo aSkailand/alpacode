@@ -55,6 +55,10 @@ private:
      * The current state the StateMachine is running.
      */
     stateID currentState;
+public:
+    stateID getCurrentState() const;
+
+private:
 
     /**
      * Mappings of stateIDs with corresponding states.

@@ -5,6 +5,19 @@
 
 class ConfigWindow {
 public:
+
+    int screenWidth = 800;
+    int screenHeight = 600;
+
+    int getScreenWidth() const;
+
+    int getScreenHeight() const;
+
+    void setScreenWidth(int screenWidth);
+
+    void setScreenHeight(int screenHeight);
+
+
     void run();
 
     tgui::Gui &getMenuGUI();

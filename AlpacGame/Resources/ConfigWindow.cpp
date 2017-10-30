@@ -1,10 +1,11 @@
 #include "ConfigWindow.h"
 
 void ConfigWindow::run(){
-    sf::VideoMode windowResolution = sf::VideoMode(800, 600);  // todo: place this line another place
+    sf::VideoMode windowResolution = sf::VideoMode(screenWidth, screenHeight);  // todo: place this line another place
     window.create(windowResolution, "AlpaGame");
     window.setFramerateLimit(144);
 
+    menuGUI.removeAllWidgets();
     menuGUI.setWindow(window);
 }
 
@@ -17,6 +18,25 @@ tgui::Gui &ConfigWindow::getMenuGUI(){
 }
 
 void ConfigWindow::setWindowResolution(int unsigned screenWidth, int unsigned screenHeight) {
-    sf::VideoMode windowResolution = sf::VideoMode(screenWidth, screenHeight);
-    window.create(windowResolution, "Alpagame");
+    window.setSize(sf::Vector2u(screenWidth,screenHeight));
+}
+
+
+
+void ConfigWindow::setScreenWidth(int screenWidth) {
+    ConfigWindow::screenWidth = screenWidth;
+}
+
+
+
+void ConfigWindow::setScreenHeight(int screenHeight) {
+    ConfigWindow::screenHeight = screenHeight;
+}
+
+int ConfigWindow::getScreenWidth() const {
+    return screenWidth;
+}
+
+int ConfigWindow::getScreenHeight() const {
+    return screenHeight;
 }
