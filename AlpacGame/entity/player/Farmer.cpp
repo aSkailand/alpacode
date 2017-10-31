@@ -1,6 +1,8 @@
 #include "Farmer.h"
 
-Farmer::Farmer(b2World *world, float width, float height, float x, float y) {
+Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y) {
+
+    this->configGame = configGame;
 
     this->x = x;
     this->y = y;
@@ -18,8 +20,10 @@ Farmer::Farmer(b2World *world, float width, float height, float x, float y) {
     // Create Fixture
     b2FixtureDef fixtureDef;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 15.0f;
+    fixtureDef.friction = 1.0f;
     fixtureDef.restitution = 0.0f;
+    fixtureDef.filter.categoryBits = (uint16) ID::FARMER;
+    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
 
     b2CircleShape b2Shape;
     b2Shape.m_radius = width / 2 / SCALE;
@@ -131,5 +135,19 @@ void Farmer::adjust() {
 }
 
 void Farmer::switchAction() {
-    return;
+    // Changes which way to flip the farmer
+    if (configGame->currentInput == sf::Keyboard::Unknown) {
+        currentAction = Action::IDLE;
+    } else if (configGame->currentInput == sf::Keyboard::Right) {
+        sfShape->setScale(1.f, 1.f);
+        currentAction = Action::WALKING;
+        currentDirection = Direction::RIGHT;
+
+    } else if (configGame->currentInput == sf::Keyboard::Left) {
+        sfShape->setScale(-1.f, 1.f);
+        currentAction = Action::WALKING;
+        currentDirection = Direction::LEFT;
+    }
 }
+
+

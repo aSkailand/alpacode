@@ -20,16 +20,18 @@ Planet::Planet(b2World *world, float radius, float x, float y) {
 
     // Create Fixture
     b2FixtureDef fixtureDef;
-    fixtureDef.friction = 10.f;
+    fixtureDef.friction = 10.0f;
 
     // Connect b2Shape to fixture
     fixtureDef.shape = &b2Shape;
+    fixtureDef.filter.categoryBits = (uint16) ID::PLANET;
+    fixtureDef.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::WOLF;
 
     // Connect fixture to body
     body->CreateFixture(&fixtureDef);
 
     setID(Entity::ID::PLANET);
-    body->SetUserData((void*) this);
+    body->SetUserData((void *) this);
 
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);

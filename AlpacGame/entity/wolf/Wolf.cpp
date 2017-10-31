@@ -19,6 +19,8 @@ Wolf::Wolf(b2World *world, b2Body *planetBody, float width, float height, float 
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 15.0f;
     fixtureDef.restitution = 0.0f;
+    fixtureDef.filter.categoryBits = (uint16) ID::WOLF;
+    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
 
     b2CircleShape b2Shape;
     b2Shape.m_radius = width / 2 / SCALE;
@@ -40,6 +42,8 @@ Wolf::Wolf(b2World *world, b2Body *planetBody, float width, float height, float 
     // Creating Random Number Generator
     long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
     generator = std::default_random_engine(seed);
+
+    moveTimer.restart();
 
 }
 
@@ -79,25 +83,26 @@ void Wolf::switchAction() {
 
     }
 
-    if (currentAction == Action::WALKING) {
-        switch (currentDirection) {
-            case Direction::LEFT: {
+    // Check if the clock has triggered
+    if (moveTimer.getElapsedTime().asSeconds() >= moveCoolDown) {
 
-                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+        if (currentAction == Action::WALKING) {
+            switch (currentDirection) {
+                case Direction::LEFT: {
+                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(-5.f, -10.f)),
+                                                          true);
+                    break;
+                }
+                case Direction::RIGHT: {
 
-                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(-0.1f, 0)) + delta),
-                                              getBody()->GetWorldCenter(), true);
-                break;
-            }
-            case Direction::RIGHT: {
-
-                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
-
-                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(0.1f, 0)) + delta),
-                                              getBody()->GetWorldCenter(), true);
-                break;
+                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(5.f, -10.f)),
+                                                          true);
+                    break;
+                }
             }
         }
+
+        moveTimer.restart();
     }
 }
 

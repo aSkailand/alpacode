@@ -65,6 +65,9 @@ private:
     int tickSecond = 3; // Amount of seconds before a new, random action is given.
     std::default_random_engine generator;
 
+    sf::Clock moveTimer;
+    float moveCoolDown = 0.3f;
+
     /**
     * Generates a random number from the generator in the range of given lower and upper.
     * @param lower the left number in the range.

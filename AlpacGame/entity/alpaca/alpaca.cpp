@@ -18,8 +18,10 @@ Alpaca::Alpaca(b2World *world, b2Body* planetBody, float width, float height, fl
     // Create Fixture
     b2FixtureDef fixtureDef;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 15.0f;
+    fixtureDef.friction = 1.0f;
     fixtureDef.restitution = 0.0f;
+    fixtureDef.filter.categoryBits = (uint16) ID::ALPACA;
+    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
 
     b2CircleShape b2Shape;
     b2Shape.m_radius = width / 2 / SCALE;
@@ -53,6 +55,8 @@ Alpaca::Alpaca(b2World *world, b2Body* planetBody, float width, float height, fl
 
     // Initiate internal clock
     clock.restart();
+
+    moveTimer.restart();
 
 
 }
@@ -112,28 +116,42 @@ void Alpaca::switchAction() {
         clock.restart();
     }
 
-    if (currentAction == Action::WALKING) {
-        switch (currentDirection) {
-            case Direction::LEFT: {
+    if(moveTimer.getElapsedTime().asSeconds() >= moveCoolDown)    {
+
+        if (currentAction == Action::WALKING) {
+            switch (currentDirection) {
+                case Direction::LEFT: {
 
 
-                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+//                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+//
+//                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(-0.1f, 0)) + delta),
+//                                                      getBody()->GetWorldCenter(), true);
 
-                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(-0.1f, 0)) + delta),
-                                                      getBody()->GetWorldCenter(), true);
-                break;
-            }
-            case Direction::RIGHT: {
+                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(-5.f, -10.f)),
+                                                          true);
+                    break;
+                }
+                case Direction::RIGHT: {
 
 
-                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+//                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+//
+//                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(0.1f, 0)) + delta),
+//                                              getBody()->GetWorldCenter(), true);
 
-                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(0.1f, 0)) + delta),
-                                              getBody()->GetWorldCenter(), true);
-                break;
+                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(5.f, -10.f)),
+                                                          true);
+                    break;
+                }
             }
         }
+
+        moveTimer.restart();
+
     }
+
+
 
 
 }

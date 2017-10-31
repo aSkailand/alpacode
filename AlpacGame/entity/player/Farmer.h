@@ -21,7 +21,7 @@ public:
 //      * @param stateMachine a reference to the stateMachine, used to access common resources.
 //      * @param initAngle the angle the alpaca will start at.
 //      */
-    Farmer(b2World *world, float width, float height, float x, float y);
+    Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y);
     /// Farmer properties
 //    sf::RectangleShape farmer;
     sf::Texture farmerTexture;
@@ -47,6 +47,9 @@ public:
 //     */
 //    void draw();
 
+    sf::Clock moveTimer;
+    float moveCoolDown = 0.3f;
+
 private:
 
     /// Enums
@@ -66,6 +69,8 @@ private:
     /// Pointers
     sf::RenderWindow *window;
     ConfigGame *configGame;
+
+
 
 
     /// Visuals

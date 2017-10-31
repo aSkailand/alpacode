@@ -19,7 +19,10 @@ class Entity {
 public:
 
     enum class ID {
-        ALPACA, FARMER, WOLF, PLANET
+        PLANET = 0x0001,
+        FARMER = 0x0002,
+        ALPACA = 0x0004,
+        WOLF = 0x0008
     };
 
     /**
