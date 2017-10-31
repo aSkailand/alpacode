@@ -16,17 +16,19 @@ public:
       * @param stateMachine a reference to the stateMachine, used to access common resources.
       * @param initAngle the angle the wolf will start at.
       */
-    Wolf(b2World *world, float width, float height, float x, float y);
+    Wolf(b2World *world, b2Body *planetBody, float width, float height, float x, float y);
     /**
      * Randomize the wolf's action and direction. Afterwards updates the position and rotation
      * according to the wolf's current state.
      */
-    void control();
+    void switchAction() override;
 
     /// Public Functions
     void adjust() override;
 
 private:
+
+    b2Body *planetBody;
 
     /// Enums
     enum class Direction {
@@ -43,7 +45,6 @@ private:
     ConfigGame *configGame;
 
     /// Wolf properties
-    sf::RectangleShape wolfshape;
     sf::Texture wolfTexture;
     float x;
     float y;

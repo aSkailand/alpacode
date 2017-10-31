@@ -36,9 +36,11 @@ public:
 //     * Randomize the farmer's action and direction. Afterwards updates the position and rotation
 //     * according to the farmer's current state.
 //     */
-//    void control();
+//    void switchAction();
 
     void adjust() override;
+
+    void switchAction() override;
 
 //    /**
 //     * Updates the farmer position and then draws it

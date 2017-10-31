@@ -13,16 +13,19 @@
 class Alpaca : public Entity{
 public:
     /// Public Functions
-    Alpaca(b2World *world, float width, float height, float x, float y);
+    Alpaca(b2World *world, b2Body *planetBody, float width, float height, float x, float y);
 
     void adjust() override;
-
-private:
 
     /// Enums
     enum class Direction {
         LEFT, RIGHT
     };
+
+private:
+
+    b2Body *planetBody;
+
     enum class Action {
         IDLE, WALKING
     };
@@ -34,7 +37,6 @@ private:
     ConfigGame *configGame;
 
     /// Alpaca properties
-    sf::RectangleShape alpacashape;
     sf::Texture alpacaTexture;
     float x;
     float y;
@@ -52,7 +54,7 @@ private:
 
     /// Alpaca movement randomizer tools
     sf::Clock clock;
-    int tickSecond = 3; // Amount of seconds before a new, random action is given.
+    float tickSecond = 3.f; // Amount of seconds before a new, random action is given.
     std::default_random_engine generator;
 
     /**
@@ -62,6 +64,8 @@ private:
     * @return returns a number between the lower and upper.
     */
     int randomNumberGenerator(int lower, int upper);
+
+    void switchAction() override;
 };
 
 #endif //ALPACGAME_ALPACA_H

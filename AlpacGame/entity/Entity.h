@@ -66,6 +66,8 @@ public:
         Entity::body = body;
     }
 
+    virtual void switchAction() = 0;
+
     float x, y;
 
 protected:

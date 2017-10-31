@@ -81,3 +81,7 @@ void Planet::adjust() {
     y = SCALE * body->GetPosition().y;
     sfShape->setPosition(x, y);
 }
+
+void Planet::switchAction() {
+    return;
+}

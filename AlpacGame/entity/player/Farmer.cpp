@@ -82,7 +82,7 @@ Farmer::Farmer(b2World *world, float width, float height, float x, float y) {
 //}
 
 /*
-void Farmer::control() {
+void Farmer::switchAction() {
 
     // Move farmer according to input
     if (configGame->currentInput == sf::Keyboard::Right) {
@@ -128,4 +128,8 @@ void Farmer::adjust() {
     y = SCALE * body->GetPosition().y;
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+}
+
+void Farmer::switchAction() {
+    return;
 }

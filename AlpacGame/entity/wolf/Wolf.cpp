@@ -1,6 +1,8 @@
 #include "Wolf.h"
 
-Wolf::Wolf(b2World *world, float width, float height, float x, float y) : id(nextId++){
+Wolf::Wolf(b2World *world, b2Body *planetBody, float width, float height, float x, float y) : id(nextId++) {
+
+    this->planetBody = planetBody;
 
     loadTextures();
 
@@ -19,12 +21,12 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y) : id(nex
     fixtureDef.restitution = 0.0f;
 
     b2CircleShape b2Shape;
-    b2Shape.m_radius = width/2 / SCALE;
+    b2Shape.m_radius = width / 2 / SCALE;
     fixtureDef.shape = &b2Shape;
 
     // Store information
     setID(Entity::ID::ALPACA);
-    body->SetUserData((void*) this);
+    body->SetUserData((void *) this);
 
     // Connect fixture to body
     body->CreateFixture(&fixtureDef);
@@ -35,37 +37,15 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y) : id(nex
 //    sfShape->setOutlineThickness(2);
 //    sfShape->setOutlineColor(sf::Color::Black);
 
+    // Creating Random Number Generator
+    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
+    generator = std::default_random_engine(seed);
 
-
-//     Assigning pointers
-//    configGame = &stateMachine.configGame;
-//    window = &stateMachine.configWindow.getWindow();
-//
-//     Load textures
-//    loadTextures();
-//
-//     Assigning default states
-//    currentAction = Action::IDLE;
-//    currentDirection = Direction::RIGHT;
-//
-//     Generate random number generator
-//    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
-//    generator = std::default_random_engine(seed);
-//
-//     Define the wolf
-//    wolfshape = sf::RectangleShape(sf::Vector2f(size, size));
-//    wolfshape.setTexture(&wolfTexture);
-//    wolfshape.setOrigin(wolfshape.getSize().x / 2, wolfshape.getSize().y);
-//    wolfshape.setOutlineThickness(1);
-//
-//
-//     Assigning initial position
-//    angle = initAngle;
 }
 
 int Wolf::nextId = 0;
 
-void Wolf::control() {
+void Wolf::switchAction() {
 
     // Check if it is time for randomizing the wolf's current state
     if ((int) clock.getElapsedTime().asSeconds() >= tickSecond) {
@@ -73,7 +53,7 @@ void Wolf::control() {
         currentAction = (Action) randomNumberGenerator(0, 1);
 
         switch (currentAction) {
-            case Wolf::Action::IDLE:{
+            case Wolf::Action::IDLE: {
                 std::cout << "Wolf " << id << " is now IDLE." << std::endl;
                 break;
             }
@@ -81,13 +61,13 @@ void Wolf::control() {
                 currentDirection = (Direction) randomNumberGenerator(0, 1);
                 switch (currentDirection) {
                     case Wolf::Direction::LEFT: {
-                        std::cout << "Wolf " << id << " is now WALKING LEFT" << std::endl;
-                        wolfshape.setScale({-1.f, 1.f});
+                        std::cout << "Wolf " << id << " is WALKING LEFT" << std::endl;
+                        sfShape->setScale(-1.f, 1.f);
                         break;
                     }
                     case Wolf::Direction::RIGHT: {
-                        std::cout << "Wolf " << id << " is now WALKING RIGHT" << std::endl;
-                        wolfshape.setScale({1.f, 1.f});
+                        std::cout << "Wolf " << id << " is WALKING RIGHT" << std::endl;
+                        sfShape->setScale(1.f, 1.f);
                         break;
                     }
                 }
@@ -99,18 +79,26 @@ void Wolf::control() {
 
     }
 
-    // Reposition the wolf
     if (currentAction == Action::WALKING) {
-        if (currentDirection == Wolf::Direction::RIGHT) {
-            angle += configGame->deltaTime * speed;
-        } else if (currentDirection == Wolf::Direction::LEFT) {
-            angle -= configGame->deltaTime * speed;
+        switch (currentDirection) {
+            case Direction::LEFT: {
+
+                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+
+                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(-0.1f, 0)) + delta),
+                                              getBody()->GetWorldCenter(), true);
+                break;
+            }
+            case Direction::RIGHT: {
+
+                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
+
+                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(0.1f, 0)) + delta),
+                                              getBody()->GetWorldCenter(), true);
+                break;
+            }
         }
     }
-
-    // Position calculation
-    x = configGame->calcX(angle);
-    y = configGame->calcY(angle);
 }
 
 int Wolf::randomNumberGenerator(int lower, int upper) {

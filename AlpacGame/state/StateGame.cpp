@@ -16,9 +16,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Instantiating initial entities
     planet = new Planet(world, configGame->planetRadius, window->getSize().x / 2, 600.f);
-    entities.push_back(planet);
-
     farmer = new Farmer(world, 100, 100, 300, 200);
+    entities.push_back(planet);
     entities.push_back(farmer);
 
     /// Poll game
@@ -45,23 +44,17 @@ void StateGame::goNext(StateMachine &stateMachine) {
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
             float force = 10.0f;
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
-            bodyIter->ApplyForce(force * delta, bodyIter->GetWorldPoint(b2Vec2(0, 5)), true);
+            bodyIter->ApplyForce(force * delta, bodyIter->GetWorldPoint(b2Vec2(0, 5.f)), true);
 
-            /// Adjust rotation every time
+            // Adjust rotation every time
             float angle = atan2f(-delta.x, delta.y);
             bodyIter->SetTransform(bodyIter->GetWorldCenter(), angle);
         }
 
         window->clear(sf::Color::Blue);
 
-//        planet->adjust();
-//        planet->draw(*window);
-//
-//        farmer->adjust();
-//        farmer->draw(*window);
-
-
         for (Entity *e : entities) {
+            e->switchAction();
             e->adjust();
             e->draw(*window);
         }
@@ -71,10 +64,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // todo: Create a function for view?
 //         Update View
         view = sf::View(window->getDefaultView());
-        view.zoom(viewZoom);
-//        view.setCenter(configGame->calcX(farmer.angle, viewOffset), configGame->calcY(farmer.angle, viewOffset));
-        view.setCenter(farmer->x,farmer->y);
-        view.setRotation(farmer->getBody()->GetAngle() * DEGtoRAD);
+        view.zoom(3.f);
+//        view.zoom(viewZoom);
+        view.setCenter(planet->x, planet->y);
+//        view.setCenter(farmer->x, farmer->y);
+//        view.setRotation(farmer->getBody()->GetAngle() * DEGtoRAD);
         window->setView(view);
     }
 }
@@ -115,9 +109,7 @@ bool StateGame::pollGame() {
 void StateGame::keyPressedHandler(sf::Event event) {
     switch (event.type) {
         case sf::Event::KeyPressed: {
-            if (event.key.code == sf::Keyboard::W) {
-                std::cout << "W" << std::endl;
-            }
+
 
             if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A) {
                 b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
@@ -158,11 +150,11 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities.push_back(new Alpaca(world, 100, 100, mouseX, mouseY));
+            entities.push_back(new Alpaca(world, planet->getBody(), 100, 100, mouseX, mouseY));
             break;
         }
         case sf::Mouse::Right: {
-            entities.push_back(new Wolf(world, 100, 100, mouseX, mouseY));
+            entities.push_back(new Wolf(world, planet->getBody(), 100, 100, mouseX, mouseY));
             break;
         }
         default: {

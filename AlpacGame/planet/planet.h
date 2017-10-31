@@ -18,6 +18,8 @@ public:
 
     void adjust() override;
 
+    void switchAction() override;
+
 private:
 
     void loadTextures();
