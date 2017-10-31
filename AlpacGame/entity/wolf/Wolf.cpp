@@ -32,8 +32,8 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y) : id(nex
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
     sfShape->setOrigin(width / 2, height / 2);
     sfShape->setTexture(&wolfTexture);
-    sfShape->setOutlineThickness(2);
-    sfShape->setOutlineColor(sf::Color::Black);
+//    sfShape->setOutlineThickness(2);
+//    sfShape->setOutlineColor(sf::Color::Black);
 
 
 

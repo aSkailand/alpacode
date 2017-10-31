@@ -127,8 +127,8 @@ Alpaca::Alpaca(b2World *world, float width, float height, float x, float y) : id
     sfShape = new sf::CircleShape(width/2);
     sfShape->setOrigin(width/2, width/2);
     sfShape->setTexture(&alpacaTexture);
-    sfShape->setOutlineThickness(2);
-    sfShape->setOutlineColor(sf::Color::Black);
+//    sfShape->setOutlineThickness(2);
+//    sfShape->setOutlineColor(sf::Color::Black);
 
 
 }
