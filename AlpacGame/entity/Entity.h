@@ -69,18 +69,16 @@ public:
         Entity::body = body;
     }
 
-    virtual void switchAction() = 0;
 
-    float x, y;
+    float x{}, y{};
 
 protected:
 
-    b2Body *body;
-
-    sf::Shape *sfShape;
-
     ID id;
 
+    b2Body *body{};
+
+    sf::Shape *sfShape{};
 
 };
 

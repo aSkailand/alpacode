@@ -8,9 +8,9 @@
 #include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
-#include "../Entity.h"
+#include "../EntityWarm.h"
 
-class Alpaca : public Entity{
+class Alpaca : public EntityWarm {
 public:
     /// Public Functions
     Alpaca(b2World *world, b2Body *planetBody, float width, float height, float x, float y);

@@ -8,8 +8,9 @@
 #include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
+#include "../EntityWarm.h"
 
-class Wolf : public Entity{
+class Wolf : public EntityWarm{
 public:
     /**
       * CONSTRUCTOR: Creates a wolf and gives it an initial position.

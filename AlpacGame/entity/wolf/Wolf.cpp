@@ -89,13 +89,13 @@ void Wolf::switchAction() {
         if (currentAction == Action::WALKING) {
             switch (currentDirection) {
                 case Direction::LEFT: {
-                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(-5.f, -10.f)),
+                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(-10.f, -10.f)),
                                                           true);
                     break;
                 }
                 case Direction::RIGHT: {
 
-                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(5.f, -10.f)),
+                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(10.f, -10.f)),
                                                           true);
                     break;
                 }

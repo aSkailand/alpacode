@@ -155,3 +155,7 @@ void Alpaca::switchAction() {
 
 
 }
+
+void adjust() {
+
+}

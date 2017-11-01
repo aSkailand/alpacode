@@ -3,15 +3,13 @@
 
 #include <iostream>
 
-#include <SFML/Graphics.hpp>
-
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
 #include "../../state/StateGame.h"
 
-#include "../Entity.h"
+#include "../EntityWarm.h"
 
-class Farmer : public Entity{
+class Farmer : public EntityWarm {
 
 public:
 
@@ -23,14 +21,8 @@ public:
 //      */
     Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y);
     /// Farmer properties
-//    sf::RectangleShape farmer;
     sf::Texture farmerTexture;
-//    float x;
-//    float y;
-    float angle;
-    const int size = 100;
 
-    float speed = 50;
 
 //    /**
 //     * Randomize the farmer's action and direction. Afterwards updates the position and rotation
@@ -48,7 +40,7 @@ public:
 //    void draw();
 
     sf::Clock moveTimer;
-    float moveCoolDown = 0.3f;
+    float moveCoolDown = 0.4f;
 
 private:
 

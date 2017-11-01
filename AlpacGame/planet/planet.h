@@ -9,16 +9,14 @@
 
 #include "../state/StateGame.h"
 
-#include "../entity/Entity.h"
+#include "../entity/EntityCold.h"
 
-class Planet : public Entity{
+class Planet : public EntityCold{
 public:
 
     Planet(b2World *world, float radius, float x, float y);
 
     void adjust() override;
-
-    void switchAction() override;
 
 private:
 

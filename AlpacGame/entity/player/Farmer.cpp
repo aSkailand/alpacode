@@ -49,77 +49,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     sfShape->setTexture(&farmerTexture);
     sfShape->setOutlineThickness(2);
     sfShape->setOutlineColor(sf::Color::Black);
-
-
-
-
-//     Assigning pointers
-//    configGame = &stateMachine.configGame;
-//    window = &stateMachine.configWindow.getWindow();
-//
-//     Load textures
-//    loadTextures();
-//
-    // Assigning default states
-//    currentAction = Action::IDLE;
-//    currentStatus = Status::GROUNDED;
-//    currentDirection = Direction::RIGHT;
-
-    // Define the alpaca
-//    farmer = sf::RectangleShape(sf::Vector2f(size, size));
-//    farmer.setTexture(&farmerTexture);
-//    farmer.setOrigin(farmer.getSize().x / 2, farmer.getSize().y);
-    //farmer.setOutlineThickness(1);
-//    farmer.scale(-1.f, 1.f);
-
-    // Assigning initial position
-//    angle = initAngle;
 }
-
-//void Farmer::draw() {
-//
-//     Place the farmer accordingly
-//    farmer.setPosition(x,y);
-//
-//     Draw the square
-//    window->draw(farmer);
-//}
-
-/*
-void Farmer::switchAction() {
-
-    // Move farmer according to input
-    if (configGame->currentInput == sf::Keyboard::Right) {
-        angle += configGame->deltaTime * speed;
-    } else if (configGame->currentInput == sf::Keyboard::Left) {
-        angle -= configGame->deltaTime * speed;
-    }
-
-    // todo: Simplify flipping?
-    // Changes which way to flip the farmer
-    if (configGame->currentInput == sf::Keyboard::Unknown) {
-        currentAction = Action::IDLE;
-    } else if (configGame->currentInput == sf::Keyboard::Right) {
-        currentAction = Action::WALKING;
-        if (currentDirection != Direction::RIGHT) {
-            farmer.scale(-1.f, 1.f);
-            currentDirection = Direction::RIGHT;
-        }
-    } else if (configGame->currentInput == sf::Keyboard::Left) {
-        currentAction = Action::WALKING;
-        if (currentDirection != Direction::LEFT) {
-            farmer.scale(-1.f, 1.f);
-            currentDirection = Direction::LEFT;
-        }
-    }
-
-    // Update the position and rotation of farmer
-    x = configGame->calcX(angle);
-    y = configGame->calcY(angle);
-    farmer.setRotation(angle);
-
-}
-*/
 
 void Farmer::loadTextures() {
     if (!farmerTexture.loadFromFile("entity/player/farmer.png")) {
@@ -135,7 +65,8 @@ void Farmer::adjust() {
 }
 
 void Farmer::switchAction() {
-    // Changes which way to flip the farmer
+
+    // Update farmer's direction and action
     if (configGame->currentInput == sf::Keyboard::Unknown) {
         currentAction = Action::IDLE;
     } else if (configGame->currentInput == sf::Keyboard::Right) {
@@ -147,7 +78,68 @@ void Farmer::switchAction() {
         sfShape->setScale(-1.f, 1.f);
         currentAction = Action::WALKING;
         currentDirection = Direction::LEFT;
+    } else if (configGame->currentInput == sf::Keyboard::Up) {
+        currentAction = Action::JUMP;
     }
+
+    // Move farmer accordingly
+    if (currentAction != Action::IDLE) {
+        if ((moveTimer.getElapsedTime().asSeconds() > moveCoolDown)) {
+
+            moveTimer.restart();
+
+            switch (currentAction) {
+                case Action::WALKING: {
+
+                    float force = 5.f;
+                    float mass = getBody()->GetMass();
+
+                    switch (currentDirection) {
+                        case Direction::RIGHT: {
+                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(10.f, -10.f));
+                            angle.Normalize();
+                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                            break;
+                        }
+                        case Direction::LEFT: {
+                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-10.f, -10.f));
+                            angle.Normalize();
+                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case Action::JUMP: {
+
+                    float force = 10.f;
+                    float mass = getBody()->GetMass();
+
+                    switch (currentDirection) {
+                        case Direction::RIGHT: {
+                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(15.f, -20.f));
+                            angle.Normalize();
+                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                            break;
+                        }
+                        case Direction::LEFT: {
+                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-15.f, -20.f));
+                            angle.Normalize();
+                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case Action::IDLE: {
+                    break;
+                }
+            }
+
+
+        }
+    }
+
 }
 
 
