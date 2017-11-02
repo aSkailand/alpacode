@@ -39,7 +39,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     /// SQUARE VERSION (SFML)
 //    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
 //    sfShape->setOrigin(width / 2, height / 2);
-//    sfShape->setTexture(&alpacaTexture);
+//    sfShape->setTexture(&texture);
 //    sfShape->setOutlineThickness(2);
 //    sfShape->setOutlineColor(sf::Color::Black);
 
@@ -47,8 +47,8 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     sfShape = new sf::CircleShape(width / 2);
     sfShape->setOrigin(width / 2, width / 2);
     sfShape->setTexture(&farmerTexture);
-    sfShape->setOutlineThickness(2);
-    sfShape->setOutlineColor(sf::Color::Black);
+//    sfShape->setOutlineThickness(2);
+//    sfShape->setOutlineColor(sf::Color::Black);
 }
 
 void Farmer::loadTextures() {
@@ -57,11 +57,13 @@ void Farmer::loadTextures() {
     }
 }
 
-void Farmer::adjust() {
+void Farmer::render(sf::RenderWindow *window) {
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
+    window->draw(*sfShape);
 }
 
 void Farmer::switchAction() {
@@ -82,11 +84,14 @@ void Farmer::switchAction() {
         currentAction = Action::JUMP;
     }
 
-    // Move farmer accordingly
-    if (currentAction != Action::IDLE) {
-        if ((moveTimer.getElapsedTime().asSeconds() > moveCoolDown)) {
 
-            moveTimer.restart();
+
+
+}
+
+void Farmer::performAction() {
+    if (currentAction != Action::IDLE) {
+        if (isMovementAvailable(moveAvailableTick)) {
 
             switch (currentAction) {
                 case Action::WALKING: {
@@ -139,7 +144,6 @@ void Farmer::switchAction() {
 
         }
     }
-
 }
 
 

@@ -5,46 +5,64 @@
 #include <random>
 #include <chrono>
 
-#include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
+
 #include "../EntityWarm.h"
+#include "../Mob.h"
 
-class Alpaca : public EntityWarm {
+class Alpaca : public Mob {
 public:
-    /// Public Functions
-    Alpaca(b2World *world, b2Body *planetBody, float width, float height, float x, float y);
 
-    void adjust() override;
-
-    /// Enums
-    enum class Direction {
-        LEFT, RIGHT
-    };
+    /**
+     * CONSTRUCTOR: Creates an alpaca and adds it to the world.
+     * @param world the world to add the alpaca to.
+     * @param width the width of the alpaca in pixels.
+     * @param height the height of the alpaca in pixels.
+     * @param x the x-coordinate of the origin of the alpaca, in pixels.
+     * @param y the y-coordinate of the origin of the alpaca, in pixels.
+     */
+    Alpaca(b2World *world, float width, float height, float x, float y);
 
 private:
 
-    b2Body *planetBody;
-
-    enum class Action {
-        IDLE, WALKING
-    };
-    Direction currentDirection;
-    Action currentAction;
-
-    /// Pointers
-    sf::RenderWindow *window;
-    ConfigGame *configGame;
-
-    /// Alpaca properties
-    sf::Texture alpacaTexture;
-    float x;
-    float y;
-    float angle;
-    int size = 150;
-    const float speed = 10;
+    /// Entity properties
+    sf::Texture texture;
     const int id;
     static int nextId;
+    float density = 1.0f;
+    float friction = 1.0f;
+    float restitution = 0.0f;
+    uint16 categoryBits = (uint16) ID::ALPACA;
+    uint16 maskBits = (uint16) ID::PLANET;
+
+    /// Movement tools
+    /**
+     * The time before current action is switched (in seconds).
+     */
+    float randomActionTick = 3.0f;
+
+    /**
+     * The time before next movement is permitted to be performed (in seconds).
+     */
+    float moveAvailableTick = 0.5f;
+
+    /// Functions
+    /**
+     * Adjust SFML shape accordingly to the Box2D body, then draw it.
+     * @param window the window to draw the SFML shape on.
+     */
+    void render(sf::RenderWindow *window) override;
+
+    /**
+     * Perform the current action if permitted by move clock.
+     */
+    void performAction() override;
+
+    /**
+     * Randomize the entity's current action and direction.
+     */
+    void switchAction() override;
 
     /// Visuals
     /**
@@ -52,24 +70,7 @@ private:
      */
     void loadTextures();
 
-    /// Alpaca movement randomizer tools
-    sf::Clock clock;
-    float tickSecond = 3.f; // Amount of seconds before a new, random action is given.
-    std::default_random_engine generator;
 
-
-    sf::Clock moveTimer;
-    float moveCoolDown = 0.8f;
-
-    /**
-    * Generates a random number from the generator in the range of given lower and upper.
-    * @param lower the left number in the range.
-    * @param upper the right number in the range.
-    * @return returns a number between the lower and upper.
-    */
-    int randomNumberGenerator(int lower, int upper);
-
-    void switchAction() override;
 };
 
 #endif //ALPACGAME_ALPACA_H

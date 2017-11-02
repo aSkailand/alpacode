@@ -1,8 +1,7 @@
 #include "Alpaca.h"
 
-Alpaca::Alpaca(b2World *world, b2Body* planetBody, float width, float height, float x, float y) : id(nextId++) {
-
-    this->planetBody = planetBody;
+Alpaca::Alpaca(b2World *world, float width, float height, float x, float y)
+        : id(nextId++), Mob(id) {
 
     // Loading Textures
     loadTextures();
@@ -15,16 +14,17 @@ Alpaca::Alpaca(b2World *world, b2Body* planetBody, float width, float height, fl
     // Create body
     body = world->CreateBody(&bodyDef);
 
-    // Create Fixture
-    b2FixtureDef fixtureDef;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 1.0f;
-    fixtureDef.restitution = 0.0f;
-    fixtureDef.filter.categoryBits = (uint16) ID::ALPACA;
-    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
-
+    // Create shape
     b2CircleShape b2Shape;
     b2Shape.m_radius = width / 2 / SCALE;
+
+    // Create Fixture
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = density;
+    fixtureDef.friction = friction;
+    fixtureDef.restitution = restitution;
+    fixtureDef.filter.categoryBits = categoryBits;
+    fixtureDef.filter.maskBits = maskBits;
     fixtureDef.shape = &b2Shape;
 
     // Store information
@@ -37,55 +37,33 @@ Alpaca::Alpaca(b2World *world, b2Body* planetBody, float width, float height, fl
     /// SQUARE VERSION (SFML)
 //    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
 //    sfShape->setOrigin(width / 2, height / 2);
-//    sfShape->setTexture(&alpacaTexture);
+//    sfShape->setTexture(&texture);
 //    sfShape->setOutlineThickness(2);
 //    sfShape->setOutlineColor(sf::Color::Black);
 
     /// CIRCLE VERSION (SFML)
     sfShape = new sf::CircleShape(width / 2);
     sfShape->setOrigin(width / 2, width / 2);
-    sfShape->setTexture(&alpacaTexture);
+    sfShape->setTexture(&texture);
 //    sfShape->setOutlineThickness(2);
 //    sfShape->setOutlineColor(sf::Color::Black);
-
-
-    // Creating Random Number Generator
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
-    generator = std::default_random_engine(seed);
-
-    // Initiate internal clock
-    clock.restart();
-
-    moveTimer.restart();
-
 
 }
 
 int Alpaca::nextId = 0;
 
-int Alpaca::randomNumberGenerator(int lower, int upper) {
-    std::uniform_int_distribution<int> distribution(lower, upper);
-    return distribution(generator);
-}
-
 void Alpaca::loadTextures() {
-    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
+    if (!texture.loadFromFile("entity/alpaca/alpaca.png")) {
         std::cout << "Error loading file!" << std::endl;
     }
 }
 
-void Alpaca::adjust() {
-    x = SCALE * body->GetPosition().x;
-    y = SCALE * body->GetPosition().y;
-    sfShape->setPosition(x, y);
-    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
-}
 
 /// ALPACA MOVE
 void Alpaca::switchAction() {
 
-    // Check if the clock has triggered
-    if (clock.getElapsedTime().asSeconds() >= tickSecond) {
+    // Check if the randomActionClock has triggered
+    if (randomActionTriggered(randomActionTick)) {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
 
@@ -113,49 +91,45 @@ void Alpaca::switchAction() {
             }
         }
 
-        clock.restart();
     }
 
-    if(moveTimer.getElapsedTime().asSeconds() >= moveCoolDown)    {
+
+}
+
+void Alpaca::render(sf::RenderWindow *window) {
+    x = SCALE * body->GetPosition().x;
+    y = SCALE * body->GetPosition().y;
+    sfShape->setPosition(x, y);
+    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
+    window->draw(*sfShape);
+}
+
+void Alpaca::performAction() {
+
+    if (isMovementAvailable(moveAvailableTick)) {
+
+        float force = 5.f;
+        float mass = getBody()->GetMass();
 
         if (currentAction == Action::WALKING) {
             switch (currentDirection) {
-                case Direction::LEFT: {
-
-
-//                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
-//
-//                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(-0.1f, 0)) + delta),
-//                                                      getBody()->GetWorldCenter(), true);
-
-                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(-5.f, -10.f)),
-                                                          true);
-                    break;
-                }
                 case Direction::RIGHT: {
-
-
-//                b2Vec2 delta = planetBody->GetWorldCenter() - getBody()->GetWorldCenter();
-//
-//                getBody()->ApplyLinearImpulse((getBody()->GetWorldVector(b2Vec2(0.1f, 0)) + delta),
-//                                              getBody()->GetWorldCenter(), true);
-
-                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(5.f, -10.f)),
-                                                          true);
+                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(10.f, -20.f));
+                    angle.Normalize();
+                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
                     break;
                 }
+                case Direction::LEFT: {
+                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-10.f, -20.f));
+                    angle.Normalize();
+                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                    break;
+                }
+
             }
         }
 
-        moveTimer.restart();
-
     }
-
-
-
-
 }
 
-void adjust() {
-
-}

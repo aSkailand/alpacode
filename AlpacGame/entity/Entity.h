@@ -9,15 +9,16 @@
 #include <SFML/Graphics.hpp>
 
 /**
- * The parent class for all entities.
+ * The abstract, base class for all entities.
  * Definition of an entity is:
  *  1. An object affected by the physics provided by Box2D.
- *  2. An object to be rendered to the game window.
+ *  2. An object to be rendered to the game window with SFML.
  */
 class Entity {
 
 public:
 
+    /// Enums
     enum class ID {
         PLANET = 0x0001,
         FARMER = 0x0002,
@@ -26,17 +27,9 @@ public:
     };
 
     /**
-     * Render the entity shape (SFML) on the given window.
-     * @param window The target window to render on.
-     */
-    void draw(sf::RenderWindow &window) {
-        window.draw(*sfShape);
-    };
-
-    /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
      */
-    virtual void adjust() = 0;
+    virtual void render(sf::RenderWindow *window) = 0;
 
     /**
      * Setter for entity type of the child inheriting this class.
@@ -69,12 +62,14 @@ public:
         Entity::body = body;
     }
 
-
+    /**
+     * The x- and y-position of the entity's origin in pixels.
+     */
     float x{}, y{};
 
 protected:
 
-    ID id;
+    ID id{};
 
     b2Body *body{};
 

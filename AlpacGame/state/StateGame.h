@@ -30,7 +30,7 @@ public:
 
 private:
 
-    // Pointers
+    /// Pointers
     StateMachine *machine;
     ConfigGame *configGame;
     sf::RenderWindow *window;

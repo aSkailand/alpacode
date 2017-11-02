@@ -1,8 +1,7 @@
 #include "Wolf.h"
 
-Wolf::Wolf(b2World *world, b2Body *planetBody, float width, float height, float x, float y) : id(nextId++) {
-
-    this->planetBody = planetBody;
+Wolf::Wolf(b2World *world, float width, float height, float x, float y)
+        :  id(nextId++), Mob(id){
 
     loadTextures();
 
@@ -16,11 +15,11 @@ Wolf::Wolf(b2World *world, b2Body *planetBody, float width, float height, float 
 
     // Create Fixture
     b2FixtureDef fixtureDef;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 15.0f;
-    fixtureDef.restitution = 0.0f;
-    fixtureDef.filter.categoryBits = (uint16) ID::WOLF;
-    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
+    fixtureDef.density = density;
+    fixtureDef.friction = friction;
+    fixtureDef.restitution = restitution;
+    fixtureDef.filter.categoryBits = categoryBits;
+    fixtureDef.filter.maskBits = maskBits;
 
     b2CircleShape b2Shape;
     b2Shape.m_radius = width / 2 / SCALE;
@@ -39,11 +38,6 @@ Wolf::Wolf(b2World *world, b2Body *planetBody, float width, float height, float 
 //    sfShape->setOutlineThickness(2);
 //    sfShape->setOutlineColor(sf::Color::Black);
 
-    // Creating Random Number Generator
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
-    generator = std::default_random_engine(seed);
-
-    moveTimer.restart();
 
 }
 
@@ -52,7 +46,7 @@ int Wolf::nextId = 0;
 void Wolf::switchAction() {
 
     // Check if it is time for randomizing the wolf's current state
-    if ((int) clock.getElapsedTime().asSeconds() >= tickSecond) {
+    if (randomActionTriggered(randomActionTick)) {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
 
@@ -79,37 +73,11 @@ void Wolf::switchAction() {
             }
         }
 
-        clock.restart();
-
     }
 
-    // Check if the clock has triggered
-    if (moveTimer.getElapsedTime().asSeconds() >= moveCoolDown) {
 
-        if (currentAction == Action::WALKING) {
-            switch (currentDirection) {
-                case Direction::LEFT: {
-                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(-10.f, -10.f)),
-                                                          true);
-                    break;
-                }
-                case Direction::RIGHT: {
-
-                    getBody()->ApplyLinearImpulseToCenter(10.f * getBody()->GetWorldVector(b2Vec2(10.f, -10.f)),
-                                                          true);
-                    break;
-                }
-            }
-        }
-
-        moveTimer.restart();
-    }
 }
 
-int Wolf::randomNumberGenerator(int lower, int upper) {
-    std::uniform_int_distribution<int> distribution(lower, upper);
-    return distribution(generator);
-}
 
 void Wolf::loadTextures() {
     if (!wolfTexture.loadFromFile("entity/wolf/wolfy.png")) {
@@ -117,9 +85,40 @@ void Wolf::loadTextures() {
     }
 }
 
-void Wolf::adjust() {
+void Wolf::render(sf::RenderWindow *window) {
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
+    window->draw(*sfShape);
+}
+
+void Wolf::performAction() {
+
+    // Check if the randomActionClock has triggered
+    if (isMovementAvailable(moveAvailableTick)) {
+
+        float force = 5.f;
+        float mass = getBody()->GetMass();
+
+        if (currentAction == Action::WALKING) {
+            switch (currentDirection) {
+                case Direction::RIGHT: {
+                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(10.f, -5.f));
+                    angle.Normalize();
+                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                    break;
+                }
+                case Direction::LEFT: {
+                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-10.f, -5.f));
+                    angle.Normalize();
+                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                    break;
+                }
+
+            }
+        }
+
+    }
 }

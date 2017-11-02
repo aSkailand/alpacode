@@ -62,15 +62,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
         for (Entity *e : entities) {
 
             // Check if current entity is an warm entity
-            if(dynamic_cast<EntityWarm*> (e) != nullptr){
-                dynamic_cast<EntityWarm*> (e)->switchAction();
+            auto warm_e = dynamic_cast<EntityWarm*> (e);
+            if(warm_e != nullptr){
+                warm_e->switchAction();
+                warm_e->performAction();
             }
 
-            // Adjust SFML shape to Box2D body's position and rotation
-            e->adjust();
-
-            // Draw SFML shape on game window
-            e->draw(*window);
+            // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+            e->render(window);
         }
 
         window->display();
@@ -121,6 +120,7 @@ bool StateGame::pollGame() {
 
 
 void StateGame::keyPressedHandler(sf::Event event) {
+    // todo: See if there is usage for this function. If(function == useless) delete.
 }
 
 
@@ -133,11 +133,11 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities.push_back(new Alpaca(world, planet->getBody(), 100, 100, mouseX, mouseY));
+            entities.push_back(new Alpaca(world, 100, 100, mouseX, mouseY));
             break;
         }
         case sf::Mouse::Right: {
-            entities.push_back(new Wolf(world, planet->getBody(), 100, 100, mouseX, mouseY));
+            entities.push_back(new Wolf(world, 100, 100, mouseX, mouseY));
             break;
         }
         default: {

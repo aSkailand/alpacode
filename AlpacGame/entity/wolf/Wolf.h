@@ -5,55 +5,53 @@
 #include <random>
 #include <chrono>
 
-#include <SFML/Graphics.hpp>
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
+
 #include "../EntityWarm.h"
+#include "../Mob.h"
 
-class Wolf : public EntityWarm{
+class Wolf : public Mob{
 public:
-    /**
-      * CONSTRUCTOR: Creates a wolf and gives it an initial position.
-      * @param stateMachine a reference to the stateMachine, used to access common resources.
-      * @param initAngle the angle the wolf will start at.
-      */
-    Wolf(b2World *world, b2Body *planetBody, float width, float height, float x, float y);
-    /**
-     * Randomize the wolf's action and direction. Afterwards updates the position and rotation
-     * according to the wolf's current state.
-     */
-    void switchAction() override;
 
-    /// Public Functions
-    void adjust() override;
+    /**
+      * CONSTRUCTOR: Creates a wolf and adds it to the world.
+      * @param world the world to add the wolf to.
+      * @param width the width of the wolf in pixels.
+      * @param height the height of the wolf in pixels.
+      * @param x the x-coordinate of the origin of the wolf, in pixels.
+      * @param y the y-coordinate of the origin of the wolf, in pixels.
+      */
+    Wolf(b2World *world, float width, float height, float x, float y);
 
 private:
 
-    b2Body *planetBody;
+    /// Functions
+    /**
+     * Randomize the entity's current action and direction.
+     */
+    void switchAction() override;
 
-    /// Enums
-    enum class Direction {
-        LEFT, RIGHT
-    };
-    enum class Action {
-        IDLE, WALKING
-    };
-    Direction currentDirection;
-    Action currentAction;
+    /**
+     * Perform the current action if permitted by move clock.
+     */
+    void performAction() override;
 
-    /// Pointers
-    sf::RenderWindow *window;
-    ConfigGame *configGame;
+    /**
+     * Adjust SFML shape accordingly to the Box2D body, then draw it.
+     * @param window the window to draw the SFML shape on.
+     */
+    void render(sf::RenderWindow *window) override;
 
-    /// Wolf properties
+    /// Entity Properties
     sf::Texture wolfTexture;
-    float x;
-    float y;
-    float angle;
-    int size = 100;
-    const float speed = 40;
     const int id;
     static int nextId;
+    float density = 1.0f;
+    float friction = 1.0f;
+    float restitution = 0.0f;
+    uint16 categoryBits = (uint16) ID::WOLF;
+    uint16 maskBits = (uint16) ID::PLANET;
 
     /// Visuals
     /**
@@ -61,21 +59,17 @@ private:
      */
     void loadTextures();
 
-    /// Wolf movement randomizer tools
-    sf::Clock clock;
-    int tickSecond = 3; // Amount of seconds before a new, random action is given.
-    std::default_random_engine generator;
-
-    sf::Clock moveTimer;
-    float moveCoolDown = 0.3f;
+    /// Movement tools
+    /**
+     * The time before current action is switched (in seconds).
+     */
+    float randomActionTick = 3.0f;
 
     /**
-    * Generates a random number from the generator in the range of given lower and upper.
-    * @param lower the left number in the range.
-    * @param upper the right number in the range.
-    * @return returns a number between the lower and upper.
-    */
-    int randomNumberGenerator(int lower, int upper);
+     * The time before next movement is permitted to be performed (in seconds).
+     */
+    float moveAvailableTick = 0.4f;
+
 };
 
 #endif //ALPACGAME_WOLFSTATE_H
