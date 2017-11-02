@@ -10,18 +10,25 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     menuGUI->removeAllWidgets();
 
 
+    auto windowWidth = tgui::bindWidth(machine->configWindow.getMenuGUI());
+    auto windowHeight = tgui::bindHeight(machine->configWindow.getMenuGUI());
+    auto picture = tgui::Picture::create("aluminium.jpg");
+    picture->setSize(tgui::bindMax(800,windowWidth), tgui::bindMax(600,windowHeight));
+    menuGUI->add(picture);
+
     //TODO: Make theme and layout pointers?
     // Creates a theme
-    tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/Black.txt");
+    tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/BabyBlue.txt");
 
     // Creates a layout
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();
-    layout->setSize(400,400);
-    layout->setPosition(machine->configWindow.getScreenWidth() / 4, machine->configWindow.getScreenHeight() /4);
+    layout->setSize(windowWidth * 2/3, windowHeight / 2);
+    layout->setPosition(windowWidth / 6, windowHeight / 6);
 
 
     // Creates a button
     tgui::Button::Ptr button = theme->load("Button");
+    button->setOpacity(50.f);
     button->setText("Play Game!");
 
     tgui::Button::Ptr button1 = tgui::Button::copy(button);
@@ -41,6 +48,8 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     layout->add(button2);
     layout->addSpace();
     menuGUI->add(layout);
+
+    
 
 
     while (pollMenu()) {

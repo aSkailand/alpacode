@@ -10,9 +10,22 @@ class StateOption : public State {
 
 public:
 
+
+    // Creates a theme
+    tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/BabyBlue.txt");
+
+
+    enum settingsID {
+        SETTINGS, VIDEO, CONTROLS, SOUND
+    };
+
     void goNext(StateMachine &stateMachine);
 
+
 private:
+
+    settingsID currentSettings;
+
     // Pointers
     StateMachine *machine;
     sf::RenderWindow *window;
@@ -29,35 +42,45 @@ private:
      */
     void drawOption();
 
-    /**
-     * Generate all option choices.
-     */
-    void initOptionStrings();
+    void menuSettings();
 
-    /**
-     * Wrapper for adding new option choices.
-     * @param choice name of option choice.
-     * @param x the x-position to draw the added option choice.
-     * @param y the y-position to draw the added option choice.
-     */
-    void addOptionChoice(const std::string &choice, int x, int y);
+    void videoSettings();
 
-    void moveUp();
-    void moveDown();
+    void controlSettings();
+
+    void soundSettings();
+
+    void applyChanges();
 
     void lowRes();
+
+    void medRes();
+
     void highRes();
 
+    void setTempRes(const std::string &tempRes);
 
-    //Sets font of texts in option
-    sf::Font fontOptionChoice;
+    void setResoulution(std::string res);
 
-    const int unsigned fontSizeOptionChoice = 50;
-    const sf::Color colorSelected = sf::Color::Red;
-    const sf::Color colorDeselected = sf::Color::Green;
+    tgui::Picture::Ptr picture;
 
-    int optionIndex = 0;
-    std::vector<sf::Text> optionChoices;
+    tgui::Button::Ptr masterButton;
+
+    tgui::VerticalLayout::Ptr layout;
+
+    tgui::CheckBox::Ptr fullScreenCheck;
+
+
+    std::string tempRes;
+    int unsigned tempXres;
+    int unsigned tempYres;
+
+    int initialVolumeLevel;
+
+    tgui::Layout windowWidth;
+    tgui::Layout windowHeight;
+
+
 };
 
 

@@ -23,10 +23,12 @@ public:
     tgui::Gui &getMenuGUI();
     sf::RenderWindow &getWindow();
     void setWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
+    void setFullscreeWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
 
 
 
 private:
+
     sf::RenderWindow window;
     tgui::Gui menuGUI;
 
