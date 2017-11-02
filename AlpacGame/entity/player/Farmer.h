@@ -2,6 +2,7 @@
 #define ALPACGAME_FARMER_H
 
 #include <iostream>
+#include <list>
 
 #include "../../Resources/ConfigGame.h"
 
@@ -10,6 +11,17 @@
 class Farmer : public EntityWarm {
 
 public:
+
+    sf::Clock graspClock;
+    float graspCooldown = 0.2f;
+
+    enum class Grasp {
+        EMPTY, HOLDING, THROWING
+    };
+
+    Grasp currentGrasp = Grasp::EMPTY;
+    Entity *holdingEntity = nullptr;
+    std::list<Entity *> currentlyTouchingEntities;
 
     /**
      * CONSTRUCTOR: Creates a farmer and places in to the world.
@@ -23,6 +35,35 @@ public:
     Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y);
 
 private:
+
+    /// Entity properties
+    // Customizable
+    float density = 1.0f;
+    float friction = 1.0f;
+    float restitution = 0.0f;
+
+    uint16 categoryBits = (uint16) ID::FARMER;
+    uint16 maskBits = (uint16) ID::PLANET;
+
+    float walkingForce = 5.f;
+    float walkingAngle = 45.f;   // Right, Degrees
+
+    float jumpingForce = 10.f;
+    float jumpingAngle = 45.f;   // Right, Degrees
+
+    float throwingForce = 10.f;
+    float throwingAngle = 10.f;   // Right, Degrees
+
+    // Non-customizable
+    sf::Texture texture;
+    b2Vec2 rightWalkVec{};
+    b2Vec2 leftWalkVec{};
+
+    b2Vec2 rightJumpVec{};
+    b2Vec2 leftJumpVec{};
+
+    b2Vec2 rightThrowingVec{};
+    b2Vec2 leftThrowingVec{};
 
     /// Functions
 
@@ -45,9 +86,6 @@ private:
     /// Pointers
     ConfigGame *configGame;
 
-    /// Farmer properties
-    sf::Texture farmerTexture;
-
     /**
      * The time before next movement is permitted to be performed.
      */
@@ -58,6 +96,11 @@ private:
      * Load necessary textures.
      */
     void loadTextures();
+
+public:
+    void startContact(Entity *contactEntity) override;
+
+    void endContact(Entity *contactEntity) override;
 };
 
 #endif //ALPACGAME_FARMER_H

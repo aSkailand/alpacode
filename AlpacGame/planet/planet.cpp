@@ -59,3 +59,11 @@ void Planet::render(sf::RenderWindow *window) {
     window->draw(*sfShape);
 }
 
+void Planet::startContact(Entity *contactEntity) {
+//    std::cout << "Planet Start Contact" << std::endl;
+}
+
+void Planet::endContact(Entity *contactEntity) {
+//    std::cout << "Planet End Contact" << std::endl;
+}
+

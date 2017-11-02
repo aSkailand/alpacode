@@ -26,6 +26,10 @@ public:
         WOLF = 0x0008
     };
 
+    enum class Direction{
+        RIGHT, LEFT
+    };
+
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
      */
@@ -61,6 +65,9 @@ public:
     void setBody(b2Body *body) {
         Entity::body = body;
     }
+
+    virtual void startContact(Entity *contactEntity) = 0;
+    virtual void endContact(Entity *contactEntity) = 0;
 
     /**
      * The x- and y-position of the entity's origin in pixels.

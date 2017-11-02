@@ -28,9 +28,7 @@ public:
 
     /// Enums
 
-    enum class Direction{
-        RIGHT, LEFT
-    };
+;
 
     enum class Action{
         IDLE, WALKING, JUMP

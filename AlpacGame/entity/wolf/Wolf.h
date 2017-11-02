@@ -44,7 +44,7 @@ private:
     void render(sf::RenderWindow *window) override;
 
     /// Entity Properties
-    sf::Texture wolfTexture;
+    sf::Texture texture;
     const int id;
     static int nextId;
     float density = 1.0f;
@@ -70,6 +70,10 @@ private:
      */
     float moveAvailableTick = 0.4f;
 
+public:
+    void startContact(Entity *contactEntity) override;
+
+    void endContact(Entity *contactEntity) override;
 };
 
 #endif //ALPACGAME_WOLFSTATE_H

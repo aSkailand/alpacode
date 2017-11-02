@@ -43,6 +43,12 @@ private:
      */
     void loadTextures();
 
+public:
+
+    void startContact(Entity *contactEntity) override;
+
+    void endContact(Entity *contactEntity) override;
+
 };
 
 #endif

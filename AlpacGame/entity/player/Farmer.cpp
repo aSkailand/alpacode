@@ -1,4 +1,5 @@
 #include "Farmer.h"
+#include "../alpaca/alpaca.h"
 
 Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y) {
 
@@ -6,6 +7,18 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
 
     this->x = x;
     this->y = y;
+
+    walkingAngle /= DEGtoRAD;
+    rightWalkVec.Set(cos(walkingAngle), -sin(walkingAngle));
+    leftWalkVec.Set(-cos(walkingAngle), -sin(walkingAngle));
+
+    jumpingAngle /= DEGtoRAD;
+    rightJumpVec.Set(cos(jumpingAngle), -sin(jumpingAngle));
+    leftJumpVec.Set(-cos(jumpingAngle), -sin(jumpingAngle));
+
+    throwingAngle /= DEGtoRAD;
+    rightThrowingVec.Set(cos(throwingAngle), -sin(throwingAngle));
+    leftThrowingVec.Set(-cos(throwingAngle), -sin(throwingAngle));
 
     loadTextures();
 
@@ -17,24 +30,35 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     // Create body
     body = world->CreateBody(&bodyDef);
 
-    // Create Fixture
-    b2FixtureDef fixtureDef;
-    fixtureDef.density = 1.0f;
-    fixtureDef.friction = 1.0f;
-    fixtureDef.restitution = 0.0f;
-    fixtureDef.filter.categoryBits = (uint16) ID::FARMER;
-    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
-
+    // Creating Shape
     b2CircleShape b2Shape;
     b2Shape.m_radius = width / 2 / SCALE;
+
+    // Create Fixture
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = density;
+    fixtureDef.friction = friction;
+    fixtureDef.restitution = restitution;
+    fixtureDef.filter.categoryBits = categoryBits;
+    fixtureDef.filter.maskBits = maskBits;
     fixtureDef.shape = &b2Shape;
 
+    b2CircleShape b2Shape2;
+    b2Shape2.m_radius = width / 2 / SCALE;
+    b2FixtureDef sensor;
+    sensor.shape = &b2Shape2;
+    sensor.isSensor = true;
+    sensor.filter.categoryBits = (uint16) ID::FARMER;
+    sensor.filter.maskBits = (uint16) ID::ALPACA;
+
+
     // Store information
-    setID(Entity::ID::ALPACA);
+    setID(Entity::ID::FARMER);
     body->SetUserData((void *) this);
 
     // Connect fixture to body
     body->CreateFixture(&fixtureDef);
+    body->CreateFixture(&sensor);
 
     /// SQUARE VERSION (SFML)
 //    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
@@ -46,13 +70,13 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     /// CIRCLE VERSION (SFML)
     sfShape = new sf::CircleShape(width / 2);
     sfShape->setOrigin(width / 2, width / 2);
-    sfShape->setTexture(&farmerTexture);
-//    sfShape->setOutlineThickness(2);
-//    sfShape->setOutlineColor(sf::Color::Black);
+    sfShape->setTexture(&texture);
+    sfShape->setOutlineThickness(2);
+    sfShape->setOutlineColor(sf::Color::Black);
 }
 
 void Farmer::loadTextures() {
-    if (!farmerTexture.loadFromFile("entity/player/farmer.png")) {
+    if (!texture.loadFromFile("entity/player/farmer.png")) {
         std::cout << "Error loading file!" << std::endl;
     }
 }
@@ -68,81 +92,209 @@ void Farmer::render(sf::RenderWindow *window) {
 
 void Farmer::switchAction() {
 
-    // Update farmer's direction and action
-    if (configGame->currentInput == sf::Keyboard::Unknown) {
-        currentAction = Action::IDLE;
-    } else if (configGame->currentInput == sf::Keyboard::Right) {
-        sfShape->setScale(1.f, 1.f);
-        currentAction = Action::WALKING;
-        currentDirection = Direction::RIGHT;
-
-    } else if (configGame->currentInput == sf::Keyboard::Left) {
-        sfShape->setScale(-1.f, 1.f);
-        currentAction = Action::WALKING;
-        currentDirection = Direction::LEFT;
-    } else if (configGame->currentInput == sf::Keyboard::Up) {
-        currentAction = Action::JUMP;
+    switch (configGame->currentInput) {
+        case sf::Keyboard::Up: {
+            currentAction = Action::JUMP;
+            break;
+        }
+        case sf::Keyboard::Right: {
+            sfShape->setScale(1.f, 1.f);
+            currentAction = Action::WALKING;
+            currentDirection = Direction::RIGHT;
+            break;
+        }
+        case sf::Keyboard::Left: {
+            sfShape->setScale(-1.f, 1.f);
+            currentAction = Action::WALKING;
+            currentDirection = Direction::LEFT;
+            break;
+        }
+        case sf::Keyboard::E: {
+            if (isCooldownTriggered(&graspClock, graspCooldown)) {
+                if (currentGrasp == Grasp::EMPTY) {
+                    if (!currentlyTouchingEntities.empty()) {
+                        currentGrasp = Grasp::HOLDING;
+                    }
+                } else if (currentGrasp == Grasp::HOLDING) {
+                    currentGrasp = Grasp::THROWING;
+                }
+            }
+            break;
+        }
+        default: {
+            currentAction = Action::IDLE;
+            break;
+        }
     }
-
-
 
 
 }
 
 void Farmer::performAction() {
-    if (currentAction != Action::IDLE) {
-        if (isMovementAvailable(moveAvailableTick)) {
 
-            switch (currentAction) {
-                case Action::WALKING: {
+    if (currentAction != Action::IDLE && isMovementAvailable(moveAvailableTick)) {
 
-                    float force = 5.f;
-                    float mass = getBody()->GetMass();
+        switch (currentAction) {
+            case Action::WALKING: {
 
-                    switch (currentDirection) {
-                        case Direction::RIGHT: {
-                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(10.f, -10.f));
-                            angle.Normalize();
-                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                            break;
-                        }
-                        case Direction::LEFT: {
-                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-10.f, -10.f));
-                            angle.Normalize();
-                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                            break;
-                        }
+                float force = walkingForce;
+                float mass = getBody()->GetMass();
+
+                switch (currentDirection) {
+                    case Direction::RIGHT: {
+                        b2Vec2 angle = getBody()->GetWorldVector(rightWalkVec);
+                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                        break;
                     }
+                    case Direction::LEFT: {
+                        b2Vec2 angle = getBody()->GetWorldVector(leftWalkVec);
+                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                        break;
+                    }
+                }
+                break;
+            }
+
+            case Action::JUMP: {
+
+                float force = jumpingForce;
+                float mass = getBody()->GetMass();
+
+                switch (currentDirection) {
+                    case Direction::RIGHT: {
+                        b2Vec2 angle = getBody()->GetWorldVector(rightJumpVec);
+                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                        break;
+                    }
+                    case Direction::LEFT: {
+                        b2Vec2 angle = getBody()->GetWorldVector(leftJumpVec);
+                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
+                        break;
+                    }
+                }
+                break;
+            }
+
+            case Action::IDLE: {
+                break;
+            }
+
+        }
+    }
+
+
+// Check the current status of grasp
+    switch (currentGrasp) {
+        case Grasp::HOLDING: {
+
+            // If farmer is in holding-mode, but holds nothing = Give him an entity to hold
+            if (holdingEntity == nullptr) {
+                holdingEntity = currentlyTouchingEntities.front();
+                currentlyTouchingEntities.pop_front();
+                graspClock.restart();
+            }
+            else {
+                // If farmer is in holding-mode, and holds something => keep holding.
+                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -4)), getBody()->GetAngle());
+            }
+            break;
+        }
+
+        case Grasp::THROWING: {
+            holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
+
+            float force = throwingForce;
+            float mass = holdingEntity->getBody()->GetMass();
+
+            switch (currentDirection) {
+                case Direction::RIGHT: {
+                    b2Vec2 angle = getBody()->GetWorldVector(rightThrowingVec);
+                    holdingEntity->getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
                     break;
                 }
-                case Action::JUMP: {
-
-                    float force = 10.f;
-                    float mass = getBody()->GetMass();
-
-                    switch (currentDirection) {
-                        case Direction::RIGHT: {
-                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(15.f, -20.f));
-                            angle.Normalize();
-                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                            break;
-                        }
-                        case Direction::LEFT: {
-                            b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-15.f, -20.f));
-                            angle.Normalize();
-                            getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case Action::IDLE: {
+                case Direction::LEFT: {
+                    b2Vec2 angle = getBody()->GetWorldVector(leftThrowingVec);
+                    holdingEntity->getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
                     break;
                 }
             }
 
+            holdingEntity = nullptr;
+            currentGrasp = Grasp::EMPTY;
+
+            break;
+        }
+
+        case
+
+            Grasp::EMPTY: {
+            break;
+        }
+
+    }
+
+}
+
+void Farmer::endContact(Entity *contactEntity) {
+
+    ID contactID = contactEntity->getID();
+    sfShape->setOutlineColor(sf::Color::Black);
+
+    switch (contactID) {
+        case ID::PLANET: {
+            sfShape->setOutlineColor(sf::Color::Red);
+            break;
+        }
+        case ID::FARMER:
+            break;
+        case ID::ALPACA: {
+
+            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) !=
+                currentlyTouchingEntities.end()) {
+                currentlyTouchingEntities.remove(contactEntity);
+                auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
+                contactAlpaca->farmerTouch = false;
+                std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
+
+            }
+
+            break;
 
         }
+        case ID::WOLF:
+            break;
+    }
+}
+
+void Farmer::startContact(Entity *contactEntity) {
+//    std::cout << "Farmer Start Contact" << std::endl;
+
+    ID contactID = contactEntity->getID();
+
+    switch (contactID) {
+        case ID::PLANET: {
+            sfShape->setOutlineColor(sf::Color::Black);
+            break;
+        }
+        case ID::FARMER:
+            break;
+        case ID::ALPACA: {
+
+            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
+                          contactEntity) == currentlyTouchingEntities.end()) {
+                currentlyTouchingEntities.push_back(contactEntity);
+                // todo: Add farmerTouch to entity?
+                auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
+                contactAlpaca->farmerTouch = true;
+                sfShape->setOutlineColor(sf::Color::Green);
+
+                std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
+            }
+
+
+        }
+        case ID::WOLF:
+            break;
     }
 }
 

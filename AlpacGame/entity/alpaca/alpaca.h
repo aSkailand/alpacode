@@ -24,11 +24,16 @@ public:
      */
     Alpaca(b2World *world, float width, float height, float x, float y);
 
-private:
+    bool farmerTouch = false;
 
+    const int id;
+
+private:
+    sf::Font font;
+
+    sf::Text *label;
     /// Entity properties
     sf::Texture texture;
-    const int id;
     static int nextId;
     float density = 1.0f;
     float friction = 1.0f;
@@ -69,6 +74,12 @@ private:
      * Load necessary textures.
      */
     void loadTextures();
+
+public:
+
+    void startContact(Entity *contactEntity) override;
+
+    void endContact(Entity *contactEntity) override;
 
 
 };

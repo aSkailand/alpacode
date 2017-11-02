@@ -1,6 +1,7 @@
 
 #include "StateGame.h"
 
+
 void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Assign pointers
@@ -10,6 +11,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Initiating World (With no innate gravitation)
     world = new b2World(b2Vec2(0, 0));
+    world->SetContactListener(new CollisionListener());
 
     /// Instantiating initial entities
     planet = new Planet(world, configGame->planetRadius, window->getSize().x / 2, 600.f);
@@ -27,6 +29,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Left;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             configGame->currentInput = sf::Keyboard::Up;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+            configGame->currentInput = sf::Keyboard::E;
         } else {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
@@ -62,8 +66,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
         for (Entity *e : entities) {
 
             // Check if current entity is an warm entity
-            auto warm_e = dynamic_cast<EntityWarm*> (e);
-            if(warm_e != nullptr){
+            auto warm_e = dynamic_cast<EntityWarm *> (e);
+            if (warm_e != nullptr) {
                 warm_e->switchAction();
                 warm_e->performAction();
             }

@@ -12,6 +12,8 @@
 #include "StateMachine.h"
 #include "../Resources/ConfigWindow.h"
 #include "../Resources/ConfigGame.h"
+#include "../entity/CollisionListener.h"
+
 #include "../planet/planet.h"
 #include "../entity/player/Farmer.h"
 #include "../entity/alpaca/Alpaca.h"

@@ -26,7 +26,7 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y)
     fixtureDef.shape = &b2Shape;
 
     // Store information
-    setID(Entity::ID::ALPACA);
+    setID(Entity::ID::WOLF);
     body->SetUserData((void *) this);
 
     // Connect fixture to body
@@ -34,7 +34,7 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y)
 
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
     sfShape->setOrigin(width / 2, height / 2);
-    sfShape->setTexture(&wolfTexture);
+    sfShape->setTexture(&texture);
 //    sfShape->setOutlineThickness(2);
 //    sfShape->setOutlineColor(sf::Color::Black);
 
@@ -80,7 +80,7 @@ void Wolf::switchAction() {
 
 
 void Wolf::loadTextures() {
-    if (!wolfTexture.loadFromFile("entity/wolf/wolfy.png")) {
+    if (!texture.loadFromFile("entity/wolf/wolfy.png")) {
         std::cout << "Error loading file!" << std::endl;
     }
 }
@@ -121,4 +121,12 @@ void Wolf::performAction() {
         }
 
     }
+}
+
+void Wolf::startContact(Entity *contactEntity) {
+    std::cout << "Wolf Start Contact" << std::endl;
+}
+
+void Wolf::endContact(Entity *contactEntity) {
+    std::cout << "Wolf End Contact" << std::endl;
 }
