@@ -1,12 +1,16 @@
 #include "Alpaca.h"
 
-Alpaca::Alpaca(b2World *world, float width, float height, float x, float y)
+Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, float y)
         : id(nextId++), Mob(id) {
+
+    // Assign Pointers
+    this->configGame = configGame;
 
     // Loading Textures
     loadTextures();
 
-//    convertAngleToVectors(walkAngle, walkVec);
+    // Convert angle and store unit vectors
+    convertAngleToVectors((int) Action::WALKING, walkAngle);
 
     // Create body definition
     b2BodyDef bodyDef;
@@ -18,7 +22,7 @@ Alpaca::Alpaca(b2World *world, float width, float height, float x, float y)
 
     // Create shape
     b2CircleShape b2Shape;
-    b2Shape.m_radius = width / 2 / SCALE;
+    b2Shape.m_radius = radius / 2 / SCALE;
 
     // Create Fixture
     b2FixtureDef fixtureDef;
@@ -29,8 +33,9 @@ Alpaca::Alpaca(b2World *world, float width, float height, float x, float y)
     fixtureDef.filter.maskBits = maskBits;
     fixtureDef.shape = &b2Shape;
 
+    // Create Sensor
     b2CircleShape b2Shape2;
-    b2Shape2.m_radius = width / 2 / SCALE;
+    b2Shape2.m_radius = radius / 2 / SCALE;
     b2FixtureDef sensor;
     sensor.shape = &b2Shape2;
     sensor.isSensor = true;
@@ -42,30 +47,19 @@ Alpaca::Alpaca(b2World *world, float width, float height, float x, float y)
     body->SetUserData((void *) this);
 
     // Connect fixture to body
-    body->CreateFixture(&fixtureDef);
-    body->CreateFixture(&sensor);
+    bodyFixture = body->CreateFixture(&fixtureDef);
+    sensorFixture = body->CreateFixture(&sensor);
 
-    /// SQUARE VERSION (SFML)
-//    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
-//    sfShape->setOrigin(width / 2, height / 2);
-//    sfShape->setTexture(&texture);
-//    sfShape->setOutlineThickness(2);
-//    sfShape->setOutlineColor(sf::Color::Black);
-
-    /// CIRCLE VERSION (SFML)
-    sfShape = new sf::CircleShape(width / 2);
-    sfShape->setOrigin(width / 2, width / 2);
+    // Creating SFML shape
+    sfShape = new sf::CircleShape(radius / 2);
+    sfShape->setOrigin(radius / 2, radius / 2);
     sfShape->setTexture(&texture);
     sfShape->setOutlineThickness(2);
     sfShape->setOutlineColor(sf::Color::Black);
 
-    font.loadFromFile("entity/alpaca/pixelmix.ttf");
-    label = new sf::Text();
-    label->setString(std::to_string(id));
-    label->setFont(font);
-    label->setCharacterSize(50);
-    label->setFillColor(sf::Color::Black);
-//    label->setOrigin(label->getLocalBounds().width/2, label->getLocalBounds().height/2);
+    // Create ID text
+    createLabel(std::to_string(id), &this->configGame->fontID);
+
 }
 
 int Alpaca::nextId = 0;
@@ -118,55 +112,63 @@ void Alpaca::switchAction() {
 }
 
 void Alpaca::render(sf::RenderWindow *window) {
+
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
+
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-    label->setPosition(body->GetWorldPoint(b2Vec2(0,-5)).x*SCALE, body->GetWorldPoint(b2Vec2(0,-5)).y*SCALE);
-    label->setRotation(sfShape->getRotation());
-
     window->draw(*sfShape);
-    window->draw(*label);
+
+    if (farmerTouch) {
+        sfShape->setOutlineColor(sf::Color::Green);
+    } else {
+        sfShape->setOutlineColor(sf::Color::Black);
+    }
+
+    if(configGame->showLabels){
+        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label->setRotation(sfShape->getRotation());
+        window->draw(*label);
+    }
 }
 
 void Alpaca::performAction() {
 
-    if(farmerTouch){
-        sfShape->setOutlineColor(sf::Color::Green);
-    }
-    else{
-        sfShape->setOutlineColor(sf::Color::Black);
-    }
-
     if (isMovementAvailable(moveAvailableTick)) {
-        switch (currentAction){
+        switch (currentAction) {
             case Action::WALKING: {
-//                forcePushBody(getBody(), walkForce, walkVec, currentDirection);
+                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
                 break;
             }
-            case Action::JUMP:break;
-            case Action::IDLE:break;
+            case Action::JUMP:
+                break;
+            case Action::IDLE:
+                break;
         }
     }
 }
 
 void Alpaca::endContact(Entity *contactEntity) {
 
-    switch (contactEntity->getID()){
-        case ID::PLANET:break;
-        case ID::FARMER:{
+    switch (contactEntity->getID()) {
+        case ID::PLANET:
+            break;
+        case ID::FARMER: {
             farmerTouch = false;
             break;
         }
-        case ID::ALPACA:break;
-        case ID::WOLF:break;
+        case ID::ALPACA:
+            break;
+        case ID::WOLF:
+            break;
     }
 
 }
 
 void Alpaca::startContact(Entity *contactEntity) {
-//    std::cout << "Alpaca Start Contact" << std::endl;
-//    sfShape->setOutlineColor(sf::Color::Red);
+
 }
 

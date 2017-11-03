@@ -12,10 +12,17 @@
 class ConfigGame {
 public:
 
+    /// Customizable Properties
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius;
+    unsigned int planetRadius = 600;
+
+    void loadFonts();
+
+    sf::Font fontID;
+
+    bool showLabels = false;
 
     /**
      * The position of the planet's center relatively to the game window.
@@ -63,19 +70,19 @@ public:
      */
     float calcY(float degree, float radius);
 
-    // todo: Find a way to move this to gameState?
-    /**
-     * The change of time since last check.
-     * Used to throttle down speed according to processor's power,
-     * so that entity movements behave smoother.
-     */
-    float deltaTime;
+//    // todo: Find a way to move this to gameState?
+//    /**
+//     * The change of time since last check.
+//     * Used to throttle down speed according to processor's power,
+//     * so that entity movements behave smoother.
+//     */
+//    float deltaTime;
 
     /**
      * The current buffered input, used to
      * determine which direction the farmer walks towards.
      */
-    sf::Keyboard::Key currentInput;
+    sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
 
 };
 

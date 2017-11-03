@@ -31,6 +31,9 @@ public:
         LEFT = 1
     };
 
+    b2Fixture *bodyFixture;
+    b2Fixture *sensorFixture;
+
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
      */
@@ -77,12 +80,56 @@ public:
 
 protected:
 
+    /// Important Entity Properties
+
     ID id{};
 
     b2Body *body{};
 
     sf::Shape *sfShape{};
 
+    /// Unit Vector + Force functions
+
+    /**
+    * Push the given body with the given force in a given angle, in the given direction.
+    * @param key the key that is mapped with the correct unit vector.
+    * @param targetBody the body to be pushed.
+    * @param force the amplitude of the force to push the body with.
+    * @param pushDirection the direction to push, either left or right.
+    */
+    void forcePushBody(int key, b2Body *targetBody, float force, Direction pushDirection) {
+        float mass = targetBody->GetMass();
+        b2Vec2 angle = targetBody->GetWorldVector(angleVectors.at(key)[(int) pushDirection]);
+        targetBody->ApplyLinearImpulseToCenter(force * mass * angle, true);
+    }
+
+    /**
+     * Convert the given angle (in degrees) to two different unit vectors (b2Vec2):
+     *  1. (RIGHT, b2Vec2)  The unit vector spanned by the angle.
+     *  2. (LEFT, b2Vec2)   The horizontal flipped version of the first unit vector.
+     * Both of these vectors (b2Vec2) are stored inside another vector (std::vector).
+     * This vector (std::vector) is stored in the entity's map of unit vectors, with
+     * the given key.
+     * @param key the key to map the pair of unit vectors with.
+     * @param angle the angle to convert over to unit vectors.
+     */
+    void convertAngleToVectors(int key, float angle) {
+        angle /= DEGtoRAD;
+        std::vector<b2Vec2> tempVec;
+        tempVec.push_back(b2Vec2(cos(angle), -sin(angle)));     // Right Angle
+        tempVec.push_back(b2Vec2(-cos(angle), -sin(angle)));    // Left Angle
+        angleVectors[key] = tempVec;
+    }
+
+private:
+
+    /// Unit Vector Storage
+
+    /**
+     * Map storing unit vectors, used to define angles for various forces.
+     * All entities have their own version of the map.
+     */
+    std::map<int, std::vector<b2Vec2>> angleVectors;
 
 
 };

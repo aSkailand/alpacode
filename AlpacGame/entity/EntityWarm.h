@@ -14,6 +14,21 @@ class EntityWarm : public Entity {
 
 public:
 
+
+
+    sf::Text *label;
+
+    void createLabel(std::string text, sf::Font *font){
+        label = new sf::Text();
+        label->setString(text);
+        label->setFont(*font);
+        label->setCharacterSize(40);
+        label->setFillColor(sf::Color::White);
+        label->setOutlineColor(sf::Color::Black);
+        label->setOutlineThickness(3);
+        label->setOrigin(label->getLocalBounds().width / 2.f, label->getLocalBounds().height / 2.f);
+    };
+
     /// Action Functions
 
     /**
@@ -69,21 +84,9 @@ protected:
         return triggered;
     }
 
-    std::map<int, std::vector<b2Vec2>> angleVectors;
+    /// Force and unit vector
 
-    void forcePushBody(int index, b2Body *targetBody, float force, Direction pushDirection) {
-        float mass = targetBody->GetMass();
-        b2Vec2 angle = targetBody->GetWorldVector(angleVectors.at(index)[(int) pushDirection]);
-        targetBody->ApplyLinearImpulseToCenter(force * mass * angle, true);
-    }
 
-    void convertAngleToVectors(int index, float angle) {
-        angle /= DEGtoRAD;
-        std::vector<b2Vec2> tempVec;
-        tempVec.push_back(b2Vec2(cos(angle), -sin(angle)));     // Right Angle
-        tempVec.push_back(b2Vec2(-cos(angle), -sin(angle)));    // Left Angle
-        angleVectors[index] = tempVec;
-    }
 
 private:
 

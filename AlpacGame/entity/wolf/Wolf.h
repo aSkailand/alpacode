@@ -17,14 +17,17 @@ public:
     /**
       * CONSTRUCTOR: Creates a wolf and adds it to the world.
       * @param world the world to add the wolf to.
-      * @param width the width of the wolf in pixels.
-      * @param height the height of the wolf in pixels.
+      * @param radius the width of the wolf in pixels.
+      * @param configGame the height of the wolf in pixels.
       * @param x the x-coordinate of the origin of the wolf, in pixels.
       * @param y the y-coordinate of the origin of the wolf, in pixels.
       */
-    Wolf(b2World *world, float width, float height, float x, float y);
+    Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
 private:
+
+    /// Pointers
+    ConfigGame *configGame;
 
     /// Functions
     /**

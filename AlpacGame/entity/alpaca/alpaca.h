@@ -17,21 +17,24 @@ public:
     /**
      * CONSTRUCTOR: Creates an alpaca and adds it to the world.
      * @param world the world to add the alpaca to.
-     * @param width the width of the alpaca in pixels.
+     * @param radius the width of the alpaca in pixels.
      * @param height the height of the alpaca in pixels.
      * @param x the x-coordinate of the origin of the alpaca, in pixels.
      * @param y the y-coordinate of the origin of the alpaca, in pixels.
      */
-    Alpaca(b2World *world, float width, float height, float x, float y);
+    Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
     bool farmerTouch = false;
 
     const int id;
 
 private:
-    sf::Font font;
 
-    sf::Text *label;
+    /// Pointers
+    ConfigGame *configGame;
+
+
+
     /// Entity properties
     sf::Texture texture;
     static int nextId;
@@ -42,7 +45,7 @@ private:
     uint16 maskBits = (uint16) ID::PLANET;
 
     float walkForce = 5.f;
-    float walkAngle = 45.f;   // Right, Degrees
+    float walkAngle = 70.f;   // Right, Degrees
 
     /// Movement tools
     /**

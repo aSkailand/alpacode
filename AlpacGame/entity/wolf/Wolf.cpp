@@ -1,7 +1,9 @@
 #include "Wolf.h"
 
-Wolf::Wolf(b2World *world, float width, float height, float x, float y)
+Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y)
         :  id(nextId++), Mob(id){
+
+    this->configGame = configGame;
 
     loadTextures();
 
@@ -22,7 +24,7 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y)
     fixtureDef.filter.maskBits = maskBits;
 
     b2CircleShape b2Shape;
-    b2Shape.m_radius = width / 2 / SCALE;
+    b2Shape.m_radius = radius / 2 / SCALE;
     fixtureDef.shape = &b2Shape;
 
     // Store information
@@ -32,11 +34,14 @@ Wolf::Wolf(b2World *world, float width, float height, float x, float y)
     // Connect fixture to body
     body->CreateFixture(&fixtureDef);
 
-    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
-    sfShape->setOrigin(width / 2, height / 2);
+    sfShape = new sf::RectangleShape(sf::Vector2f(radius, radius));
+    sfShape->setOrigin(radius / 2, radius / 2);
     sfShape->setTexture(&texture);
-//    sfShape->setOutlineThickness(2);
-//    sfShape->setOutlineColor(sf::Color::Black);
+    sfShape->setOutlineThickness(2);
+    sfShape->setOutlineColor(sf::Color::Black);
+
+    // Create ID text
+    createLabel(std::to_string(id), &this->configGame->fontID);
 
 
 }
@@ -90,8 +95,13 @@ void Wolf::render(sf::RenderWindow *window) {
     y = SCALE * body->GetPosition().y;
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
-
     window->draw(*sfShape);
+
+    if(configGame->showLabels){
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -3.f)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -3.f)).y * SCALE);
+        label->setRotation(sfShape->getRotation());
+        window->draw(*label);
+    }
 }
 
 void Wolf::performAction() {

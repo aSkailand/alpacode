@@ -4,8 +4,9 @@
 
 void ConfigGame::run(sf::RenderWindow &window) {
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
-    planetRadius = 600;
+//    planetRadius = 600;
 
+    loadFonts();
 }
 
 float ConfigGame::calcX(float angle) {
@@ -26,4 +27,8 @@ float ConfigGame::calcX(float degree, float radius) {
 float ConfigGame::calcY(float degree, float radius) {
     float y = planetCenter.y - radius * (float) std::cos(degree * (M_PI / 180));
     return y;
+}
+
+void ConfigGame::loadFonts() {
+    fontID.loadFromFile("Resources/fontPixel.ttf");
 }

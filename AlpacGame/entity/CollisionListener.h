@@ -6,20 +6,39 @@
 
 #include "Entity.h"
 
+/**
+ * Collision handler for Box2D collisions.
+ * The functions here get called ONLY when a contact between fixtures occur.
+ */
 class CollisionListener : public b2ContactListener {
 
-public:
+private:
+
+    /**
+     * This function gets called when two fixtures touch.
+     * @param contact the Box2D object handling touch.
+     */
     void BeginContact(b2Contact *contact) override;
 
+    /**
+     * This function gets called when two fixtures stop touching each other.
+     * @param contact the Box2D object handling touch.
+     */
     void EndContact(b2Contact *contact) override;
 
-    b2Contact *contact;
+    /**
+     * Get entity A of the two contacting entities.
+     * @param contact the Box2D object handling touch.
+     * @return entity A
+     */
+    Entity *getEntity_A(b2Contact *contact);
 
-    Entity::ID getID_FixtureA();
-    Entity::ID getID_FixtureB();
-
-    Entity* getEntity_A();
-    Entity* getEntity_B();
+    /**
+     * Get entity B of the two contacting entities.
+     * @param contact the Box2D object handling touch.
+     * @return entity B
+     */
+    Entity *getEntity_B(b2Contact *contact);
 
 };
 

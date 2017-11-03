@@ -11,8 +11,6 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     convertAngleToVectors((int) Action::WALKING, walkAngle);
     convertAngleToVectors((int) Action::JUMP, jumpAngle);
     convertAngleToVectors((int) Grasp::THROWING, throwAngle);
-//    convertAngleToVectors(jumpAngle, jumpVec);
-//    convertAngleToVectors(throwAngle, throwVec);
 
     loadTextures();
 
@@ -50,8 +48,8 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     body->SetUserData((void *) this);
 
     // Connect fixture to body
-    body->CreateFixture(&fixtureDef);
-    body->CreateFixture(&sensor);
+    bodyFixture = body->CreateFixture(&fixtureDef);
+    sensorFixture = body->CreateFixture(&sensor);
 
     /// SQUARE VERSION (SFML)
 //    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
@@ -153,9 +151,15 @@ void Farmer::performAction() {
                 holdingEntity = currentlyTouchingEntities.front();
                 currentlyTouchingEntities.pop_front();
                 graspClock.restart();
-            } else {
-                // If farmer is in holding-mode, and holds something => keep holding.
-                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -4)), getBody()->GetAngle());
+            }
+                // If farmer is in holding-mode, and holds something => keep holding
+            else {
+                // Calculate the length between farmer and the held entity.
+                float offset = -1.f;
+                float32 delta = bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
+
+                // Lock the entity delta length above farmer's origin
+                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta+offset))), getBody()->GetAngle());
             }
             break;
         }
