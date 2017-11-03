@@ -1,30 +1,21 @@
 #include "StateOption.h"
 
-
 void StateOption::goNext(StateMachine &stateMachine) {
-
 
     /// Assigning pointers
     machine = &stateMachine;
     window = &machine->configWindow.getWindow();
     menuGUI = &machine->configWindow.getMenuGUI();
+
+    /// TGUI setup
     menuGUI->removeAllWidgets();
     windowWidth = tgui::bindWidth(machine->configWindow.getMenuGUI());
     windowHeight = tgui::bindHeight(machine->configWindow.getMenuGUI());
-
-    initialVolumeLevel = 10;
-
-
-    tempXres = 800;
-    tempYres = 600;
-    tempRes = "800x600";
-
 
     // Picture
     picture = tgui::Picture::create("aluminium.jpg");
     picture->setSize(tgui::bindMax(machine->configWindow.getScreenWidth(), windowWidth),
                      tgui::bindMax(machine->configWindow.getScreenHeight(), windowHeight));
-
 
     // Creates a layout
     layout = tgui::VerticalLayout::create();
@@ -59,41 +50,49 @@ void StateOption::drawOption() {
 }
 
 void StateOption::menuSettings() {
-    picture->setSize(tgui::bindMax(machine->configWindow.getScreenWidth(), windowWidth),
-                     tgui::bindMax(machine->configWindow.getScreenHeight(), windowHeight));
-    layout->setSize(windowWidth * 2 / 3, windowHeight / 2);
-    layout->setPosition(windowWidth / 6, windowHeight / 6);
 
+    // Clears the GUI for all widgets
     menuGUI->removeAllWidgets();
     layout->removeAllWidgets();
 
+    // Sets the size to the layout
+    layout->setSize(windowWidth * 2 / 3, windowHeight / 2);
+    layout->setPosition(windowWidth / 6, windowHeight / 6);
+
+    // Adds a picture as a background
     menuGUI->add(picture);
 
     // Video button
     tgui::Button::Ptr videoSettings = tgui::Button::copy(masterButton);
     videoSettings->setText("Video settings");
+    // Connects a function to the Video settings button,
+    // this function runs when the the button is pressed
+
     videoSettings->connect("pressed", StateOption::videoSettings, this);
 
     // Control button
     tgui::Button::Ptr controlSettings = tgui::Button::copy(masterButton);
     controlSettings->setText("Controls");
+    // Connects a function to the Controls button,
+    // this function runs when the the button is pressed
+
     controlSettings->connect("pressed", StateOption::controlSettings, this);
 
     // Sound button
     tgui::Button::Ptr soundSettings = tgui::Button::copy(masterButton);
     soundSettings->setText("Sound settings");
-    soundSettings->connect("pressed", this->soundSettings, this);
-
+    // Connects a function to the Sound Setting button,
+    // this function runs when the the button is pressed
+    soundSettings->connect("pressed", StateOption::soundSettings, this);
 
     // Back button
     tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
     backButton->setText("Back");
     backButton->setSize(100, 50);
     backButton->setPosition(10, windowHeight - 60);
-
-    // Connects a function to the  back button
+    // Connects a function to the  Back button
+    // this function runs when the the button is pressed,
     backButton->connect("pressed", [this] { machine->setCurrentState(StateMachine::stateID::MENU); });
-
 
     // Adds all the widgets to the layout and GUI
     layout->add(videoSettings);
@@ -108,11 +107,13 @@ void StateOption::menuSettings() {
 
 void StateOption::videoSettings() {
 
-    // Setup
+    // Clears the GUI for all widgets
     menuGUI->removeAllWidgets();
     layout->removeAllWidgets();
-    picture->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
+
+    // Adds a picture to the GUI as the background
     menuGUI->add(picture);
+
     layout->setSize(windowWidth * 2 / 3, windowHeight / 6);
 
     // ComboBox
@@ -129,20 +130,19 @@ void StateOption::videoSettings() {
     resLabel->setTextSize(30);
     resLabel->setSize(100, 50);
 
-
-    // TODO: fix ful screen checkbox isChecked() ...
+    // TODO: fix full screen checkbox isChecked() ...
     // TODO: fix fullscreen feature ...
     // Fullscreen checkbox
     fullScreenCheck->setPosition(windowWidth / 6, windowHeight / 2.5);
     fullScreenCheck->setText("Fullscreen");
-
-
 
     // Back button
     tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
     backButton->setText("Back");
     backButton->setSize(100, 50);
     backButton->setPosition(10, windowHeight - 60);
+    // Connects a function to the  Back button
+    // this function runs when the the button is pressed,
     backButton->connect("pressed", StateOption::menuSettings, this);
 
     // Apply changes button
@@ -150,6 +150,8 @@ void StateOption::videoSettings() {
     applyButton->setText("Apply changes");
     applyButton->setSize(200, 50);
     applyButton->setPosition(windowWidth - 210, windowHeight - 60);
+    // Connects a function to the Apply changes button
+    // this function runs when the the button is pressed,
     applyButton->connect("Pressed", StateOption::applyChanges, this);
 
     // Adds the widgets and layout to the GUI
@@ -179,20 +181,14 @@ void StateOption::controlSettings() {
 }
 
 void StateOption::soundSettings() {
+
+    // TODO: add function to all the sound Sliders and sound Buttons ...
+
     menuGUI->removeAllWidgets();
     layout->removeAllWidgets();
     menuGUI->add(picture);
 
     tgui::HorizontalLayout::Ptr horiLayout = tgui::HorizontalLayout::create();
-
-
-    // Back button
-    tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
-    backButton->setText("Back");
-    backButton->setSize(100, 50);
-    backButton->setPosition(10, windowHeight - 60);
-
-
 
     // Scrollbar master
     tgui::Slider::Ptr masterSlider = theme->load("Slider");
@@ -232,9 +228,16 @@ void StateOption::soundSettings() {
     applyButton->setPosition(windowWidth - 210, windowHeight - 60);
     applyButton->connect("Pressed", [this, musicSlider] { std::cout << musicSlider->getValue() << std::endl; });
 
-
+    // Back button
+    tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
+    backButton->setText("Back");
+    backButton->setSize(100, 50);
+    backButton->setPosition(10, windowHeight - 60);
+    // Connects a function to the  Back button
+    // this function runs when the the button is pressed,
     backButton->connect("pressed", this->menuSettings, this);
 
+    // Adds all the layouts and widgets to the GUI
     horiLayout->add(muteSound);
     horiLayout->addSpace(2.75);
     layout->add(horiLayout);
@@ -278,7 +281,6 @@ void StateOption::lowRes() {
         machine->configWindow.setFullscreeWindowResolution(800, 600);
     } else {
         machine->configWindow.setWindowResolution(800, 600);
-
     }
 }
 
@@ -299,7 +301,6 @@ void StateOption::highRes() {
         machine->configWindow.setFullscreeWindowResolution(1920, 1080);
     } else {
         machine->configWindow.setWindowResolution(1920, 1080);
-
     }
 }
 
@@ -307,6 +308,7 @@ void StateOption::applyChanges() {
     std::cout << tempRes << std::endl;
     if (fullScreenCheck->isChecked() == 1) {
         // set fullscreen
+        // TODO: implement functional setFullscreen
         machine->configWindow.setScreenWidth(tempXres);
         machine->configWindow.setScreenHeight(tempYres);
         StateOption::setResoulution(tempRes);

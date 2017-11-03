@@ -1,4 +1,3 @@
-
 #ifndef ALPACGAME_STATEMENU_H
 #define ALPACGAME_STATEMENU_H
 
@@ -7,6 +6,10 @@
 #include "State.h"
 #include "StateMachine.h"
 
+/**
+ * This is the StateMenu class, it contains is the main menu for the game,
+ * the main menu has three options, Play game, Settings and Quit.
+ */
 class StateMenu : public State {
 public:
 
@@ -18,7 +21,6 @@ public:
 
 private:
     // Pointers
-
 
     /**
      * Pointer to the one and only StateMachine.
@@ -36,7 +38,6 @@ private:
     tgui::Gui *menuGUI;
 
     // Menu functions
-
     /**
      * Check if menu is still running.
      * @return true if no meaningful input is given, false if meaningful input is given.
@@ -48,6 +49,12 @@ private:
      */
     void drawMenu();
 
+    // TGUI setup
+    // Creates a theme
+    tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/BabyBlue.txt");
+    tgui::Layout windowWidth;
+    tgui::Layout windowHeight;
+    tgui::Picture::Ptr picture;
 };
 
 
