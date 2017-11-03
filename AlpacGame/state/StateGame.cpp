@@ -1,6 +1,5 @@
 
 #include "StateGame.h"
-
 void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Assign pointers
@@ -12,10 +11,13 @@ void StateGame::goNext(StateMachine &stateMachine) {
     world = new b2World(b2Vec2(0, 0));
 
     /// Instantiating initial entities
-    planet = new Planet(world, configGame->planetRadius, window->getSize().x / 2, 600.f);
-    farmer = new Farmer(world, configGame, 100, 100, 300, 200);
+    planet = new Planet(world, configGame->planetRadius, 0, 0);
+    farmer = new Farmer(world, configGame, 100, 100, 0, -200);
     entities.push_back(planet);
     entities.push_back(farmer);
+
+    /// View
+    float f_x, f_y;
 
     /// Poll game
     while (pollGame()) {
@@ -72,17 +74,24 @@ void StateGame::goNext(StateMachine &stateMachine) {
             e->render(window);
         }
 
-        window->display();
-
         /// Update View
-//         Update View
+        window->display();
         view = sf::View(window->getDefaultView());
-        view.zoom(3.f);
-//        view.zoom(viewZoom);
-        view.setCenter(planet->x, planet->y);
-//        view.setCenter(farmer->x, farmer->y);
-//        view.setRotation(farmer->getBody()->GetAngle() * DEGtoRAD);
+        view.zoom(1.5f);
+
+        // Finding able of farmer
+        b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
+        float angle = atan2f(-delta.x, delta.y);
+
+        // Coordinates of the surface in which the farmer is standing on
+        f_y = (configGame->planetRadius * sin(angle - b2_pi/2.0f) );
+        f_x = (configGame->planetRadius * cos(angle - b2_pi/2.0f) );
+
+        view.setCenter(f_x , f_y);
+
+        view.setRotation(angle * DEGtoRAD);
         window->setView(view);
+
     }
 }
 
