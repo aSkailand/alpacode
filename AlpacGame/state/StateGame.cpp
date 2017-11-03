@@ -81,11 +81,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Update View
 //         Update View
         view = sf::View(window->getDefaultView());
-        view.zoom(3.f);
-//        view.zoom(viewZoom);
-        view.setCenter(planet->x, planet->y);
-//        view.setCenter(farmer->x, farmer->y);
-//        view.setRotation(farmer->getBody()->GetAngle() * DEGtoRAD);
+//        view.zoom(3.f);
+        view.zoom(viewZoom);
+//        view.setCenter(planet->x, planet->y);
+        view.setCenter(farmer->x, farmer->y);
+        view.setRotation(farmer->getBody()->GetAngle() * DEGtoRAD);
         window->setView(view);
     }
 }

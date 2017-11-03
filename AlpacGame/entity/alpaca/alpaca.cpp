@@ -6,6 +6,7 @@ Alpaca::Alpaca(b2World *world, float width, float height, float x, float y)
     // Loading Textures
     loadTextures();
 
+//    convertAngleToVectors(walkAngle, walkVec);
 
     // Create body definition
     b2BodyDef bodyDef;
@@ -106,6 +107,9 @@ void Alpaca::switchAction() {
                     }
                 }
             }
+            default: {
+                break;
+            }
         }
 
     }
@@ -136,34 +140,19 @@ void Alpaca::performAction() {
     }
 
     if (isMovementAvailable(moveAvailableTick)) {
-
-        float force = 5.f;
-        float mass = getBody()->GetMass();
-
-        if (currentAction == Action::WALKING) {
-            switch (currentDirection) {
-                case Direction::RIGHT: {
-                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(10.f, -20.f));
-                    angle.Normalize();
-                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                    break;
-                }
-                case Direction::LEFT: {
-                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-10.f, -20.f));
-                    angle.Normalize();
-                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                    break;
-                }
-
+        switch (currentAction){
+            case Action::WALKING: {
+//                forcePushBody(getBody(), walkForce, walkVec, currentDirection);
+                break;
             }
+            case Action::JUMP:break;
+            case Action::IDLE:break;
         }
-
     }
 }
 
 void Alpaca::endContact(Entity *contactEntity) {
-//    std::cout << "Alpaca End Contact" << std::endl;
-//    sfShape->setOutlineColor(sf::Color::Black);
+
     switch (contactEntity->getID()){
         case ID::PLANET:break;
         case ID::FARMER:{

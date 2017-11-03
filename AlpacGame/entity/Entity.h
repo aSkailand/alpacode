@@ -27,7 +27,8 @@ public:
     };
 
     enum class Direction{
-        RIGHT, LEFT
+        RIGHT = 0,
+        LEFT = 1
     };
 
     /**
@@ -81,6 +82,8 @@ protected:
     b2Body *body{};
 
     sf::Shape *sfShape{};
+
+
 
 };
 

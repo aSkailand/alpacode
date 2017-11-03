@@ -41,6 +41,9 @@ private:
     uint16 categoryBits = (uint16) ID::ALPACA;
     uint16 maskBits = (uint16) ID::PLANET;
 
+    float walkForce = 5.f;
+    float walkAngle = 45.f;   // Right, Degrees
+
     /// Movement tools
     /**
      * The time before current action is switched (in seconds).
@@ -76,6 +79,8 @@ private:
     void loadTextures();
 
 public:
+
+    b2Vec2 walkVec[2]{};
 
     void startContact(Entity *contactEntity) override;
 

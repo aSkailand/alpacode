@@ -16,7 +16,7 @@ public:
     float graspCooldown = 0.2f;
 
     enum class Grasp {
-        EMPTY, HOLDING, THROWING
+        EMPTY, HOLDING, THROWING = 3
     };
 
     Grasp currentGrasp = Grasp::EMPTY;
@@ -45,25 +45,17 @@ private:
     uint16 categoryBits = (uint16) ID::FARMER;
     uint16 maskBits = (uint16) ID::PLANET;
 
-    float walkingForce = 5.f;
-    float walkingAngle = 45.f;   // Right, Degrees
+    float walkForce = 5.f;
+    float walkAngle = 45.f;   // Right, Degrees
 
-    float jumpingForce = 10.f;
-    float jumpingAngle = 45.f;   // Right, Degrees
+    float jumpForce = 10.f;
+    float jumpAngle = 45.f;   // Right, Degrees
 
-    float throwingForce = 10.f;
-    float throwingAngle = 10.f;   // Right, Degrees
+    float throwForce = 10.f;
+    float throwAngle = 10.f;   // Right, Degrees
 
     // Non-customizable
     sf::Texture texture;
-    b2Vec2 rightWalkVec{};
-    b2Vec2 leftWalkVec{};
-
-    b2Vec2 rightJumpVec{};
-    b2Vec2 leftJumpVec{};
-
-    b2Vec2 rightThrowingVec{};
-    b2Vec2 leftThrowingVec{};
 
     /// Functions
 
@@ -98,6 +90,12 @@ private:
     void loadTextures();
 
 public:
+
+
+    b2Vec2 walkVec[2]{};
+    b2Vec2 jumpVec[2]{};
+    b2Vec2 throwVec[2]{};
+
     void startContact(Entity *contactEntity) override;
 
     void endContact(Entity *contactEntity) override;

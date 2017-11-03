@@ -8,17 +8,11 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     this->x = x;
     this->y = y;
 
-    walkingAngle /= DEGtoRAD;
-    rightWalkVec.Set(cos(walkingAngle), -sin(walkingAngle));
-    leftWalkVec.Set(-cos(walkingAngle), -sin(walkingAngle));
-
-    jumpingAngle /= DEGtoRAD;
-    rightJumpVec.Set(cos(jumpingAngle), -sin(jumpingAngle));
-    leftJumpVec.Set(-cos(jumpingAngle), -sin(jumpingAngle));
-
-    throwingAngle /= DEGtoRAD;
-    rightThrowingVec.Set(cos(throwingAngle), -sin(throwingAngle));
-    leftThrowingVec.Set(-cos(throwingAngle), -sin(throwingAngle));
+    convertAngleToVectors((int) Action::WALKING, walkAngle);
+    convertAngleToVectors((int) Action::JUMP, jumpAngle);
+    convertAngleToVectors((int) Grasp::THROWING, throwAngle);
+//    convertAngleToVectors(jumpAngle, jumpVec);
+//    convertAngleToVectors(throwAngle, throwVec);
 
     loadTextures();
 
@@ -50,7 +44,6 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     sensor.isSensor = true;
     sensor.filter.categoryBits = (uint16) ID::FARMER;
     sensor.filter.maskBits = (uint16) ID::ALPACA;
-
 
     // Store information
     setID(Entity::ID::FARMER);
@@ -136,45 +129,13 @@ void Farmer::performAction() {
 
         switch (currentAction) {
             case Action::WALKING: {
-
-                float force = walkingForce;
-                float mass = getBody()->GetMass();
-
-                switch (currentDirection) {
-                    case Direction::RIGHT: {
-                        b2Vec2 angle = getBody()->GetWorldVector(rightWalkVec);
-                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                        break;
-                    }
-                    case Direction::LEFT: {
-                        b2Vec2 angle = getBody()->GetWorldVector(leftWalkVec);
-                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                        break;
-                    }
-                }
+                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
                 break;
             }
-
             case Action::JUMP: {
-
-                float force = jumpingForce;
-                float mass = getBody()->GetMass();
-
-                switch (currentDirection) {
-                    case Direction::RIGHT: {
-                        b2Vec2 angle = getBody()->GetWorldVector(rightJumpVec);
-                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                        break;
-                    }
-                    case Direction::LEFT: {
-                        b2Vec2 angle = getBody()->GetWorldVector(leftJumpVec);
-                        getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                        break;
-                    }
-                }
+                forcePushBody((int) Action::JUMP, getBody(), jumpForce, currentDirection);
                 break;
             }
-
             case Action::IDLE: {
                 break;
             }
@@ -192,8 +153,7 @@ void Farmer::performAction() {
                 holdingEntity = currentlyTouchingEntities.front();
                 currentlyTouchingEntities.pop_front();
                 graspClock.restart();
-            }
-            else {
+            } else {
                 // If farmer is in holding-mode, and holds something => keep holding.
                 holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -4)), getBody()->GetAngle());
             }
@@ -203,31 +163,14 @@ void Farmer::performAction() {
         case Grasp::THROWING: {
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
 
-            float force = throwingForce;
-            float mass = holdingEntity->getBody()->GetMass();
-
-            switch (currentDirection) {
-                case Direction::RIGHT: {
-                    b2Vec2 angle = getBody()->GetWorldVector(rightThrowingVec);
-                    holdingEntity->getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                    break;
-                }
-                case Direction::LEFT: {
-                    b2Vec2 angle = getBody()->GetWorldVector(leftThrowingVec);
-                    holdingEntity->getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                    break;
-                }
-            }
+            forcePushBody((int) Grasp::THROWING, getBody(), throwForce, currentDirection);
 
             holdingEntity = nullptr;
             currentGrasp = Grasp::EMPTY;
-
             break;
         }
 
-        case
-
-            Grasp::EMPTY: {
+        case Grasp::EMPTY: {
             break;
         }
 
@@ -297,5 +240,3 @@ void Farmer::startContact(Entity *contactEntity) {
             break;
     }
 }
-
-
