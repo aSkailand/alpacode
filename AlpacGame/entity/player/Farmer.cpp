@@ -161,10 +161,9 @@ void Farmer::performAction() {
         }
 
         case Grasp::THROWING: {
+
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-
-            forcePushBody((int) Grasp::THROWING, getBody(), throwForce, currentDirection);
-
+            forcePushBody((int) Grasp::THROWING, holdingEntity->getBody(), throwForce, currentDirection);
             holdingEntity = nullptr;
             currentGrasp = Grasp::EMPTY;
             break;
