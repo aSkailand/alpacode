@@ -1,22 +1,17 @@
 #include "Farmer.h"
 #include "../alpaca/alpaca.h"
 
-Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y) {
+Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
 
     this->configGame = configGame;
-
-    this->x = x;
-    this->y = y;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);
     convertAngleToVectors((int) Action::JUMP, jumpAngle);
     convertAngleToVectors((int) Grasp::THROWING, throwAngle);
 
-    loadTextures();
-
     // Create body definition
     b2BodyDef bodyDef;
-    bodyDef.position = b2Vec2(this->x / SCALE, this->y / SCALE);
+    bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
     bodyDef.type = b2_dynamicBody;
 
     // Create body
@@ -24,7 +19,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
 
     // Creating Shape
     b2CircleShape b2Shape;
-    b2Shape.m_radius = width / 2 / SCALE;
+    b2Shape.m_radius = radius / SCALE;
 
     // Create Fixture
     b2FixtureDef fixtureDef;
@@ -35,13 +30,15 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     fixtureDef.filter.maskBits = maskBits;
     fixtureDef.shape = &b2Shape;
 
+
+    // Create sensor
     b2CircleShape b2Shape2;
-    b2Shape2.m_radius = width / 2 / SCALE;
+    b2Shape2.m_radius = radius / SCALE;
     b2FixtureDef sensor;
     sensor.shape = &b2Shape2;
     sensor.isSensor = true;
     sensor.filter.categoryBits = (uint16) ID::FARMER;
-    sensor.filter.maskBits = (uint16) ID::ALPACA;
+    sensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF;
 
     // Store information
     setID(Entity::ID::FARMER);
@@ -51,26 +48,15 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float width, float height
     bodyFixture = body->CreateFixture(&fixtureDef);
     sensorFixture = body->CreateFixture(&sensor);
 
-    /// SQUARE VERSION (SFML)
-//    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
-//    sfShape->setOrigin(width / 2, height / 2);
-//    sfShape->setTexture(&texture);
-//    sfShape->setOutlineThickness(2);
-//    sfShape->setOutlineColor(sf::Color::Black);
+    // Create SFML shape
+    sfShape = new sf::CircleShape(radius);
+    sfShape->setOrigin(radius, radius);
+    sfShape->setTexture(&configGame->farmerTexture);
 
-    /// CIRCLE VERSION (SFML)
-    sfShape = new sf::CircleShape(width / 2);
-    sfShape->setOrigin(width / 2, width / 2);
-    sfShape->setTexture(&texture);
-    sfShape->setOutlineThickness(2);
-    sfShape->setOutlineColor(sf::Color::Black);
+    // Create ID text
+    createLabel("P1", &this->configGame->fontID);
 }
 
-void Farmer::loadTextures() {
-    if (!texture.loadFromFile("entity/player/farmer.png")) {
-        std::cout << "Error loading file!" << std::endl;
-    }
-}
 
 void Farmer::render(sf::RenderWindow *window) {
     x = SCALE * body->GetPosition().x;
@@ -79,6 +65,16 @@ void Farmer::render(sf::RenderWindow *window) {
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
     window->draw(*sfShape);
+
+    if(configGame->showLabels){
+        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label->setRotation(sfShape->getRotation());
+        window->draw(*label);
+        sfShape->setOutlineThickness(2);
+    } else{
+        sfShape->setOutlineThickness(0);
+    }
 }
 
 void Farmer::switchAction() {
@@ -150,6 +146,9 @@ void Farmer::performAction() {
             if (holdingEntity == nullptr) {
                 holdingEntity = currentlyTouchingEntities.front();
                 currentlyTouchingEntities.pop_front();
+
+                dynamic_cast<EntityWarm*> (holdingEntity)->currentStatus = Status::AIRBORNE;
+
                 graspClock.restart();
             }
                 // If farmer is in holding-mode, and holds something => keep holding
@@ -239,7 +238,8 @@ void Farmer::startContact(Entity *contactEntity) {
 
 
         }
-        case ID::WOLF:
+        case ID::WOLF:{
             break;
+        }
     }
 }

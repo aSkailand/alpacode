@@ -26,23 +26,18 @@ public:
 
     bool farmerTouch = false;
 
-    const int id;
-
 private:
 
-    /// Pointers
-    ConfigGame *configGame;
-
-
-
     /// Entity properties
-    sf::Texture texture;
+    const int id;
     static int nextId;
+
     float density = 1.0f;
     float friction = 1.0f;
     float restitution = 0.0f;
+
     uint16 categoryBits = (uint16) ID::ALPACA;
-    uint16 maskBits = (uint16) ID::PLANET;
+    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
 
     float walkForce = 5.f;
     float walkAngle = 70.f;   // Right, Degrees
@@ -57,6 +52,7 @@ private:
      * The time before next movement is permitted to be performed (in seconds).
      */
     float moveAvailableTick = 0.5f;
+
 
     /// Functions
     /**
@@ -75,15 +71,10 @@ private:
      */
     void switchAction() override;
 
-    /// Visuals
-    /**
-     * Load necessary textures.
-     */
-    void loadTextures();
+    /// Pointers
+    ConfigGame *configGame;
 
 public:
-
-    b2Vec2 walkVec[2]{};
 
     void startContact(Entity *contactEntity) override;
 

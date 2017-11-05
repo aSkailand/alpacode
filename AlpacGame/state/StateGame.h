@@ -14,7 +14,7 @@
 #include "../Resources/ConfigGame.h"
 #include "../entity/CollisionListener.h"
 
-#include "../planet/planet.h"
+#include "../entity/planet/planet.h"
 #include "../entity/player/Farmer.h"
 #include "../entity/alpaca/Alpaca.h"
 #include "../entity/wolf/Wolf.h"
@@ -43,10 +43,11 @@ private:
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
 
-    // View
+    /// View
     sf::View view;
-    float viewZoom = 1.0f;  // How much to zoom in
-    int viewOffset = 400;   // How much is the view's offset
+    float viewNonZoomed = 1.5f;  // How much to zoom in
+    float viewZoomed = 4.0f;
+    bool zoomed = false;
 
     // Game State Functions
     /**

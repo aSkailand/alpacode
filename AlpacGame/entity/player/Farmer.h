@@ -12,27 +12,15 @@ class Farmer : public EntityWarm {
 
 public:
 
-    sf::Clock graspClock;
-    float graspCooldown = 0.2f;
-
-    enum class Grasp {
-        EMPTY, HOLDING, THROWING = 3
-    };
-
-    Grasp currentGrasp = Grasp::EMPTY;
-    Entity *holdingEntity = nullptr;
-    std::list<Entity *> currentlyTouchingEntities;
-
     /**
      * CONSTRUCTOR: Creates a farmer and places in to the world.
      * @param world the world to add the farmer to.
      * @param configGame the configurations of the game.
-     * @param width the width of the farmer in pixels.
-     * @param height the height of the farmer in pixels.
+     * @param radius the radius of the fixture shape of entity.
      * @param x the x-position of the farmer's origin, in pixels.
      * @param y the y-position of the farmer's origin, in pixels.
      */
-    Farmer(b2World *world, ConfigGame *configGame, float width, float height, float x, float y);
+    Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
 private:
 
@@ -43,7 +31,7 @@ private:
     float restitution = 0.0f;
 
     uint16 categoryBits = (uint16) ID::FARMER;
-    uint16 maskBits = (uint16) ID::PLANET;
+    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
 
     float walkForce = 5.f;
     float walkAngle = 45.f;   // Right, Degrees
@@ -54,8 +42,21 @@ private:
     float throwForce = 10.f;
     float throwAngle = 10.f;   // Right, Degrees
 
-    // Non-customizable
-    sf::Texture texture;
+    /**
+     * The time before next movement is permitted to be performed.
+     */
+    float moveAvailableTick = 0.4f;
+
+    /// Grasp Properties
+    enum class Grasp {
+        EMPTY, HOLDING, THROWING = 3
+    };
+
+    Entity *holdingEntity = nullptr;
+    sf::Clock graspClock;
+    float graspCooldown = 0.1f;
+    Grasp currentGrasp = Grasp::EMPTY;
+    std::list<Entity *> currentlyTouchingEntities;
 
     /// Functions
 
@@ -78,27 +79,14 @@ private:
     /// Pointers
     ConfigGame *configGame;
 
-    /**
-     * The time before next movement is permitted to be performed.
-     */
-    float moveAvailableTick = 0.4f;
 
-    /// Visuals
-    /**
-     * Load necessary textures.
-     */
-    void loadTextures();
 
 public:
-
-
-    b2Vec2 walkVec[2]{};
-    b2Vec2 jumpVec[2]{};
-    b2Vec2 throwVec[2]{};
 
     void startContact(Entity *contactEntity) override;
 
     void endContact(Entity *contactEntity) override;
+
 };
 
 #endif //ALPACGAME_FARMER_H

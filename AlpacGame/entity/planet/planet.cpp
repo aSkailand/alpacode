@@ -1,12 +1,10 @@
 
 #include "planet.h"
 
-Planet::Planet(b2World *world, float radius, float x, float y) {
+Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
 
     this->x = x;
     this->y = y;
-
-    loadTextures();
 
     b2BodyDef bodyDef;
     bodyDef.position = b2Vec2(this->x / SCALE, this->y / SCALE);
@@ -38,17 +36,9 @@ Planet::Planet(b2World *world, float radius, float x, float y) {
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
     sfShape->setFillColor(sf::Color::White);
-    sfShape->setTexture(&texture);
+    sfShape->setTexture(&configGame->planetTexture);
     sfShape->setOutlineThickness(3);
     sfShape->setOutlineColor(sf::Color::Black);
-}
-
-void Planet::loadTextures() {
-
-    if (!texture.loadFromFile("planet/planet.png")) {
-        std::cout << "Error!!!" << std::endl;
-    }
-
 }
 
 void Planet::render(sf::RenderWindow *window) {
@@ -60,10 +50,8 @@ void Planet::render(sf::RenderWindow *window) {
 }
 
 void Planet::startContact(Entity *contactEntity) {
-//    std::cout << "Planet Start Contact" << std::endl;
 }
 
 void Planet::endContact(Entity *contactEntity) {
-//    std::cout << "Planet End Contact" << std::endl;
 }
 

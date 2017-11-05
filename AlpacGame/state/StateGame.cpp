@@ -13,15 +13,16 @@ void StateGame::goNext(StateMachine &stateMachine) {
     world->SetContactListener(new CollisionListener());
 
     /// Instantiating initial entities
-    planet = new Planet(world, configGame->planetRadius, 0, 0);
-    farmer = new Farmer(world, configGame, 100, 100, 0, -200);
+    planet = new Planet(world, configGame, configGame->planetRadius, configGame->planetCenter.x, configGame->planetCenter.y);
+    farmer = new Farmer(world, configGame, 50, 0, -200);
     entities.push_back(planet);
     entities.push_back(farmer);
 
+    configGame->planetBody = planet->getBody();
+
     /// View
-    float f_x, f_y;
     view = sf::View(window->getDefaultView());
-    view.zoom(1.5f);
+    view.zoom(viewNonZoomed);
 
     /// Poll game
     while (pollGame()) {
@@ -90,10 +91,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
         float angle = atan2f(-delta.x, delta.y);
 
         // Coordinates of the surface in which the farmer is standing on
-        f_y = (configGame->planetRadius * sin(angle - b2_pi/2.0f) );
-        f_x = (configGame->planetRadius * cos(angle - b2_pi/2.0f) );
+        float viewX = configGame->calcX(angle * DEGtoRAD);
+        float viewY = configGame->calcY(angle * DEGtoRAD);
 
-        view.setCenter(f_x , f_y);
+        view.setCenter(viewX , viewY);
 
         view.setRotation(angle * DEGtoRAD);
 
@@ -141,6 +142,18 @@ void StateGame::keyPressedHandler(sf::Event event) {
             configGame->showLabels = !configGame->showLabels;
             break;
         }
+        case sf::Keyboard::Z:{
+            if(zoomed){
+                zoomed = false;
+                view = sf::View(window->getDefaultView());
+                view.zoom(viewNonZoomed);
+            } else{
+                zoomed = true;
+                view = sf::View(window->getDefaultView());
+                view.zoom(viewZoomed);
+            }
+            break;
+        }
         default:{
             break;
         }
@@ -157,11 +170,11 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities.push_back(new Alpaca(world, configGame, 100, mouseX, mouseY));
+            entities.push_back(new Alpaca(world, configGame, 50, mouseX, mouseY));
             break;
         }
         case sf::Mouse::Right: {
-            entities.push_back(new Wolf(world, configGame, 100, mouseX, mouseY));
+            entities.push_back(new Wolf(world, configGame, 50, mouseX, mouseY));
             break;
         }
         default: {

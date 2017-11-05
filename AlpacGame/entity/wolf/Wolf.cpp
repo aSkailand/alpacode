@@ -1,11 +1,13 @@
 #include "Wolf.h"
 
 Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y)
-        :  id(nextId++), Mob(id){
+        : id(nextId++), Mob(id) {
 
+    // Assign Pointers
     this->configGame = configGame;
 
-    loadTextures();
+    // Convert angle and store unit vectors
+    convertAngleToVectors(((int) Action::WALKING), walkAngle);
 
     // Create body definition
     b2BodyDef bodyDef;
@@ -16,29 +18,37 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
     body = world->CreateBody(&bodyDef);
 
     // Create Fixture
+    b2CircleShape b2Shape;
+    b2Shape.m_radius = radius / SCALE;
     b2FixtureDef fixtureDef;
     fixtureDef.density = density;
     fixtureDef.friction = friction;
     fixtureDef.restitution = restitution;
     fixtureDef.filter.categoryBits = categoryBits;
     fixtureDef.filter.maskBits = maskBits;
-
-    b2CircleShape b2Shape;
-    b2Shape.m_radius = radius / 2 / SCALE;
     fixtureDef.shape = &b2Shape;
+
+    // Create Sensor
+    b2CircleShape b2Shape2;
+    b2Shape2.m_radius = radius / SCALE;
+    b2FixtureDef sensor;
+    sensor.shape = &b2Shape2;
+    sensor.isSensor = true;
+    sensor.filter.categoryBits = (uint16) ID::WOLF;
+    sensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA;
 
     // Store information
     setID(Entity::ID::WOLF);
     body->SetUserData((void *) this);
 
     // Connect fixture to body
-    body->CreateFixture(&fixtureDef);
+    bodyFixture = body->CreateFixture(&fixtureDef);
+    sensorFixture = body->CreateFixture(&sensor);
 
-    sfShape = new sf::RectangleShape(sf::Vector2f(radius, radius));
-    sfShape->setOrigin(radius / 2, radius / 2);
-    sfShape->setTexture(&texture);
-    sfShape->setOutlineThickness(2);
-    sfShape->setOutlineColor(sf::Color::Black);
+    // Create SFML shape
+    sfShape = new sf::CircleShape(radius);
+    sfShape->setOrigin(radius, radius);
+    sfShape->setTexture(&configGame->wolfTexture);
 
     // Create ID text
     createLabel(std::to_string(id), &this->configGame->fontID);
@@ -56,24 +66,24 @@ void Wolf::switchAction() {
         currentAction = (Action) randomNumberGenerator(0, 1);
 
         switch (currentAction) {
-            case Wolf::Action::IDLE: {
-                std::cout << "Wolf " << id << " is now IDLE." << std::endl;
-                break;
-            }
             case Wolf::Action::WALKING: {
                 currentDirection = (Direction) randomNumberGenerator(0, 1);
                 switch (currentDirection) {
                     case Wolf::Direction::LEFT: {
-                        std::cout << "Wolf " << id << " is WALKING LEFT" << std::endl;
                         sfShape->setScale(-1.f, 1.f);
                         break;
                     }
                     case Wolf::Direction::RIGHT: {
-                        std::cout << "Wolf " << id << " is WALKING RIGHT" << std::endl;
                         sfShape->setScale(1.f, 1.f);
                         break;
                     }
                 }
+                break;
+            }
+            case Action::JUMP: {
+                break;
+            }
+            case Wolf::Action::IDLE: {
                 break;
             }
         }
@@ -84,23 +94,26 @@ void Wolf::switchAction() {
 }
 
 
-void Wolf::loadTextures() {
-    if (!texture.loadFromFile("entity/wolf/wolfy.png")) {
-        std::cout << "Error loading file!" << std::endl;
-    }
-}
-
 void Wolf::render(sf::RenderWindow *window) {
+
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
+
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
     window->draw(*sfShape);
 
-    if(configGame->showLabels){
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -3.f)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -3.f)).y * SCALE);
+    if (configGame->showLabels) {
+        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                           body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label->setRotation(sfShape->getRotation());
         window->draw(*label);
+        sfShape->setOutlineColor(sf::Color::Black);
+        sfShape->setOutlineThickness(2);
+    } else {
+        sfShape->setOutlineThickness(0);
     }
 }
 
@@ -108,35 +121,53 @@ void Wolf::performAction() {
 
     // Check if the randomActionClock has triggered
     if (isMovementAvailable(moveAvailableTick)) {
-
-        float force = 5.f;
-        float mass = getBody()->GetMass();
-
-        if (currentAction == Action::WALKING) {
-            switch (currentDirection) {
-                case Direction::RIGHT: {
-                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(10.f, -5.f));
-                    angle.Normalize();
-                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                    break;
-                }
-                case Direction::LEFT: {
-                    b2Vec2 angle = getBody()->GetWorldVector(b2Vec2(-10.f, -5.f));
-                    angle.Normalize();
-                    getBody()->ApplyLinearImpulseToCenter(force * mass * angle, true);
-                    break;
-                }
-
+        switch (currentAction) {
+            case Action::WALKING: {
+                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                break;
+            }
+            default: {
+                break;
             }
         }
-
     }
 }
 
 void Wolf::startContact(Entity *contactEntity) {
-    std::cout << "Wolf Start Contact" << std::endl;
+    switch (contactEntity->getID()) {
+        case ID::PLANET:
+            break;
+        case ID::FARMER: {
+            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
+            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
+            beta.Normalize();
+            delta += beta;
+            delta.Normalize();
+            float mass = contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
+
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+
+            break;
+
+        }
+        case ID::ALPACA: {
+            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
+            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
+            beta.Normalize();
+            delta += beta;
+            delta.Normalize();
+            float mass = contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+            break;
+        }
+
+        case ID::WOLF:
+            break;
+    }
 }
 
 void Wolf::endContact(Entity *contactEntity) {
-    std::cout << "Wolf End Contact" << std::endl;
+
 }

@@ -31,6 +31,7 @@ public:
         LEFT = 1
     };
 
+    /// Fixture pointers
     b2Fixture *bodyFixture;
     b2Fixture *sensorFixture;
 
@@ -70,17 +71,18 @@ public:
         Entity::body = body;
     }
 
+    /// Contact Functions
     virtual void startContact(Entity *contactEntity) = 0;
     virtual void endContact(Entity *contactEntity) = 0;
+
+protected:
+
+    /// Important Entity Properties
 
     /**
      * The x- and y-position of the entity's origin in pixels.
      */
     float x{}, y{};
-
-protected:
-
-    /// Important Entity Properties
 
     ID id{};
 
@@ -116,8 +118,8 @@ protected:
     void convertAngleToVectors(int key, float angle) {
         angle /= DEGtoRAD;
         std::vector<b2Vec2> tempVec;
-        tempVec.push_back(b2Vec2(cos(angle), -sin(angle)));     // Right Angle
-        tempVec.push_back(b2Vec2(-cos(angle), -sin(angle)));    // Left Angle
+        tempVec.emplace_back(cos(angle), -sin(angle));     // Right Angle
+        tempVec.emplace_back(-cos(angle), -sin(angle));    // Left Angle
         angleVectors[key] = tempVec;
     }
 

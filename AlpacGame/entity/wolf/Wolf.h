@@ -15,16 +15,32 @@ class Wolf : public Mob{
 public:
 
     /**
-      * CONSTRUCTOR: Creates a wolf and adds it to the world.
-      * @param world the world to add the wolf to.
-      * @param radius the width of the wolf in pixels.
-      * @param configGame the height of the wolf in pixels.
-      * @param x the x-coordinate of the origin of the wolf, in pixels.
-      * @param y the y-coordinate of the origin of the wolf, in pixels.
-      */
+     * CONSTRUCTOR: Creates a wolf and adds it to the world.
+     * @param world the world to add the wolf to.
+     * @param configGame the pointer to the configurations.
+     * @param radius the radius of the fixture.
+     * @param x the x-coordinate of the origin of the wolf, in pixels.
+     * @param y the y-coordinate of the origin of the wolf, in pixels.
+     */
     Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
 private:
+
+    /// Entity Properties
+    const int id;
+    static int nextId;
+
+    float density = 1.0f;
+    float friction = 1.0f;
+    float restitution = 0.0f;
+
+    uint16 categoryBits = (uint16) ID::WOLF;
+    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::FARMER | (uint16) ID::ALPACA;
+
+    float walkForce = 5.f;
+    float walkAngle = 30.f;   // Right, Degrees
+
+    float attackForce = 10.f;
 
     /// Pointers
     ConfigGame *configGame;
@@ -46,21 +62,7 @@ private:
      */
     void render(sf::RenderWindow *window) override;
 
-    /// Entity Properties
-    sf::Texture texture;
-    const int id;
-    static int nextId;
-    float density = 1.0f;
-    float friction = 1.0f;
-    float restitution = 0.0f;
-    uint16 categoryBits = (uint16) ID::WOLF;
-    uint16 maskBits = (uint16) ID::PLANET;
 
-    /// Visuals
-    /**
-     * Load necessary textures.
-     */
-    void loadTextures();
 
     /// Movement tools
     /**
@@ -74,6 +76,7 @@ private:
     float moveAvailableTick = 0.4f;
 
 public:
+
     void startContact(Entity *contactEntity) override;
 
     void endContact(Entity *contactEntity) override;

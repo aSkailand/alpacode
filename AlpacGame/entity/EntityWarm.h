@@ -14,12 +14,12 @@ class EntityWarm : public Entity {
 
 public:
 
-
-
-    sf::Text *label;
+    /**
+     * The label above entities' head in-game.
+     */
+    sf::Text *label = new sf::Text();
 
     void createLabel(std::string text, sf::Font *font){
-        label = new sf::Text();
         label->setString(text);
         label->setFont(*font);
         label->setCharacterSize(40);
@@ -55,7 +55,6 @@ public:
     Action currentAction = Action::IDLE;
     Status currentStatus = Status::GROUNDED;
 
-
 protected:
 
 
@@ -83,10 +82,6 @@ protected:
         }
         return triggered;
     }
-
-    /// Force and unit vector
-
-
 
 private:
 
