@@ -36,16 +36,17 @@ private:
     float walkForce = 5.f;
     float walkAngle = 45.f;   // Right, Degrees
 
-    float jumpForce = 10.f;
-    float jumpAngle = 45.f;   // Right, Degrees
+    float jumpForce = 8.f;
+    float jumpAngle = 60.f;   // Right, Degrees
 
     float throwForce = 10.f;
     float throwAngle = 10.f;   // Right, Degrees
 
     /**
      * The time before next movement is permitted to be performed.
+     * Slight delay due to calculations are too fast.
      */
-    float moveAvailableTick = 0.4f;
+    float moveAvailableTick = 0.1f;
 
     /// Grasp Properties
     enum class Grasp {

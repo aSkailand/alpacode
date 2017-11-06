@@ -55,6 +55,9 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
 
     // Create ID text
     createLabel("P1", &this->configGame->fontID);
+
+    /// Check if player starts in the air
+    currentStatus = Status::AIRBORNE;
 }
 
 
@@ -75,6 +78,8 @@ void Farmer::render(sf::RenderWindow *window) {
     } else{
         sfShape->setOutlineThickness(0);
     }
+
+
 }
 
 void Farmer::switchAction() {
@@ -119,15 +124,17 @@ void Farmer::switchAction() {
 
 void Farmer::performAction() {
 
-    if (currentAction != Action::IDLE && isMovementAvailable(moveAvailableTick)) {
+    if (currentAction != Action::IDLE  && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
 
         switch (currentAction) {
+
             case Action::WALKING: {
                 forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
                 break;
             }
             case Action::JUMP: {
                 forcePushBody((int) Action::JUMP, getBody(), jumpForce, currentDirection);
+
                 break;
             }
             case Action::IDLE: {
@@ -188,6 +195,7 @@ void Farmer::endContact(Entity *contactEntity) {
     switch (contactID) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Red);
+            currentStatus = Status::AIRBORNE;
             break;
         }
         case ID::FARMER:
@@ -219,14 +227,15 @@ void Farmer::startContact(Entity *contactEntity) {
     switch (contactID) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Black);
+            currentStatus = Status::GROUNDED;
+            body->SetLinearVelocity(b2Vec2(0, 0));
             break;
         }
         case ID::FARMER:
             break;
         case ID::ALPACA: {
 
-            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
-                          contactEntity) == currentlyTouchingEntities.end()) {
+            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) == currentlyTouchingEntities.end()) {
                 currentlyTouchingEntities.push_back(contactEntity);
                 // todo: Add farmerTouch to entity?
                 auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
@@ -235,9 +244,8 @@ void Farmer::startContact(Entity *contactEntity) {
 
                 std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
             }
-
-
         }
+
         case ID::WOLF:{
             break;
         }

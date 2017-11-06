@@ -40,7 +40,8 @@ private:
     float walkForce = 5.f;
     float walkAngle = 30.f;   // Right, Degrees
 
-    float attackForce = 10.f;
+    float attackForce = 8.f;
+    float attackAngle = 25.f;
 
     /// Pointers
     ConfigGame *configGame;

@@ -53,7 +53,7 @@ public:
 
     Direction currentDirection = Direction::RIGHT;
     Action currentAction = Action::IDLE;
-    Status currentStatus = Status::GROUNDED;
+    Status currentStatus;
 
 protected:
 
