@@ -5,6 +5,7 @@
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include <Box2D/Dynamics/b2Body.h>
 
 /**
  * Common resources accessible by all game entities.
@@ -12,10 +13,19 @@
 class ConfigGame {
 public:
 
+    /// Customizable Properties
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius;
+    unsigned int planetRadius = 600;
+
+    b2Body* planetBody;
+
+
+    /**
+     * Show in-game labels or not.
+     */
+    bool showLabels = false;
 
     /**
      * The position of the planet's center relatively to the game window.
@@ -28,11 +38,7 @@ public:
      */
     void run(sf::RenderWindow &window);
 
-    /**
-     * Offset on the placement of the planet.
-     */
     // todo: make into static?
-
     /**
      * Calculates the x position on the circle's outline given by the angle.
      * @param angle the angle to calculate with.
@@ -63,19 +69,34 @@ public:
      */
     float calcY(float degree, float radius);
 
-    // todo: Find a way to move this to gameState?
-    /**
-     * The change of time since last check.
-     * Used to throttle down speed according to processor's power,
-     * so that entity movements behave smoother.
-     */
-    float deltaTime;
-
     /**
      * The current buffered input, used to
      * determine which direction the farmer walks towards.
      */
-    sf::Keyboard::Key currentInput;
+
+    sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
+
+    /// Fonts
+    sf::Font fontID;
+
+    /// Textures
+    sf::Texture planetTexture;
+    sf::Texture farmerTexture;
+    sf::Texture alpacaTexture;
+    sf::Texture wolfTexture;
+
+private:
+
+    /**
+    * Load all necessary font used during the game.
+    */
+    void loadAllFonts();
+
+    /**
+     * Load all necessary textures used during the game.
+     */
+    void loadAllTextures();
+
 };
 
 

@@ -1,106 +1,173 @@
 #include "Wolf.h"
 
-Wolf::Wolf(StateMachine &stateMachine, float initAngle) : id(nextId++){
+Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y)
+        : id(nextId++), Mob(id) {
 
-    // Assigning pointers
-    configGame = &stateMachine.configGame;
-    window = &stateMachine.configWindow.getWindow();
+    // Assign Pointers
+    this->configGame = configGame;
 
-    // Load textures
-    loadTextures();
+    // Convert angle and store unit vectors
+    convertAngleToVectors(((int) Action::WALKING), walkAngle);
 
-    // Assigning default states
-    currentAction = Action::IDLE;
-    currentDirection = Direction::RIGHT;
+    // Create body definition
+    b2BodyDef bodyDef;
+    bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
+    bodyDef.type = b2_dynamicBody;
 
-    // Generate random number generator
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
-    generator = std::default_random_engine(seed);
+    // Create body
+    body = world->CreateBody(&bodyDef);
 
-    // Define the wolf
-    wolfshape = sf::RectangleShape(sf::Vector2f(size, size));
-    wolfshape.setTexture(&wolfTexture);
-    wolfshape.setOrigin(wolfshape.getSize().x / 2, wolfshape.getSize().y);
-    wolfshape.setOutlineThickness(1);
+    // Create Fixture
+    b2CircleShape b2Shape;
+    b2Shape.m_radius = radius / SCALE;
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = density;
+    fixtureDef.friction = friction;
+    fixtureDef.restitution = restitution;
+    fixtureDef.filter.categoryBits = categoryBits;
+    fixtureDef.filter.maskBits = maskBits;
+    fixtureDef.shape = &b2Shape;
+
+    // Create Sensor
+    b2CircleShape b2Shape2;
+    b2Shape2.m_radius = radius / SCALE;
+    b2FixtureDef sensor;
+    sensor.shape = &b2Shape2;
+    sensor.isSensor = true;
+    sensor.filter.categoryBits = (uint16) ID::WOLF;
+    sensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA;
+
+    // Store information
+    setID(Entity::ID::WOLF);
+    body->SetUserData((void *) this);
+
+    // Connect fixture to body
+    bodyFixture = body->CreateFixture(&fixtureDef);
+    sensorFixture = body->CreateFixture(&sensor);
+
+    // Create SFML shape
+    sfShape = new sf::CircleShape(radius);
+    sfShape->setOrigin(radius, radius);
+    sfShape->setTexture(&configGame->wolfTexture);
+
+    // Create ID text
+    createLabel(std::to_string(id), &this->configGame->fontID);
 
 
-    // Assigning initial position
-    angle = initAngle;
 }
 
 int Wolf::nextId = 0;
 
-void Wolf::draw() {
-
-    /* The reason why setPosition and setRotation is here and not in control() is
-     * because when adding movement to wolves, the x and y change one more time (First
-     * time being the reposition because of the planet's rotation).
-     * Therefore we don't want setPosition and setRotation in control(), where
-     * this movement will be handled. */
-
-    // Place the wolf accordingly
-    wolfshape.setRotation(angle);
-    wolfshape.setPosition(x, y);
-
-    // Draw the square
-    window->draw(wolfshape);
-}
-
-void Wolf::control() {
+void Wolf::switchAction() {
 
     // Check if it is time for randomizing the wolf's current state
-    if ((int) clock.getElapsedTime().asSeconds() >= tickSecond) {
+    if (randomActionTriggered(randomActionTick)) {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
 
         switch (currentAction) {
-            case Wolf::Action::IDLE:{
-                std::cout << "Wolf " << id << " is now IDLE." << std::endl;
-                break;
-            }
             case Wolf::Action::WALKING: {
                 currentDirection = (Direction) randomNumberGenerator(0, 1);
                 switch (currentDirection) {
                     case Wolf::Direction::LEFT: {
-                        std::cout << "Wolf " << id << " is now WALKING LEFT" << std::endl;
-                        wolfshape.setScale({-1.f, 1.f});
+                        sfShape->setScale(-1.f, 1.f);
                         break;
                     }
                     case Wolf::Direction::RIGHT: {
-                        std::cout << "Wolf " << id << " is now WALKING RIGHT" << std::endl;
-                        wolfshape.setScale({1.f, 1.f});
+                        sfShape->setScale(1.f, 1.f);
                         break;
                     }
                 }
                 break;
             }
+            case Action::JUMP: {
+                break;
+            }
+            case Wolf::Action::IDLE: {
+                break;
+            }
         }
 
-        clock.restart();
-
     }
 
-    // Reposition the wolf
-    if (currentAction == Action::WALKING) {
-        if (currentDirection == Wolf::Direction::RIGHT) {
-            angle += configGame->deltaTime * speed;
-        } else if (currentDirection == Wolf::Direction::LEFT) {
-            angle -= configGame->deltaTime * speed;
+
+}
+
+
+void Wolf::render(sf::RenderWindow *window) {
+
+    x = SCALE * body->GetPosition().x;
+    y = SCALE * body->GetPosition().y;
+
+    sfShape->setPosition(x, y);
+    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
+    window->draw(*sfShape);
+
+    if (configGame->showLabels) {
+        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                           body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label->setRotation(sfShape->getRotation());
+        window->draw(*label);
+        sfShape->setOutlineColor(sf::Color::Black);
+        sfShape->setOutlineThickness(2);
+    } else {
+        sfShape->setOutlineThickness(0);
+    }
+}
+
+void Wolf::performAction() {
+
+    // Check if the randomActionClock has triggered
+    if (isMovementAvailable(moveAvailableTick)) {
+        switch (currentAction) {
+            case Action::WALKING: {
+                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
-
-    // Position calculation
-    x = configGame->calcX(angle);
-    y = configGame->calcY(angle);
 }
 
-int Wolf::randomNumberGenerator(int lower, int upper) {
-    std::uniform_int_distribution<int> distribution(lower, upper);
-    return distribution(generator);
-}
+void Wolf::startContact(Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::PLANET:
+            break;
+        case ID::FARMER: {
+            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
+            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
+            beta.Normalize();
+            delta += beta;
+            delta.Normalize();
+            float mass = contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
 
-void Wolf::loadTextures() {
-    if (!wolfTexture.loadFromFile("entity/wolf/wolfy.png")) {
-        std::cout << "Error loading file!" << std::endl;
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+
+            break;
+
+        }
+        case ID::ALPACA: {
+            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
+            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
+            beta.Normalize();
+            delta += beta;
+            delta.Normalize();
+            float mass = contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+            break;
+        }
+
+        case ID::WOLF:
+            break;
     }
+}
+
+void Wolf::endContact(Entity *contactEntity) {
+
 }

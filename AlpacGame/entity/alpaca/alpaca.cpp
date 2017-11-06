@@ -1,105 +1,173 @@
 #include "Alpaca.h"
 
-Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) : id(nextId++) {
+Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, float y)
+        : id(nextId++), Mob(id) {
 
-    // Assigning pointers
-    configGame = &stateMachine.configGame;
-    window = &stateMachine.configWindow.getWindow();
+    // Assign Pointers
+    this->configGame = configGame;
 
-    // Load textures
-    loadTextures();
+    // Convert angle and store unit vectors
+    convertAngleToVectors((int) Action::WALKING, walkAngle);
 
-    // Assigning default states
-    currentAction = Action::IDLE;
-    currentDirection = Direction::RIGHT;
+    // Create body definition
+    b2BodyDef bodyDef;
+    bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
+    bodyDef.type = b2_dynamicBody;
 
-    // Generate random number generator
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + id;
-    generator = std::default_random_engine(seed);
+    // Create body
+    body = world->CreateBody(&bodyDef);
 
-    // Define the alpaca
-    alpacashape = sf::RectangleShape(sf::Vector2f(size, size));
-    alpacashape.setTexture(&alpacaTexture);
-    alpacashape.setOrigin(alpacashape.getSize().x / 2, alpacashape.getSize().y);
-    alpacashape.setOutlineThickness(1);
+    // Create Fixture
+    b2CircleShape b2Shape;
+    b2Shape.m_radius = radius / SCALE;
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = density;
+    fixtureDef.friction = friction;
+    fixtureDef.restitution = restitution;
+    fixtureDef.filter.categoryBits = categoryBits;
+    fixtureDef.filter.maskBits = maskBits;
+    fixtureDef.shape = &b2Shape;
 
-    // Assigning initial position
-    angle = initAngle;
+    // Create Sensor
+    b2CircleShape b2Shape2;
+    b2Shape2.m_radius = radius / SCALE;
+    b2FixtureDef sensor;
+    sensor.shape = &b2Shape2;
+    sensor.isSensor = true;
+    sensor.filter.categoryBits = (uint16) ID::ALPACA;
+    sensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF;
+
+    // Store information
+    setID(Entity::ID::ALPACA);
+    body->SetUserData((void *) this);
+
+    // Connect fixture to body
+    bodyFixture = body->CreateFixture(&fixtureDef);
+    sensorFixture = body->CreateFixture(&sensor);
+
+    // Creating SFML shape
+    sfShape = new sf::CircleShape(radius);
+    sfShape->setOrigin(radius, radius);
+    sfShape->setTexture(&configGame->alpacaTexture);
+
+    // Create ID text
+    createLabel(std::to_string(id), &this->configGame->fontID);
+
 }
 
 int Alpaca::nextId = 0;
 
-void Alpaca::draw() {
+void Alpaca::switchAction() {
 
-    /* The reason why setPosition and setRotation is here and not in control() is
-     * because when adding movement to alpacas, the x and y change one more time (First
-     * time being the reposition because of the planet's rotation).
-     * Therefore we don't want setPosition and setRotation in control(), where
-     * this movement will be handled. */
-
-    // Place the alpaca accordingly
-    alpacashape.setRotation(angle);
-    alpacashape.setPosition(x, y);
-
-    // Draw the square
-    window->draw(alpacashape);
-}
-
-void Alpaca::control() {
-
-    // Check if it is time for randomizing the alpaca's current state
-    if ((int) clock.getElapsedTime().asSeconds() >= tickSecond) {
+    // Check if the randomActionClock has triggered
+    if (currentStatus == Status::GROUNDED && randomActionTriggered(randomActionTick)) {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
 
         switch (currentAction) {
-            case Alpaca::Action::IDLE:{
-                std::cout << "Alpaca " << id << " is now IDLE." << std::endl;
+            case Action::IDLE: {
                 break;
             }
-            case Alpaca::Action::WALKING: {
+            case Action::WALKING: {
+
                 currentDirection = (Direction) randomNumberGenerator(0, 1);
+
                 switch (currentDirection) {
-                    case Alpaca::Direction::LEFT: {
-                        std::cout << "Alpaca " << id << " is now WALKING LEFT" << std::endl;
-                        alpacashape.setScale({-1.f, 1.f});
+                    case Direction::LEFT: {
+                        sfShape->setScale(-1.f, 1.f);
                         break;
                     }
-                    case Alpaca::Direction::RIGHT: {
-                        std::cout << "Alpaca " << id << " is now WALKING RIGHT" << std::endl;
-                        alpacashape.setScale({1.f, 1.f});
+                    case Direction::RIGHT: {
+                        sfShape->setScale(1.f, 1.f);
                         break;
                     }
                 }
+            }
+            default: {
                 break;
             }
         }
 
-        clock.restart();
-
     }
 
-    // Reposition the alpaca
-    if (currentAction == Action::WALKING) {
-        if (currentDirection == Alpaca::Direction::RIGHT) {
-            angle += configGame->deltaTime * speed;
-        } else if (currentDirection == Alpaca::Direction::LEFT) {
-            angle -= configGame->deltaTime * speed;
+
+}
+
+void Alpaca::render(sf::RenderWindow *window) {
+
+    x = SCALE * body->GetPosition().x;
+    y = SCALE * body->GetPosition().y;
+
+    sfShape->setPosition(x, y);
+    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
+    window->draw(*sfShape);
+
+    if (configGame->showLabels) {
+        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                           body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label->setRotation(sfShape->getRotation());
+        window->draw(*label);
+
+        if (farmerTouch) sfShape->setOutlineColor(sf::Color::Green);
+        else sfShape->setOutlineColor(sf::Color::Black);
+
+        sfShape->setOutlineThickness(2);
+    } else {
+        sfShape->setOutlineThickness(0);
+    }
+}
+
+void Alpaca::performAction() {
+
+    if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
+        switch (currentAction) {
+            case Action::WALKING: {
+                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                break;
+            }
+            case Action::JUMP:
+                break;
+            case Action::IDLE:
+                break;
         }
     }
-
-    // Position calculation
-    x = configGame->calcX(angle);
-    y = configGame->calcY(angle);
 }
 
-int Alpaca::randomNumberGenerator(int lower, int upper) {
-    std::uniform_int_distribution<int> distribution(lower, upper);
-    return distribution(generator);
+void Alpaca::endContact(Entity *contactEntity) {
+
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
+            currentStatus = Status::AIRBORNE;
+            break;
+        }
+        case ID::FARMER: {
+            farmerTouch = false;
+            break;
+        }
+        case ID::ALPACA:
+            break;
+        case ID::WOLF:
+            break;
+    }
+
 }
 
-void Alpaca::loadTextures() {
-    if (!alpacaTexture.loadFromFile("entity/alpaca/alpaca.png")) {
-        std::cout << "Error loading file!" << std::endl;
+void Alpaca::startContact(Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
+            currentStatus = Status::GROUNDED;
+            break;
+        }
+        case ID::FARMER: {
+            farmerTouch = true;
+            break;
+        }
+        case ID::ALPACA:
+            break;
+        case ID::WOLF:
+            break;
     }
 }
+
