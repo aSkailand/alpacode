@@ -76,7 +76,6 @@ public:
      * determine which direction the farmer walks towards.
      */
     sf::Keyboard::Key currentInput;
-
 };
 
 

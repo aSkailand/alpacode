@@ -27,3 +27,4 @@ float ConfigGame::calcY(float degree, float radius) {
     float y = planetCenter.y - radius * (float) std::cos(degree * (M_PI / 180));
     return y;
 }
+
