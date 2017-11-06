@@ -5,6 +5,7 @@
 #include "State.h"
 #include "StateMachine.h"
 
+
 /**
  * The StateOption class contains four different menus, the main option menu
  * which contains video setting, control settings and sound settings.

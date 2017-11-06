@@ -63,12 +63,12 @@ void StateOption::menuSettings() {
     menuGUI->add(picture);
 
     // Video button
-    tgui::Button::Ptr videoSettings = tgui::Button::copy(masterButton);
-    videoSettings->setText("Video settings");
+    tgui::Button::Ptr videoSettings1 = tgui::Button::copy(masterButton);
+    videoSettings1->setText("Video settings");
     // Connects a function to the Video settings button,
     // this function runs when the the button is pressed
 
-    videoSettings->connect("pressed", StateOption::videoSettings, this);
+    videoSettings1->connect("pressed", &StateOption::videoSettings,this);
 
     // Control button
     tgui::Button::Ptr controlSettings = tgui::Button::copy(masterButton);
@@ -76,14 +76,14 @@ void StateOption::menuSettings() {
     // Connects a function to the Controls button,
     // this function runs when the the button is pressed
 
-    controlSettings->connect("pressed", StateOption::controlSettings, this);
+    controlSettings->connect("pressed", &StateOption::controlSettings, this);
 
     // Sound button
     tgui::Button::Ptr soundSettings = tgui::Button::copy(masterButton);
     soundSettings->setText("Sound settings");
     // Connects a function to the Sound Setting button,
     // this function runs when the the button is pressed
-    soundSettings->connect("pressed", StateOption::soundSettings, this);
+    soundSettings->connect("pressed", &StateOption::soundSettings, this);
 
     // Back button
     tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
@@ -95,7 +95,7 @@ void StateOption::menuSettings() {
     backButton->connect("pressed", [this] { machine->setCurrentState(StateMachine::stateID::MENU); });
 
     // Adds all the widgets to the layout and GUI
-    layout->add(videoSettings);
+    layout->add(videoSettings1);
     layout->addSpace();
     layout->add(controlSettings);
     layout->addSpace();
@@ -122,7 +122,7 @@ void StateOption::videoSettings() {
     resolutonBox->addItem("1280x720");
     resolutonBox->addItem("1920x1080");
     resolutonBox->setSelectedItem(tempRes);
-    resolutonBox->connect("ItemSelected", StateOption::setTempRes, this);
+    resolutonBox->connect("ItemSelected", &StateOption::setTempRes, this);
 
     // Resoulution label
     tgui::Label::Ptr resLabel = tgui::Label::create();
@@ -143,7 +143,7 @@ void StateOption::videoSettings() {
     backButton->setPosition(10, windowHeight - 60);
     // Connects a function to the  Back button
     // this function runs when the the button is pressed,
-    backButton->connect("pressed", StateOption::menuSettings, this);
+    backButton->connect("pressed", &StateOption::menuSettings, this);
 
     // Apply changes button
     tgui::Button::Ptr applyButton = tgui::Button::copy(masterButton);
@@ -152,7 +152,7 @@ void StateOption::videoSettings() {
     applyButton->setPosition(windowWidth - 210, windowHeight - 60);
     // Connects a function to the Apply changes button
     // this function runs when the the button is pressed,
-    applyButton->connect("Pressed", StateOption::applyChanges, this);
+    applyButton->connect("Pressed", &StateOption::applyChanges, this);
 
     // Adds the widgets and layout to the GUI
     layout->add(resLabel);
@@ -175,7 +175,7 @@ void StateOption::controlSettings() {
     backButton->setPosition(10, windowHeight - 60);
 
     // Connects a function to the  back button
-    backButton->connect("pressed", StateOption::menuSettings, this);
+    backButton->connect("pressed", &StateOption::menuSettings, this);
 
     menuGUI->add(backButton);
 }
@@ -235,7 +235,7 @@ void StateOption::soundSettings() {
     backButton->setPosition(10, windowHeight - 60);
     // Connects a function to the  Back button
     // this function runs when the the button is pressed,
-    backButton->connect("pressed", this->menuSettings, this);
+    backButton->connect("pressed", &menuSettings, this);
 
     // Adds all the layouts and widgets to the GUI
     horiLayout->add(muteSound);

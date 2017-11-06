@@ -49,6 +49,8 @@ private:
      */
     void drawMenu();
 
+    void changeOption();
+
     // TGUI setup
     // Creates a theme
     tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/BabyBlue.txt");
