@@ -6,7 +6,7 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     /// Assigning pointers
     machine = &stateMachine;
     window = &machine->configWindow.getWindow();
-    //window->setView(sf::View(window->getDefaultView()));
+    window->setView(sf::View(window->getDefaultView()));
     menuGUI = &machine->configWindow.getMenuGUI();
 
 
@@ -37,9 +37,9 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     quitButton->setText("Quit");
 
     // Connects functions to the different buttons
-    button->connect("pressed", [this] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
+    button->connect("pressed", [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
     settingsButton->connect("pressed", &StateMenu::changeOption, this);
-    quitButton->connect("pressed", [this] { machine->setCurrentState(StateMachine::stateID::EXIT); });
+    quitButton->connect("pressed", [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
 
     // Adds all the widgets and layouts to the MenuGUI
     layout->add(button);

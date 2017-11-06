@@ -75,7 +75,6 @@ void StateOption::menuSettings() {
     controlSettings->setText("Controls");
     // Connects a function to the Controls button,
     // this function runs when the the button is pressed
-
     controlSettings->connect("pressed", &StateOption::controlSettings, this);
 
     // Sound button
@@ -131,7 +130,6 @@ void StateOption::videoSettings() {
     resLabel->setSize(100, 50);
 
     // TODO: fix full screen checkbox isChecked() ...
-    // TODO: fix fullscreen feature ...
     // Fullscreen checkbox
     fullScreenCheck->setPosition(windowWidth / 6, windowHeight / 2.5);
     fullScreenCheck->setText("Fullscreen");
@@ -183,7 +181,6 @@ void StateOption::controlSettings() {
 void StateOption::soundSettings() {
 
     // TODO: add function to all the sound Sliders and sound Buttons ...
-
     menuGUI->removeAllWidgets();
     layout->removeAllWidgets();
     menuGUI->add(picture);
