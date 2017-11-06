@@ -26,11 +26,11 @@ public:
 
     bool farmerTouch = false;
 
-private:
+    static int nextId;
 
+private:
     /// Entity properties
     const int id;
-    static int nextId;
 
     float density = 1.0f;
     float friction = 1.0f;

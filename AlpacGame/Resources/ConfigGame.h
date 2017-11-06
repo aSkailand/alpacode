@@ -2,10 +2,10 @@
 #ifndef ALPACGAME_CONFIGGAME_H
 #define ALPACGAME_CONFIGGAME_H
 
-
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
+#include "../entity/Entity.h"
 
 /**
  * Common resources accessible by all game entities.
@@ -19,8 +19,16 @@ public:
      */
     unsigned int planetRadius = 600;
 
-    b2Body* planetBody;
+    bool newGame = true;
 
+    b2World* world = nullptr;
+    Entity* planet = nullptr;
+    Entity* farmer = nullptr;
+    b2Body* planetBody = nullptr;
+
+    void reset();
+
+    std::vector<Entity*> *entities = nullptr;
 
     /**
      * Show in-game labels or not.

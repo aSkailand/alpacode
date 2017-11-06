@@ -24,12 +24,11 @@ public:
      */
     Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
-private:
-
-    /// Entity Properties
-    const int id;
     static int nextId;
 
+private:
+    /// Entity Properties
+    const int id;
     float density = 1.0f;
     float friction = 1.0f;
     float restitution = 0.0f;

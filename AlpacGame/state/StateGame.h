@@ -24,9 +24,8 @@ public:
 
     void goNext(StateMachine &stateMachine) override;
 
-    std::vector<Entity*> entities;
+    std::vector<Entity*> *entities;
 
-    // todo: Put planet and farmer in vector, then point to them with these pointers?
     Entity* planet;
     Entity* farmer;
 

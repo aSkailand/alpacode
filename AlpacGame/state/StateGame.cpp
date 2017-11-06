@@ -5,20 +5,22 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Assign pointers
     machine = &stateMachine;
-    window = &machine->configWindow.getWindow();
     configGame = &machine->configGame;
 
-    /// Initiating World (With no innate gravitation)
-    world = new b2World(b2Vec2(0, 0));
-    world->SetContactListener(new CollisionListener());
+    /// Reset Game
+    if(configGame->newGame){
 
-    /// Instantiating initial entities
-    planet = new Planet(world, configGame, configGame->planetRadius, configGame->planetCenter.x, configGame->planetCenter.y);
-    farmer = new Farmer(world, configGame, 50, 0, -200);
-    entities.push_back(planet);
-    entities.push_back(farmer);
+        configGame->reset();
 
-    configGame->planetBody = planet->getBody();
+        /// Assign pointers
+        window = &machine->configWindow.getWindow();
+        world = configGame->world;
+        entities = configGame->entities;
+        planet = configGame->planet;
+        farmer = configGame->farmer;
+
+        configGame->newGame = false;
+    }
 
     /// View
     view = sf::View(window->getDefaultView());
@@ -68,7 +70,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Render Phase
         window->clear(sf::Color::Blue);
 
-        for (Entity *e : entities) {
+        for (Entity *e : *entities) {
 
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
@@ -132,7 +134,9 @@ bool StateGame::pollGame() {
             }
         }
     }
-    return true;
+
+    return !configGame->newGame;
+
 }
 
 
@@ -140,6 +144,11 @@ void StateGame::keyPressedHandler(sf::Event event) {
     switch(event.key.code){
         case sf::Keyboard::I: {
             configGame->showLabels = !configGame->showLabels;
+            break;
+        }
+        case sf::Keyboard::R:{
+            configGame->newGame = true;
+
             break;
         }
         case sf::Keyboard::Z:{
@@ -167,14 +176,13 @@ void StateGame::mousePressedHandler(sf::Event event) {
     int mouseX = sf::Mouse::getPosition(*window).x;
     int mouseY = sf::Mouse::getPosition(*window).y;
 
-
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities.push_back(new Alpaca(world, configGame, 50, mouseX, mouseY));
+            entities->emplace_back(new Alpaca(world, configGame, 50, mouseX, mouseY));
             break;
         }
         case sf::Mouse::Right: {
-            entities.push_back(new Wolf(world, configGame, 50, mouseX, mouseY));
+            entities->emplace_back(new Wolf(world, configGame, 50, mouseX, mouseY));
             break;
         }
         default: {

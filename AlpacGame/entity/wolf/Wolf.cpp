@@ -138,6 +138,7 @@ void Wolf::startContact(Entity *contactEntity) {
         case ID::PLANET:
             break;
         case ID::FARMER: {
+
             b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
             b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
             beta.Normalize();
