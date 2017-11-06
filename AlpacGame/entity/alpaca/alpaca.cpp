@@ -1,4 +1,4 @@
-#include "Alpaca.h"
+#include "alpaca.h"
 
 Alpaca::Alpaca(StateMachine &stateMachine, float initAngle) : id(nextId++) {
 

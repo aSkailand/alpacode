@@ -13,7 +13,7 @@ void StateOption::goNext(StateMachine &stateMachine) {
     windowHeight = tgui::bindHeight(machine->configWindow.getMenuGUI());
 
     // Picture
-    picture = tgui::Picture::create("aluminium.jpg");
+    picture = tgui::Picture::create("Resources/aluminium.jpg");
     picture->setSize(tgui::bindMax(machine->configWindow.getScreenWidth(), windowWidth),
                      tgui::bindMax(machine->configWindow.getScreenHeight(), windowHeight));
 
@@ -232,7 +232,7 @@ void StateOption::soundSettings() {
     backButton->setPosition(10, windowHeight - 60);
     // Connects a function to the  Back button
     // this function runs when the the button is pressed,
-    backButton->connect("pressed", &menuSettings, this);
+    backButton->connect("pressed", &StateOption::menuSettings, this);
 
     // Adds all the layouts and widgets to the GUI
     horiLayout->add(muteSound);

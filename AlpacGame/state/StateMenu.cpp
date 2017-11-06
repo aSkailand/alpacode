@@ -13,7 +13,7 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     menuGUI->removeAllWidgets();
     windowWidth = tgui::bindWidth(machine->configWindow.getMenuGUI());
     windowHeight = tgui::bindHeight(machine->configWindow.getMenuGUI());
-    picture = tgui::Picture::create("aluminium.jpg");
+    picture = tgui::Picture::create("Resources/aluminium.jpg");
     picture->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
     menuGUI->add(picture);
 
@@ -38,7 +38,7 @@ void StateMenu::goNext(StateMachine &stateMachine) {
 
     // Connects functions to the different buttons
     button->connect("pressed", [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
-    settingsButton->connect("pressed", &StateMenu::changeOption, this);
+    settingsButton->connect("MousePressed", &StateMenu::changeOption, this);
     quitButton->connect("pressed", [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
 
     // Adds all the widgets and layouts to the MenuGUI

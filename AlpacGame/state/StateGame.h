@@ -13,7 +13,7 @@
 #include "../Resources/ConfigGame.h"
 #include "../planet/planet.h"
 #include "../entity/player/Farmer.h"
-#include "../entity/alpaca/Alpaca.h"
+#include "../entity/alpaca/alpaca.h"
 
 class StateGame : public State{
 public:

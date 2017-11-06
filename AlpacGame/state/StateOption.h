@@ -98,7 +98,7 @@ private:
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
     // Creates a theme
-    tgui::Theme::Ptr theme = tgui::Theme::create("C:/dev/libs/TGUI/include/TGUI/widgets/BabyBlue.txt");
+    tgui::Theme::Ptr theme = tgui::Theme::create("Resources/BabyBlue.txt");
 
 
     // Variables
