@@ -17,7 +17,7 @@ public:
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius = 300;
+    unsigned int planetRadius = 600;
 
     bool newGame = true;
 
@@ -51,12 +51,6 @@ public:
      */
     float mouseXpos = 0;
     float mouseYpos = 0;
-
-    sf::RenderWindow *windowPointer = nullptr;
-    float windowWidth = 0;
-    float windowHeigth = 0;
-
-
 
     /**
      * Run the given configurations.

@@ -190,9 +190,9 @@ void Farmer::performAction() {
                         float offsetY = -2.5f;
                         float offsetX = 0.5f;
 
-//                        if(currentDirection == Direction::LEFT){
-//                            offsetX *= -1;
-//                        }
+                        if(currentDirection == Direction::LEFT){
+                            offsetX *= -1;
+                        }
 
                         float32 delta =
                                 bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
@@ -201,9 +201,9 @@ void Farmer::performAction() {
 
 
 //                        float bodyAngle = body->GetAngle();
-                        float posY = configGame->windowHeigth - configGame->mouseYpos;
-                        b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() - b2Vec2( configGame->mouseXpos / SCALE, posY / SCALE);
-                        float angle = atan2(-toTarget.x, toTarget.y) + 90 / DEGtoRAD;
+//                        float posY = configGame->winPdowHeigth - configGame->mouseYpos;
+                        b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() - b2Vec2( configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+                        float angle = atan2(-toTarget.x, toTarget.y) - 90 / DEGtoRAD;
 //                        while ( angle < -180 * DEGtoRAD ) angle += 360 * DEGtoRAD;
 //                        while ( angle >  180 * DEGtoRAD ) angle -= 360 * DEGtoRAD;
                         printf("Angle: %f\n",angle * DEGtoRAD);

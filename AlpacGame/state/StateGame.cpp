@@ -30,9 +30,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Poll game
     while (pollGame()) {
 
-        /// Save current mouse coordinates
-        configGame->mouseXpos = sf::Mouse::getPosition(*window).x;
-        configGame->mouseYpos = sf::Mouse::getPosition(*window).y;
+        /// Save current mouse coordinates relatively to view
+        sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+        sf::Vector2f worldPos = window->mapPixelToCoords(pixelPos);
+        configGame->mouseXpos = worldPos.x;
+        configGame->mouseYpos = worldPos.y;
 
         /// Save current input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
@@ -109,7 +111,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         view.setRotation(angle * DEGtoRAD);
 
-//        window->setView(view);
+        window->setView(view);
 
     }
 }
@@ -161,7 +163,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::G: {
-            entities->emplace_back(new Shotgun(world, configGame, 60, 15, 50, 50));
+            entities->emplace_back(new Shotgun(world, configGame, 80, 20, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::P:{
@@ -190,17 +192,13 @@ void StateGame::keyPressedHandler(sf::Event event) {
 
 void StateGame::mousePressedHandler(sf::Event event) {
 
-    // Save Mouse Coordinates
-    int mouseX = sf::Mouse::getPosition(*window).x;
-    int mouseY = sf::Mouse::getPosition(*window).y;
-
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities->emplace_back(new Alpaca(world, configGame, 50, mouseX, mouseY));
+            entities->emplace_back(new Alpaca(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Mouse::Right: {
-            entities->emplace_back(new Wolf(world, configGame, 50, mouseX, mouseY));
+            entities->emplace_back(new Wolf(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         default: {

@@ -8,7 +8,7 @@ Shotgun::Shotgun(b2World *world, ConfigGame *configGame, float width, float heig
 
     // Create Body
     b2BodyDef bodyDef;
-    bodyDef.position = b2Vec2(this->x / SCALE, this->y / SCALE);
+    bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
     bodyDef.type = b2_dynamicBody;
     body = world->CreateBody(&bodyDef);
 
@@ -43,9 +43,13 @@ Shotgun::Shotgun(b2World *world, ConfigGame *configGame, float width, float heig
     // Create SFML shape
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
     sfShape->setOrigin(width/2,height/2);
-    sfShape->setFillColor(sf::Color::Magenta);
-    sfShape->setOutlineThickness(3);
+//    sfShape->setFillColor(sf::Color::Magenta);
+    sfShape->setOutlineThickness(1);
     sfShape->setOutlineColor(sf::Color::Black);
+
+    sf::Texture *texture = new sf::Texture;
+    texture->loadFromFile("entity/shotgun/shotgun.png");
+    sfShape->setTexture(texture);
 
 }
 
