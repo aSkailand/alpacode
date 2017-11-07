@@ -35,7 +35,10 @@ private:
     float restitution = 0.0f;
 
     uint16 categoryBits = (uint16) ID::PLANET;
-    uint16 maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::WOLF;
+    uint16 maskBits =   (uint16) ID::FARMER
+                      | (uint16) ID::ALPACA
+                      | (uint16) ID::WOLF
+                      | (uint16) ID::SHOTGUN;
 
 
 public:

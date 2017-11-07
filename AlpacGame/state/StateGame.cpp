@@ -1,6 +1,7 @@
 
 #include "StateGame.h"
 
+
 void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Assign pointers
@@ -8,7 +9,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
     configGame = &machine->configGame;
 
     /// Reset Game
-    if(configGame->newGame){
+    if (configGame->newGame) {
 
         configGame->reset();
 
@@ -96,7 +97,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         float viewX = configGame->calcX(angle * DEGtoRAD);
         float viewY = configGame->calcY(angle * DEGtoRAD);
 
-        view.setCenter(viewX , viewY);
+        view.setCenter(viewX, viewY);
 
         view.setRotation(angle * DEGtoRAD);
 
@@ -141,29 +142,33 @@ bool StateGame::pollGame() {
 
 
 void StateGame::keyPressedHandler(sf::Event event) {
-    switch(event.key.code){
+    switch (event.key.code) {
         case sf::Keyboard::I: {
             configGame->showLabels = !configGame->showLabels;
             break;
         }
-        case sf::Keyboard::R:{
+        case sf::Keyboard::R: {
             configGame->newGame = true;
 
             break;
         }
-        case sf::Keyboard::Z:{
-            if(zoomed){
+        case sf::Keyboard::G: {
+            entities->emplace_back(new Shotgun(world, configGame, 60, 15, 50, 50));
+            break;
+        }
+        case sf::Keyboard::Z: {
+            if (zoomed) {
                 zoomed = false;
                 view = sf::View(window->getDefaultView());
                 view.zoom(viewNonZoomed);
-            } else{
+            } else {
                 zoomed = true;
                 view = sf::View(window->getDefaultView());
                 view.zoom(viewZoomed);
             }
             break;
         }
-        default:{
+        default: {
             break;
         }
     }

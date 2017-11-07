@@ -18,6 +18,7 @@
 #include "../entity/player/Farmer.h"
 #include "../entity/alpaca/Alpaca.h"
 #include "../entity/wolf/Wolf.h"
+#include "../entity/shotgun/Shotgun.h"
 
 class StateGame : public State{
 public:
