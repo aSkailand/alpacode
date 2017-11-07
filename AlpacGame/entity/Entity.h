@@ -36,6 +36,8 @@ public:
     b2Fixture *bodyFixture;
     b2Fixture *sensorFixture;
 
+    bool physicsSensitive = true;
+
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
      */

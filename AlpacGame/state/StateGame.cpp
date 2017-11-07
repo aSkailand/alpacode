@@ -30,6 +30,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Poll game
     while (pollGame()) {
 
+        /// Save current mouse coordinates
+        configGame->mouseXpos = sf::Mouse::getPosition(*window).x;
+        configGame->mouseYpos = sf::Mouse::getPosition(*window).y;
+
         /// Save current input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             configGame->currentInput = sf::Keyboard::Right;
@@ -46,6 +50,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Box2D Physics Calculations
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
+
+            auto *entityInfo = (Entity*) bodyIter->GetUserData();
+            if(!entityInfo->physicsSensitive)
+                continue;
 
             // Calculate Radial Gravitation on all bodies
             float gravitationForce = 10.0f;
@@ -101,7 +109,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         view.setRotation(angle * DEGtoRAD);
 
-        window->setView(view);
+//        window->setView(view);
 
     }
 }
@@ -154,6 +162,11 @@ void StateGame::keyPressedHandler(sf::Event event) {
         }
         case sf::Keyboard::G: {
             entities->emplace_back(new Shotgun(world, configGame, 60, 15, 50, 50));
+            break;
+        }
+        case sf::Keyboard::P:{
+            printf("X pos: %f\n",configGame->mouseXpos);
+            printf("Y pos: %f\n\n",configGame->mouseYpos);
             break;
         }
         case sf::Keyboard::Z: {

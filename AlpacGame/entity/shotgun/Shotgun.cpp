@@ -4,6 +4,7 @@
 
 Shotgun::Shotgun(b2World *world, ConfigGame *configGame, float width, float height, float x, float y) {
 
+    this->configGame = configGame;
 
     // Create Body
     b2BodyDef bodyDef;
@@ -51,6 +52,7 @@ Shotgun::Shotgun(b2World *world, ConfigGame *configGame, float width, float heig
 void Shotgun::render(sf::RenderWindow *window) {
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
+
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 

@@ -11,6 +11,11 @@
 
 class Shotgun : public EntityCold{
 public:
+
+    bool farmerTouch = false;
+
+    ConfigGame *configGame;
+
     Shotgun(b2World *world, ConfigGame *configGame, float width, float height, float x, float y);
 
     void render(sf::RenderWindow *window) override;

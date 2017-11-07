@@ -38,7 +38,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     sensor.shape = &b2Shape2;
     sensor.isSensor = true;
     sensor.filter.categoryBits = (uint16) ID::FARMER;
-    sensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF;
+    sensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF | (uint16) ID::SHOTGUN;
 
     // Store information
     setID(Entity::ID::FARMER);
@@ -66,13 +66,14 @@ void Farmer::render(sf::RenderWindow *window) {
 
     window->draw(*sfShape);
 
-    if(configGame->showLabels){
+    if (configGame->showLabels) {
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                           body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label->setRotation(sfShape->getRotation());
         window->draw(*label);
         sfShape->setOutlineThickness(2);
-    } else{
+    } else {
         sfShape->setOutlineThickness(0);
     }
 }
@@ -147,24 +148,88 @@ void Farmer::performAction() {
                 holdingEntity = currentlyTouchingEntities.front();
                 currentlyTouchingEntities.pop_front();
 
-                dynamic_cast<EntityWarm*> (holdingEntity)->currentStatus = Status::AIRBORNE;
+                holdingEntity->physicsSensitive = false;
+
+                // todo: add a if else instead? Or add distinctive if cases that fit all entity?
+                auto *warm = dynamic_cast<EntityWarm *> (holdingEntity);
+                if (warm) {
+                    warm->currentStatus = Status::AIRBORNE;
+                }
+
+//                auto *cold = dynamic_cast<EntityCold *> (holdingEntity);
+//                if (cold) {
+//
+//                }
+
 
                 graspClock.restart();
             }
                 // If farmer is in holding-mode, and holds something => keep holding
             else {
-                // Calculate the length between farmer and the held entity.
-                float offset = -1.f;
-                float32 delta = bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
 
-                // Lock the entity delta length above farmer's origin
-                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta+offset))), getBody()->GetAngle());
+                switch (holdingEntity->getID()) {
+                    case ID::PLANET:
+                        break;
+                    case ID::FARMER:
+                        break;
+                    case ID::ALPACA: {
+                        // Calculate the length between farmer and the held entity.
+                        float offset = -1.f;
+                        float32 delta =
+                                bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
+
+                        // Lock the entity delta length above farmer's origin
+                        holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta + offset))),
+                                                              getBody()->GetAngle());
+                        break;
+                    }
+                    case ID::WOLF:
+                        break;
+                    case ID::SHOTGUN: {
+                        // Calculate the length between farmer and the held entity.
+                        float offsetY = -2.5f;
+                        float offsetX = 0.5f;
+
+//                        if(currentDirection == Direction::LEFT){
+//                            offsetX *= -1;
+//                        }
+
+                        float32 delta =
+                                bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
+
+
+
+
+//                        float bodyAngle = body->GetAngle();
+                        float posY = configGame->windowHeigth - configGame->mouseYpos;
+                        b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() - b2Vec2( configGame->mouseXpos / SCALE, posY / SCALE);
+                        float angle = atan2(-toTarget.x, toTarget.y) + 90 / DEGtoRAD;
+//                        while ( angle < -180 * DEGtoRAD ) angle += 360 * DEGtoRAD;
+//                        while ( angle >  180 * DEGtoRAD ) angle -= 360 * DEGtoRAD;
+                        printf("Angle: %f\n",angle * DEGtoRAD);
+//                        float desiredAngle = atan2f( -toTarget.x, toTarget.y );
+//                        while ( desiredAngle < -180 * DEGtoRAD ) desiredAngle += 360 * DEGtoRAD;
+//                        while ( desiredAngle >  180 * DEGtoRAD ) desiredAngle -= 360 * DEGtoRAD;
+
+//                        b2Vec2 angleVec(
+//                                holdingEntity->getBody()->GetLocalPoint(b2Vec2(configGame->mouseXpos, configGame->mouseYpos).x,));
+
+                        // Lock the entity delta length above farmer's origin
+                        holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(offsetX, -(delta + offsetY))),
+                                                               angle);
+
+//                        holdingEntity->getBody()->SetTransform(getBody()->GetWorldCenter(),holdingEntity->getBody()->GetWorldVector(toTarget));
+                        break;
+                    }
+                }
+
             }
             break;
         }
 
         case Grasp::THROWING: {
 
+            holdingEntity->physicsSensitive = true;
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
             forcePushBody((int) Grasp::THROWING, holdingEntity->getBody(), throwForce, currentDirection);
             holdingEntity = nullptr;
@@ -208,11 +273,21 @@ void Farmer::endContact(Entity *contactEntity) {
         }
         case ID::WOLF:
             break;
+        case ID::SHOTGUN: {
+            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) !=
+                currentlyTouchingEntities.end()) {
+                currentlyTouchingEntities.remove(contactEntity);
+                auto contactAlpaca = dynamic_cast<Shotgun *> (contactEntity);
+                contactAlpaca->farmerTouch = false;
+                std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
+
+            }
+            break;
+        }
     }
 }
 
 void Farmer::startContact(Entity *contactEntity) {
-//    std::cout << "Farmer Start Contact" << std::endl;
 
     ID contactID = contactEntity->getID();
 
@@ -238,7 +313,20 @@ void Farmer::startContact(Entity *contactEntity) {
 
 
         }
-        case ID::WOLF:{
+        case ID::WOLF: {
+            break;
+        }
+        case ID::SHOTGUN: {
+            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
+                          contactEntity) == currentlyTouchingEntities.end()) {
+                currentlyTouchingEntities.push_back(contactEntity);
+                // todo: Add farmerTouch to entity?
+                auto contactAlpaca = dynamic_cast<Shotgun *> (contactEntity);
+                contactAlpaca->farmerTouch = true;
+                sfShape->setOutlineColor(sf::Color::Green);
+
+                std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
+            }
             break;
         }
     }

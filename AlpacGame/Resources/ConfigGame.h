@@ -17,7 +17,7 @@ public:
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius = 600;
+    unsigned int planetRadius = 300;
 
     bool newGame = true;
 
@@ -41,12 +41,29 @@ public:
     sf::Vector2f planetCenter;
 
     /**
+     * The current buffered input, used to
+     * determine which direction the farmer walks towards.
+     */
+    sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
+
+    /**
+     * Mouse Coordinates.
+     */
+    float mouseXpos = 0;
+    float mouseYpos = 0;
+
+    sf::RenderWindow *windowPointer = nullptr;
+    float windowWidth = 0;
+    float windowHeigth = 0;
+
+
+
+    /**
      * Run the given configurations.
      * @param window the shared window.
      */
     void run(sf::RenderWindow &window);
 
-    // todo: make into static?
     /**
      * Calculates the x position on the circle's outline given by the angle.
      * @param angle the angle to calculate with.
@@ -76,12 +93,6 @@ public:
      * @return The y position.
      */
     float calcY(float degree, float radius);
-
-    /**
-     * The current buffered input, used to
-     * determine which direction the farmer walks towards.
-     */
-    sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
 
     /// Fonts
     sf::Font fontID;
