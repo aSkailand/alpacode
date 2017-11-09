@@ -6,6 +6,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
+#include "../entity/EntityWarm.h"
+#include "../entity/AnimationInfo.h"
 
 /**
  * Common resources accessible by all game entities.
@@ -95,8 +97,18 @@ private:
     /**
      * Load all necessary textures used during the game.
      */
+    void loadTexture(std::string filename, std::map<EntityWarm::Action, AnimationInfo>& sprites, int mode, int width, int height,int y);
     void loadAllTextures();
 
+protected:
+    /// Frame Size:
+    int spriteX = 153;
+    int spriteY = 122;
+
+    /// Map of every entities sprites.
+    std::map<EntityWarm::Action , AnimationInfo> wolfSprites;
+    std::map<EntityWarm::Action , AnimationInfo> alpacaSprites;
+    std::map<EntityWarm::Action , AnimationInfo> farmerSprites;
 };
 
 

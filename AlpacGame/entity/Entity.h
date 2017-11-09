@@ -134,6 +134,8 @@ private:
     std::map<int, std::vector<b2Vec2>> angleVectors;
 
 
+
+
 };
 
 #endif //ALPACGAME_ENTITY_H

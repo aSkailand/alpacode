@@ -10,7 +10,8 @@
  *  1. An entity (Check Entity.h).
  *  2. Can move by own will.
  */
-class EntityWarm : public Entity {
+class EntityWarm : public Entity
+{
 
 public:
 
@@ -83,12 +84,19 @@ protected:
         return triggered;
     }
 
+
 private:
 
     /**
      * Clock used to determine if entity is allowed to move or not.
      */
     sf::Clock movementTriggerClock{};
+
+    /**
+     * Clock used to determine switching texture for sprites(Animation)
+     */
+
+    sf::Clock AnimationClock{};
 
 };
 
