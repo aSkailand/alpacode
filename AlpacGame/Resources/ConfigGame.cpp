@@ -6,6 +6,8 @@
 
 void ConfigGame::run(sf::RenderWindow &window) {
 
+    this->window = &window;
+
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
 
     loadAllTextures();

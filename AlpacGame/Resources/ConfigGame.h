@@ -28,6 +28,8 @@ public:
 
     void reset();
 
+    sf::RenderWindow *window = nullptr;
+
     std::vector<Entity*> *entities = nullptr;
 
     /**

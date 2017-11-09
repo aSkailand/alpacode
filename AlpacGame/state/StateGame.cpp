@@ -18,7 +18,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         world = configGame->world;
         entities = configGame->entities;
         planet = configGame->planet;
-        farmer = configGame->farmer;
+        farmer = dynamic_cast<Farmer*> (configGame->farmer);
 
         configGame->newGame = false;
     }
@@ -26,6 +26,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// View
     view = sf::View(window->getDefaultView());
     view.zoom(viewNonZoomed);
+
+    window->setMouseCursorVisible(false);
 
     /// Poll game
     while (pollGame()) {
@@ -49,12 +51,13 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
 
+
         /// Box2D Physics Calculations
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-            auto *entityInfo = (Entity*) bodyIter->GetUserData();
-            if(!entityInfo->physicsSensitive)
+            auto *entityInfo = (Entity *) bodyIter->GetUserData();
+            if (!entityInfo->physicsSensitive)
                 continue;
 
             // Calculate Radial Gravitation on all bodies
@@ -94,6 +97,15 @@ void StateGame::goNext(StateMachine &stateMachine) {
             e->render(window);
         }
 
+        // todo fix aim
+        sf::CircleShape mouseAim;
+        mouseAim.setRadius(5);
+        mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
+        mouseAim.setFillColor(sf::Color::Red);
+        mouseAim.setOutlineColor(sf::Color::Black);
+        mouseAim.setOutlineThickness(2);
+        window->draw(mouseAim);
+
         /// Update View
         window->display();
 
@@ -115,7 +127,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     }
 }
-
 
 bool StateGame::pollGame() {
     sf::Event event{};
@@ -162,13 +173,22 @@ void StateGame::keyPressedHandler(sf::Event event) {
 
             break;
         }
-        case sf::Keyboard::G: {
-            entities->emplace_back(new Shotgun(world, configGame, 80, 20, configGame->mouseXpos, configGame->mouseYpos));
+        case sf::Keyboard::P: {
+            printf("X pos: %f\n", configGame->mouseXpos);
+            printf("Y pos: %f\n\n", configGame->mouseYpos);
             break;
         }
-        case sf::Keyboard::P:{
-            printf("X pos: %f\n",configGame->mouseXpos);
-            printf("Y pos: %f\n\n",configGame->mouseYpos);
+        case sf::Keyboard::Num1: {
+            entities->emplace_back(new Alpaca(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Num2: {
+            entities->emplace_back(new Wolf(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Num3: {
+            entities->emplace_back(
+                    new Shotgun(world, configGame, 80, 20, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Z: {
@@ -194,11 +214,13 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities->emplace_back(new Alpaca(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
+
+            if(dynamic_cast<Usable*>(farmer->holdingEntity)){
+                dynamic_cast<Usable*>(farmer->holdingEntity)->use();
+            }
             break;
         }
         case sf::Mouse::Right: {
-            entities->emplace_back(new Wolf(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         default: {

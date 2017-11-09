@@ -20,11 +20,12 @@ public:
 
     /// Enums
     enum class ID {
-        PLANET = 0x0001,
-        FARMER = 0x0002,
-        ALPACA = 0x0004,
-        WOLF = 0x0008,
-        SHOTGUN = 0x0010
+        PLANET  = 0x0001,
+        FARMER  = 0x0002,
+        ALPACA  = 0x0004,
+        WOLF    = 0x0008,
+        SHOTGUN = 0x0010,
+        BULLET  = 0x0100
     };
 
     enum class Direction{

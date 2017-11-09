@@ -8,24 +8,33 @@
 
 #include "../EntityCold.h"
 #include "../../Resources/ConfigGame.h"
+#include "../Usable.h"
 
-class Shotgun : public EntityCold{
+class Shotgun : public EntityCold, public Usable {
 public:
 
     bool farmerTouch = false;
 
+    float length;
+
+
+
     ConfigGame *configGame;
 
-    Shotgun(b2World *world, ConfigGame *configGame, float width, float height, float x, float y);
+    b2World *world;
+
+    Shotgun(b2World *world, ConfigGame *configGame, float length, float height, float x, float y);
 
     void render(sf::RenderWindow *window) override;
 
     void startContact(Entity *contactEntity) override;
 
     void endContact(Entity *contactEntity) override;
+
+    void use() override;
+
+    void shootBullets(float bulletForce, float coneAngle, int numBullets);
 };
-
-
 
 
 #endif //ALPACGAME_SHOTGUN_H

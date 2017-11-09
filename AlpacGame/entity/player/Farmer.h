@@ -22,24 +22,29 @@ public:
      */
     Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
-private:
+    /**
+     * Current held entity.
+     */
+    Entity *holdingEntity = nullptr;
 
+private:
     /// Entity properties
     // Customizable
     float density = 1.0f;
     float friction = 1.0f;
+
     float restitution = 0.0f;
-
     uint16 categoryBits = (uint16) ID::FARMER;
+
     uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
-
     float walkForce = 5.f;
+
     float walkAngle = 45.f;   // Right, Degrees
-
     float jumpForce = 10.f;
-    float jumpAngle = 45.f;   // Right, Degrees
 
+    float jumpAngle = 45.f;   // Right, Degrees
     float throwForce = 10.f;
+
     float throwAngle = 10.f;   // Right, Degrees
 
     /**
@@ -51,10 +56,8 @@ private:
     enum class Grasp {
         EMPTY, HOLDING, THROWING = 3
     };
-
-    Entity *holdingEntity = nullptr;
     sf::Clock graspClock;
-    float graspCooldown = 0.1f;
+    float graspCooldown = 0.2f;
     Grasp currentGrasp = Grasp::EMPTY;
     std::list<Entity *> currentlyTouchingEntities;
 

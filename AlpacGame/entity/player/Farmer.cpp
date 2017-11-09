@@ -98,12 +98,14 @@ void Farmer::switchAction() {
             break;
         }
         case sf::Keyboard::E: {
+
             if (isCooldownTriggered(&graspClock, graspCooldown)) {
                 if (currentGrasp == Grasp::EMPTY) {
                     if (!currentlyTouchingEntities.empty()) {
                         currentGrasp = Grasp::HOLDING;
                     }
-                } else if (currentGrasp == Grasp::HOLDING) {
+                }
+                else if (currentGrasp == Grasp::HOLDING) {
                     currentGrasp = Grasp::THROWING;
                 }
             }
@@ -206,7 +208,7 @@ void Farmer::performAction() {
                         float angle = atan2(-toTarget.x, toTarget.y) - 90 / DEGtoRAD;
 //                        while ( angle < -180 * DEGtoRAD ) angle += 360 * DEGtoRAD;
 //                        while ( angle >  180 * DEGtoRAD ) angle -= 360 * DEGtoRAD;
-                        printf("Angle: %f\n",angle * DEGtoRAD);
+//                        printf("Angle: %f\n",angle * DEGtoRAD);
 //                        float desiredAngle = atan2f( -toTarget.x, toTarget.y );
 //                        while ( desiredAngle < -180 * DEGtoRAD ) desiredAngle += 360 * DEGtoRAD;
 //                        while ( desiredAngle >  180 * DEGtoRAD ) desiredAngle -= 360 * DEGtoRAD;
@@ -230,8 +232,21 @@ void Farmer::performAction() {
         case Grasp::THROWING: {
 
             holdingEntity->physicsSensitive = true;
+
+            // Reset Rotation (So that throwing angle works as intended)
+            holdingEntity->getBody()->SetTransform(holdingEntity->getBody()->GetWorldCenter(), getBody()->GetAngle());
+
+            // Reset Speed
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-            forcePushBody((int) Grasp::THROWING, holdingEntity->getBody(), throwForce, currentDirection);
+
+            // Get mouse angle
+            b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() - b2Vec2( configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+            toTarget.Normalize();
+
+            float mass = holdingEntity->getBody()->GetMass();
+
+            holdingEntity->getBody()->ApplyLinearImpulseToCenter(throwForce * mass * -toTarget, true);
+
             holdingEntity = nullptr;
             currentGrasp = Grasp::EMPTY;
             break;

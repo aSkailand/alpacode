@@ -28,7 +28,7 @@ public:
     std::vector<Entity*> *entities;
 
     Entity* planet;
-    Entity* farmer;
+    Farmer* farmer;
 
 private:
 
