@@ -28,6 +28,10 @@ public:
 
 private:
 
+    /// AI Status
+    enum class Behavior{NORMAL, AFRAID};
+    Behavior currentBehavior = Behavior::NORMAL;
+
     /// Entity properties
     const int id;
     static int nextId;

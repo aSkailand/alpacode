@@ -39,6 +39,7 @@ Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, fl
     sfShape->setTexture(&configGame->planetTexture);
     sfShape->setOutlineThickness(3);
     sfShape->setOutlineColor(sf::Color::Black);
+
 }
 
 void Planet::render(sf::RenderWindow *window) {
