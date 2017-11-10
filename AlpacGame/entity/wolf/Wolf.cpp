@@ -120,7 +120,7 @@ void Wolf::render(sf::RenderWindow *window) {
 void Wolf::performAction() {
 
     // Check if the randomActionClock has triggered
-    if (isMovementAvailable(moveAvailableTick)) {
+    if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
         switch (currentAction) {
             case Action::WALKING: {
                 forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
@@ -136,38 +136,59 @@ void Wolf::performAction() {
 void Wolf::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET:
+            currentStatus = Status ::GROUNDED;
             break;
         case ID::FARMER: {
-            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
-            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
-            beta.Normalize();
-            delta += beta;
-            delta.Normalize();
+            b2Vec2 delta =  getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
             float mass = contactEntity->getBody()->GetMass();
+            float tempAngle = attackAngle;
+
+            if(delta.x > 0){ /// Hit from the right side, force must be going left
+                tempAngle = 180 - tempAngle; }
+
+            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(b2Vec2( -cos(tempAngle *b2_pi/180), -sin( tempAngle* b2_pi/180)));
+
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
-
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
             break;
 
         }
         case ID::ALPACA: {
-            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
-            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
-            beta.Normalize();
-            delta += beta;
-            delta.Normalize();
+            b2Vec2 delta =  getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
             float mass = contactEntity->getBody()->GetMass();
+            float tempAngle = attackAngle;
+
+            if(delta.x > 0){ /// Hit from the right side, force must be going left
+                tempAngle = 180 - tempAngle; }
+
+            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(b2Vec2( -cos(tempAngle *b2_pi/180), -sin( tempAngle* b2_pi/180)));
+
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
             break;
         }
 
         case ID::WOLF:
             break;
     }
+
 }
 
 void Wolf::endContact(Entity *contactEntity) {
+    switch (contactEntity->getID()){
+        case ID::PLANET:{
+            currentStatus = Status::AIRBORNE;
+            break;
+        }
+        case ID::ALPACA:{
+            break;
+        }
+        case ID::FARMER:{
+            break;
+        }
+
+    }
+
+
 
 }

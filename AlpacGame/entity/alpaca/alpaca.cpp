@@ -64,7 +64,9 @@ void Alpaca::switchAction() {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
 
+
         switch (currentAction) {
+
             case Action::IDLE: {
                 break;
             }
@@ -87,10 +89,7 @@ void Alpaca::switchAction() {
                 break;
             }
         }
-
     }
-
-
 }
 
 void Alpaca::render(sf::RenderWindow *window) {
@@ -124,7 +123,9 @@ void Alpaca::performAction() {
     if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
         switch (currentAction) {
             case Action::WALKING: {
-                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                if(currentStatus == Status::GROUNDED){
+                    forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                }
                 break;
             }
             case Action::JUMP:
