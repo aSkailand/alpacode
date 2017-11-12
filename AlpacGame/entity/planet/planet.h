@@ -21,6 +21,8 @@ public:
      */
     Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y);
 
+    bool deadCheck() override;
+
 private:
 
     /**

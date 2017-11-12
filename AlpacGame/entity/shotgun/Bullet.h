@@ -12,6 +12,14 @@
 class Bullet : public EntityCold{
 public:
 
+    ConfigGame *configGame;
+
+    ~Bullet();
+
+    b2Filter filter;
+
+    bool hit = false;
+
     Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 position);
 
     void render(sf::RenderWindow *window) override;
@@ -19,6 +27,12 @@ public:
     void startContact(Entity *contactEntity) override;
 
     void endContact(Entity *contactEntity) override;
+
+    bool deadCheck() override;
+
+private:
+    sf::Clock decayClock;
+    float decayTick = 1.0f;
 };
 
 

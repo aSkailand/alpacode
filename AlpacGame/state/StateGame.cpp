@@ -78,6 +78,22 @@ void StateGame::goNext(StateMachine &stateMachine) {
             bodyIter->ApplyAngularImpulse(impulse, true);
         }
 
+
+        /// Delete Dead Entities
+        for (Entity *e : *entities) {
+            if(e->deadCheck()){
+                // todo Fix!
+                printf("To be deleted.\n");
+                world->DestroyBody(e->getBody());
+                printf("Deleted.\n");
+
+                auto it = std::find(entities->begin(), entities->end(), e);
+                if(it != entities->end()){
+                    entities->erase(it);
+                }
+            }
+        }
+
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
 

@@ -82,7 +82,8 @@ private:
     /// Pointers
     ConfigGame *configGame;
 
-
+public:
+    bool deadCheck() override;
 
 public:
 

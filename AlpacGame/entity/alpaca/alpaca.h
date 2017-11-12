@@ -74,6 +74,11 @@ private:
      */
     void switchAction() override;
 
+public:
+    bool deadCheck() override;
+
+private:
+
     /// Pointers
     ConfigGame *configGame;
 

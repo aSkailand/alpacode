@@ -55,3 +55,7 @@ void Planet::startContact(Entity *contactEntity) {
 void Planet::endContact(Entity *contactEntity) {
 }
 
+bool Planet::deadCheck() {
+    return false;
+}
+

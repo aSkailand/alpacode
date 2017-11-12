@@ -26,6 +26,8 @@ public:
 
     static int nextId;
 
+    bool deadCheck() override;
+
 private:
     /// Entity Properties
     const int id;

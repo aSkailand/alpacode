@@ -150,6 +150,8 @@ void Alpaca::endContact(Entity *contactEntity) {
             break;
         case ID::WOLF:
             break;
+        default:
+            break;
     }
 
 }
@@ -168,6 +170,12 @@ void Alpaca::startContact(Entity *contactEntity) {
             break;
         case ID::WOLF:
             break;
+        default:
+            break;
     }
+}
+
+bool Alpaca::deadCheck() {
+    return false;
 }
 

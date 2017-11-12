@@ -34,6 +34,8 @@ public:
     void use() override;
 
     void shootBullets(float bulletForce, float coneAngle, int numBullets);
+
+    bool deadCheck() override;
 };
 
 

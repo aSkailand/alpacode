@@ -79,6 +79,9 @@ public:
     virtual void startContact(Entity *contactEntity) = 0;
     virtual void endContact(Entity *contactEntity) = 0;
 
+    /// Death
+    virtual bool deadCheck() = 0;
+
 protected:
 
     /// Important Entity Properties

@@ -166,9 +166,14 @@ void Wolf::startContact(Entity *contactEntity) {
 
         case ID::WOLF:
             break;
+        default:
+            break;
     }
 }
 
 void Wolf::endContact(Entity *contactEntity) {
+}
 
+bool Wolf::deadCheck() {
+    return false;
 }

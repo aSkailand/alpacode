@@ -346,3 +346,7 @@ void Farmer::startContact(Entity *contactEntity) {
         }
     }
 }
+
+bool Farmer::deadCheck() {
+    return false;
+}

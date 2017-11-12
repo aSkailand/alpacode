@@ -93,7 +93,7 @@ void Shotgun::endContact(Entity *contactEntity) {
 
 void Shotgun::use() {
 
-    shootBullets(30.f, 20.f, 7);
+    shootBullets(40.f, 10.f, 5);
 
 
 
@@ -130,4 +130,8 @@ void Shotgun::shootBullets(float bulletForce, float coneAngle, int numBullets) {
 
         configGame->entities->emplace_back(tempBullet);
     }
+}
+
+bool Shotgun::deadCheck() {
+    return false;
 }
