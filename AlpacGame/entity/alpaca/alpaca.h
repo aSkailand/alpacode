@@ -14,6 +14,8 @@
 class Alpaca : public Mob {
 public:
 
+    virtual ~Alpaca();
+
     /**
      * CONSTRUCTOR: Creates an alpaca and adds it to the world.
      * @param world the world to add the alpaca to.

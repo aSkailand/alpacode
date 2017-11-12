@@ -12,9 +12,9 @@
 class Bullet : public EntityCold{
 public:
 
-    ConfigGame *configGame;
+    ~Bullet() override;
 
-    ~Bullet();
+    ConfigGame *configGame;
 
     b2Filter filter;
 

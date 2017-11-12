@@ -79,26 +79,35 @@ void StateGame::goNext(StateMachine &stateMachine) {
         }
 
 
-        /// Delete Dead Entities
-        for (Entity *e : *entities) {
-            if(e->deadCheck()){
-                // todo Fix!
-                printf("To be deleted.\n");
-                world->DestroyBody(e->getBody());
-                printf("Deleted.\n");
 
-                auto it = std::find(entities->begin(), entities->end(), e);
-                if(it != entities->end()){
-                    entities->erase(it);
-                }
-            }
-        }
 
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
 
         /// Render Phase
         window->clear(sf::Color::Blue);
+
+        /// Delete Dead Entities
+        for(auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter){
+            if((*entityIter)->deadCheck()){
+
+                world->DestroyBody((*entityIter)->getBody());
+
+                delete (*entityIter);
+
+                entityIter = entities->erase(entityIter);
+
+                if(entityIter == entities->end()){
+                    break;
+                }
+//                auto it = std::find(entities->begin(), entities->end(), *entityIter);
+//                if(it != entities->end()){
+//                    entityIter = entities->erase(it);
+//                }
+
+
+            }
+        }
 
         for (Entity *e : *entities) {
 

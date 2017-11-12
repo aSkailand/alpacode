@@ -98,6 +98,7 @@ public:
     sf::Texture farmerTexture;
     sf::Texture alpacaTexture;
     sf::Texture wolfTexture;
+    sf::Texture shotgunTexture;
 
 private:
 

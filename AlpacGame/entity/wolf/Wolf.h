@@ -14,6 +14,8 @@
 class Wolf : public Mob{
 public:
 
+    virtual ~Wolf();
+
     /**
      * CONSTRUCTOR: Creates a wolf and adds it to the world.
      * @param world the world to add the wolf to.

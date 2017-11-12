@@ -3,6 +3,7 @@
 //
 
 #include "Bullet.h"
+#include "../EntityWarm.h"
 
 Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 position) {
 
@@ -64,26 +65,24 @@ void Bullet::render(sf::RenderWindow *window) {
 
 void Bullet::startContact(Entity *contactEntity) {
 
-//    switch (contactEntity->getID()) {
-//        case ID::PLANET:
-//            break;
-//        case ID::FARMER:
-//            break;
-//        case ID::ALPACA: {
-//            sfShape->setFillColor(sf::Color::Red);
-//            sfShape->setOutlineThickness(0);
-//            break;
-//        }
-//        case ID::WOLF: {
-//            sfShape->setFillColor(sf::Color::Red);
-//            sfShape->setOutlineThickness(0);
-//            break;
-//        }
-//        case ID::SHOTGUN:
-//            break;
-//        case ID::BULLET:
-//            break;
-//    }
+    switch (contactEntity->getID()) {
+        case ID::PLANET:
+            break;
+        case ID::FARMER:
+            break;
+        case ID::ALPACA: {
+            dynamic_cast<EntityWarm*> (contactEntity)->HP -= 1;
+            break;
+        }
+        case ID::WOLF: {
+            dynamic_cast<EntityWarm*> (contactEntity)->HP -= 1;
+            break;
+        }
+        case ID::SHOTGUN:
+            break;
+        case ID::BULLET:
+            break;
+    }
 
     sfShape->setFillColor(sf::Color::Red);
     sfShape->setOutlineThickness(0);
@@ -119,26 +118,8 @@ void Bullet::endContact(Entity *contactEntity) {
 }
 
 bool Bullet::deadCheck() {
-
     return decayClock.getElapsedTime().asSeconds() > decayTick;
-
-//    if(decayClock.getElapsedTime().asSeconds() > decayTick){
-//        auto it = std::find(configGame->entities->begin(), configGame->entities->end(), this);
-//        if(it != configGame->entities->end()){
-////            delete this;
-////            *it = nullptr;
-//            Bullet *target = dynamic_cast<Bullet*> (*it);
-//            delete target;
-////            delete *it;
-//            configGame->world->DestroyBody(body);
-////            configGame->entities->erase(it);
-//            printf("Heloo\n");
-//        }
-////        delete this;
-//    }
-
 }
 
 Bullet::~Bullet() {
-    printf("Bullet Deconstruct Run\n");
 }

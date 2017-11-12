@@ -82,6 +82,8 @@ public:
     /// Death
     virtual bool deadCheck() = 0;
 
+    virtual ~Entity() = default;
+
 protected:
 
     /// Important Entity Properties
@@ -142,5 +144,7 @@ private:
 
 
 };
+
+
 
 #endif //ALPACGAME_ENTITY_H

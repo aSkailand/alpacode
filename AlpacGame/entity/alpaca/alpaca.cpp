@@ -50,8 +50,13 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
     sfShape->setOrigin(radius, radius);
     sfShape->setTexture(&configGame->alpacaTexture);
 
+    // Set HP
+    HP = 10;
+
     // Create ID text
-    createLabel(std::to_string(id), &this->configGame->fontID);
+    createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
+    createLabel(label_HP, &this->configGame->fontID, std::to_string(HP));
+
 
 }
 
@@ -105,10 +110,15 @@ void Alpaca::render(sf::RenderWindow *window) {
 
     if (configGame->showLabels) {
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                            body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label->setRotation(sfShape->getRotation());
-        window->draw(*label);
+        label_ID->setRotation(sfShape->getRotation());
+        window->draw(*label_ID);
+
+        label_HP->setString(std::to_string(HP));
+        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
+        label_HP->setRotation(sfShape->getRotation());
+        window->draw(*label_HP);
 
         if (farmerTouch) sfShape->setOutlineColor(sf::Color::Green);
         else sfShape->setOutlineColor(sf::Color::Black);
@@ -176,6 +186,10 @@ void Alpaca::startContact(Entity *contactEntity) {
 }
 
 bool Alpaca::deadCheck() {
-    return false;
+    return HP <= 0;
+}
+
+Alpaca::~Alpaca() {
+    printf("Alpaca %i killed.\n", id);
 }
 

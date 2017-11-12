@@ -43,6 +43,7 @@ void ConfigGame::loadAllTextures() {
     farmerTexture.loadFromFile("entity/player/farmer.png");
     alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
     wolfTexture.loadFromFile("entity/wolf/wolfy.png");
+    shotgunTexture.loadFromFile("entity/shotgun/shotgun.png");
 }
 
 void ConfigGame::reset() {

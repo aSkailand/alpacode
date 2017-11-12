@@ -54,7 +54,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     sfShape->setTexture(&configGame->farmerTexture);
 
     // Create ID text
-    createLabel("P1", &this->configGame->fontID);
+    createLabel(label_ID, &this->configGame->fontID, "P1");
 }
 
 
@@ -64,14 +64,17 @@ void Farmer::render(sf::RenderWindow *window) {
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
+    if(sf::Mouse::getPosition(*configGame->window).x < configGame->window->getSize().x/2) sfShape->setScale(-1.f, 1.f);
+    else sfShape->setScale(1.f, 1.f);
+
     window->draw(*sfShape);
 
     if (configGame->showLabels) {
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                            body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label->setRotation(sfShape->getRotation());
-        window->draw(*label);
+        label_ID->setRotation(sfShape->getRotation());
+        window->draw(*label_ID);
         sfShape->setOutlineThickness(2);
     } else {
         sfShape->setOutlineThickness(0);
@@ -86,13 +89,13 @@ void Farmer::switchAction() {
             break;
         }
         case sf::Keyboard::Right: {
-            sfShape->setScale(1.f, 1.f);
+//            sfShape->setScale(1.f, 1.f);
             currentAction = Action::WALKING;
             currentDirection = Direction::RIGHT;
             break;
         }
         case sf::Keyboard::Left: {
-            sfShape->setScale(-1.f, 1.f);
+//            sfShape->setScale(-1.f, 1.f);
             currentAction = Action::WALKING;
             currentDirection = Direction::LEFT;
             break;
@@ -116,6 +119,8 @@ void Farmer::switchAction() {
             break;
         }
     }
+
+
 
 
 }
@@ -190,7 +195,7 @@ void Farmer::performAction() {
                     case ID::SHOTGUN: {
                         // Calculate the length between farmer and the held entity.
                         float offsetY = -2.5f;
-                        float offsetX = 0.5f;
+                        float offsetX = 0.0f;
 
                         if(currentDirection == Direction::LEFT){
                             offsetX *= -1;

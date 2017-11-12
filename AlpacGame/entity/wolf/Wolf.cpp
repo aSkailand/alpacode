@@ -50,8 +50,12 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
     sfShape->setOrigin(radius, radius);
     sfShape->setTexture(&configGame->wolfTexture);
 
+    // Set HP
+    HP = 10;
+
     // Create ID text
-    createLabel(std::to_string(id), &this->configGame->fontID);
+    createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
+    createLabel(label_HP, &this->configGame->fontID, std::to_string(HP));
 
 
 }
@@ -105,11 +109,18 @@ void Wolf::render(sf::RenderWindow *window) {
     window->draw(*sfShape);
 
     if (configGame->showLabels) {
+
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                            body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label->setRotation(sfShape->getRotation());
-        window->draw(*label);
+        label_ID->setRotation(sfShape->getRotation());
+        window->draw(*label_ID);
+
+        label_HP->setString(std::to_string(HP));
+        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
+        label_HP->setRotation(sfShape->getRotation());
+        window->draw(*label_HP);
+
         sfShape->setOutlineColor(sf::Color::Black);
         sfShape->setOutlineThickness(2);
     } else {
@@ -153,6 +164,7 @@ void Wolf::startContact(Entity *contactEntity) {
 
         }
         case ID::ALPACA: {
+
             b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
             b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
             beta.Normalize();
@@ -161,6 +173,9 @@ void Wolf::startContact(Entity *contactEntity) {
             float mass = contactEntity->getBody()->GetMass();
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
             contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+
+            dynamic_cast<EntityWarm*>(contactEntity)->HP -= 1;
+
             break;
         }
 
@@ -175,5 +190,9 @@ void Wolf::endContact(Entity *contactEntity) {
 }
 
 bool Wolf::deadCheck() {
-    return false;
+    return HP <= 0;
+}
+
+Wolf::~Wolf() {
+    printf("Wolf %i killed.\n", id);
 }
