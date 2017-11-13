@@ -17,6 +17,13 @@ public:
 
     void goNext(StateMachine &stateMachine);
 
+    /**
+     * The video settings menu,
+     * how it looks and how it functions
+     */
+    void videoSettings();
+
+
 private:
 
     // Pointers
@@ -38,13 +45,8 @@ private:
     /**
      * This is the
      */
-    void menuSettings();
+   // void menuSettings();
 
-    /**
-     * The video settings menu,
-     * how it looks and how it functions
-     */
-    void videoSettings();
 
     /**
      * The control settings menu,
@@ -91,7 +93,7 @@ private:
     void setResoulution(std::string res);
 
     // TGUI setup
-    tgui::Picture::Ptr picture;
+    tgui::Picture::Ptr pictureMenu;
     tgui::Button::Ptr masterButton;
     tgui::VerticalLayout::Ptr layout;
     tgui::CheckBox::Ptr fullScreenCheck;

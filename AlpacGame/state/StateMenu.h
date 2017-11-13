@@ -37,6 +37,17 @@ private:
      */
     tgui::Gui *menuGUI;
 
+    /**
+     * tgui layout pointer
+     */
+    tgui::VerticalLayout::Ptr layoutMenu;
+
+    /**
+     *
+     */
+    tgui::Layout windowWidth;
+    tgui::Layout windowHeight;
+
     // Menu functions
     /**
      * Check if menu is still running.
@@ -54,9 +65,8 @@ private:
     // TGUI setup
     // Creates a theme
     tgui::Theme::Ptr theme = tgui::Theme::create("Resources/BabyBlue.txt");
-    tgui::Layout windowWidth;
-    tgui::Layout windowHeight;
-    tgui::Picture::Ptr picture;
+
+    tgui::Picture::Ptr pictureMenu;
 };
 
 

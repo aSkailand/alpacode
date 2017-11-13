@@ -10,7 +10,9 @@
 #include "StateOption.h"
 #include "StateExit.h"
 #include "../Resources/ConfigWindow.h"
+#include "../Resources/ConfigMenu.h"
 #include "../Resources/ConfigGame.h"
+
 
 
 class State;
@@ -48,7 +50,10 @@ public:
     void setCurrentState(stateID currentState);
 
     ConfigWindow configWindow;
+    ConfigMenu configMenu;
     ConfigGame configGame;
+
+
 private:
 
     /**

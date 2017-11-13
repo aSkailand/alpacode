@@ -7,7 +7,7 @@ class ConfigWindow {
 public:
 
     /// Pointers
-    tgui::Gui &getMenuGUI();
+    tgui::Gui *getMenuGUI();
 
     sf::RenderWindow &getWindow();
 
@@ -59,7 +59,8 @@ private:
     int screenWidth = 800;
     int screenHeight = 600;
     sf::RenderWindow window;
-    tgui::Gui menuGUI;
+    tgui::Gui *menuGUI;
+    tgui::Picture::Ptr picture;
 };
 
 

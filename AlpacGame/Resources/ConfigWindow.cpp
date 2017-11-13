@@ -5,16 +5,19 @@ void ConfigWindow::run() {
                                                    32);  // todo: place this line another place
     window.create(windowResolution, "AlpaGame");
     window.setFramerateLimit(144);
+    menuGUI = new tgui::Gui();
 
-    menuGUI.removeAllWidgets();
-    menuGUI.setWindow(window);
+    menuGUI->removeAllWidgets();
+    menuGUI->setWindow(window);
+
+
 }
 
 sf::RenderWindow &ConfigWindow::getWindow() {
     return window;
 }
 
-tgui::Gui &ConfigWindow::getMenuGUI() {
+tgui::Gui *ConfigWindow::getMenuGUI() {
     return menuGUI;
 }
 
