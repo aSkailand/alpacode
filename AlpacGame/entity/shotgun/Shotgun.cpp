@@ -2,11 +2,11 @@
 #include "Shotgun.h"
 #include "Bullet.h"
 
+Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, float y) {
 
-Shotgun::Shotgun(b2World *world, ConfigGame *configGame, float length, float height, float x, float y) {
-
+    // Assign pointers
     this->configGame = configGame;
-    this->world = world;
+    this->world = configGame->world;
     this->length = length;
 
     // Create Body
@@ -46,23 +46,43 @@ Shotgun::Shotgun(b2World *world, ConfigGame *configGame, float length, float hei
     // Create SFML shape
     sfShape = new sf::RectangleShape(sf::Vector2f(length, height));
     sfShape->setOrigin(length / 2, height / 2);
-    sfShape->setOutlineThickness(1);
     sfShape->setOutlineColor(sf::Color::Black);
     sfShape->setTexture(&configGame->shotgunTexture);
+
+    sf_HitSensor = new sf::CircleShape(length / 2);
+    sf_HitSensor->setFillColor(sf::Color::Transparent);
+    sf_HitSensor->setOrigin(length / 2, length / 2);
 
 }
 
 void Shotgun::render(sf::RenderWindow *window) {
-    x = SCALE * body->GetPosition().x;
-    y = SCALE * body->GetPosition().y;
 
-    sfShape->setPosition(x, y);
+    // Render sfShape
+    float shape_x = SCALE * body->GetPosition().x;
+    float shape_y = SCALE * body->GetPosition().y;
+
+    sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-    if(sf::Mouse::getPosition(*configGame->window).x < configGame->window->getSize().x/2) sfShape->setScale(1.f, -1.f);
-    else sfShape->setScale(1.f, 1.f);
+    if(farmerTouch)
+        sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
 
     window->draw(*sfShape);
+
+    if(configGame->showLabels){
+
+        // Draw sfShape Debug
+        sfShape->setOutlineThickness(2);
+
+        // Draw hitSensor debug
+        sf_HitSensor->setOutlineThickness(2);
+        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_HitSensor);
+    }
+    else{
+        sfShape->setOutlineThickness(0);
+    }
 }
 
 void Shotgun::startContact(Entity *contactEntity) {
@@ -75,7 +95,16 @@ void Shotgun::endContact(Entity *contactEntity) {
 
 void Shotgun::use() {
 
+    // Shoot bullets
     shootBullets(40.f, 10.f, 5);
+
+    // Recoil push
+    b2Body *farmerBody = configGame->farmer->getBody();
+    float mass = farmerBody->GetMass();
+    b2Vec2 muzzle = getBody()->GetWorldPoint(b2Vec2(length / 2 / SCALE, 0));
+    b2Vec2 toTarget = b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE) - muzzle;
+    toTarget.Normalize();
+    farmerBody->ApplyLinearImpulseToCenter(10.f * mass * -toTarget, true);
 
 }
 

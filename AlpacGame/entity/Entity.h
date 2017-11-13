@@ -20,6 +20,7 @@ public:
 
     /// Enums
     enum class ID {
+        VOID    = 0x0000,
         PLANET  = 0x0001,
         FARMER  = 0x0002,
         ALPACA  = 0x0004,
@@ -38,6 +39,8 @@ public:
     b2Fixture *sensorFixture;
 
     bool physicsSensitive = true;
+
+    sf::CircleShape *sf_HitSensor = nullptr;
 
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
@@ -88,16 +91,11 @@ protected:
 
     /// Important Entity Properties
 
-    /**
-     * The x- and y-position of the entity's origin in pixels.
-     */
-    float x{}, y{};
+    ID id = ID::VOID;
 
-    ID id{};
+    b2Body *body = nullptr;
 
-    b2Body *body{};
-
-    sf::Shape *sfShape{};
+    sf::Shape *sfShape = nullptr;
 
     /// Unit Vector + Force functions
 

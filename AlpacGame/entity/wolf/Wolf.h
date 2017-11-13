@@ -24,7 +24,7 @@ public:
      * @param x the x-coordinate of the origin of the wolf, in pixels.
      * @param y the y-coordinate of the origin of the wolf, in pixels.
      */
-    Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
     static int nextId;
 

@@ -59,7 +59,7 @@ void ConfigGame::reset() {
     planetBody = planet->getBody();
 
     delete farmer;
-    farmer = new Farmer(world, this, 50, 0, -200);
+    farmer = new Farmer(this, 30, 100, 100, 100, -200);
 
     delete entities;
     entities = new std::vector<Entity*>;

@@ -3,11 +3,8 @@
 
 Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
 
-    this->x = x;
-    this->y = y;
-
     b2BodyDef bodyDef;
-    bodyDef.position = b2Vec2(this->x / SCALE, this->y / SCALE);
+    bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
     bodyDef.type = b2_staticBody;
 
     body = world->CreateBody(&bodyDef);
@@ -42,10 +39,11 @@ Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, fl
 }
 
 void Planet::render(sf::RenderWindow *window) {
-    x = SCALE * body->GetPosition().x;
-    y = SCALE * body->GetPosition().y;
-    sfShape->setPosition(x, y);
 
+    float shape_x = getBody()->GetPosition().x * SCALE;
+    float shape_y = getBody()->GetPosition().y * SCALE;
+
+    sfShape->setPosition(shape_x, shape_y);
     window->draw(*sfShape);
 }
 

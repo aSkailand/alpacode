@@ -14,7 +14,7 @@
 class Alpaca : public Mob {
 public:
 
-    virtual ~Alpaca();
+    ~Alpaca() override;
 
     /**
      * CONSTRUCTOR: Creates an alpaca and adds it to the world.
@@ -24,7 +24,7 @@ public:
      * @param x the x-coordinate of the origin of the alpaca, in pixels.
      * @param y the y-coordinate of the origin of the alpaca, in pixels.
      */
-    Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
     bool farmerTouch = false;
 

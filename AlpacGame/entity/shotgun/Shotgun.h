@@ -17,13 +17,11 @@ public:
 
     float length;
 
-
-
     ConfigGame *configGame;
 
     b2World *world;
 
-    Shotgun(b2World *world, ConfigGame *configGame, float length, float height, float x, float y);
+    Shotgun(ConfigGame *configGame, float length, float height, float x, float y);
 
     void render(sf::RenderWindow *window) override;
 

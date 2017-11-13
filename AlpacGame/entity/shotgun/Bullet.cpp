@@ -54,10 +54,10 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
 
 void Bullet::render(sf::RenderWindow *window) {
 
-    x = SCALE * body->GetPosition().x;
-    y = SCALE * body->GetPosition().y;
+    float shape_x = SCALE * body->GetPosition().x;
+    float shape_y = SCALE * body->GetPosition().y;
 
-    sfShape->setPosition(x, y);
+    sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
     window->draw(*sfShape);
@@ -122,4 +122,5 @@ bool Bullet::deadCheck() {
 }
 
 Bullet::~Bullet() {
+
 }

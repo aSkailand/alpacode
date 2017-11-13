@@ -18,7 +18,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         world = configGame->world;
         entities = configGame->entities;
         planet = configGame->planet;
-        farmer = dynamic_cast<Farmer*> (configGame->farmer);
+        farmer = dynamic_cast<Farmer *> (configGame->farmer);
 
         configGame->newGame = false;
     }
@@ -37,6 +37,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
         sf::Vector2f worldPos = window->mapPixelToCoords(pixelPos);
         configGame->mouseXpos = worldPos.x;
         configGame->mouseYpos = worldPos.y;
+
+        double mouse = sf::Mouse::getPosition(*configGame->window).x;
+        double center = configGame->window->getSize().x / 2;
+        configGame->mouseInLeftSide = mouse < center;
+
 
         /// Save current input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
@@ -88,8 +93,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->clear(sf::Color::Blue);
 
         /// Delete Dead Entities
-        for(auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter){
-            if((*entityIter)->deadCheck()){
+        for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
+            if ((*entityIter)->deadCheck()) {
 
                 world->DestroyBody((*entityIter)->getBody());
 
@@ -97,14 +102,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
                 entityIter = entities->erase(entityIter);
 
-                if(entityIter == entities->end()){
+                if (entityIter == entities->end()) {
                     break;
                 }
-//                auto it = std::find(entities->begin(), entities->end(), *entityIter);
-//                if(it != entities->end()){
-//                    entityIter = entities->erase(it);
-//                }
-
 
             }
         }
@@ -128,7 +128,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         mouseAim.setFillColor(sf::Color::Red);
         mouseAim.setOutlineColor(sf::Color::Black);
-        mouseAim.setOutlineThickness(2);
+        mouseAim.setOutlineThickness(5);
         window->draw(mouseAim);
 
         /// Update View
@@ -204,16 +204,16 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::Num1: {
-            entities->emplace_back(new Alpaca(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace_back(new Wolf(world, configGame, 50, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Wolf(configGame, 40, 90, 90, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num3: {
             entities->emplace_back(
-                    new Shotgun(world, configGame, 80, 20, configGame->mouseXpos, configGame->mouseYpos));
+                    new Shotgun(configGame, 80, 20, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Z: {
@@ -240,8 +240,8 @@ void StateGame::mousePressedHandler(sf::Event event) {
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
 
-            if(dynamic_cast<Usable*>(farmer->holdingEntity)){
-                dynamic_cast<Usable*>(farmer->holdingEntity)->use();
+            if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
+                dynamic_cast<Usable *>(farmer->holdingEntity)->use();
             }
             break;
         }

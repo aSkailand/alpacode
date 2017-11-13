@@ -1,6 +1,6 @@
 #include "Wolf.h"
 
-Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y)
+Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y)
         : id(nextId++), Mob(id) {
 
     // Assign Pointers
@@ -15,7 +15,7 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
     bodyDef.type = b2_dynamicBody;
 
     // Create body
-    body = world->CreateBody(&bodyDef);
+    body = configGame->world->CreateBody(&bodyDef);
 
     // Create Fixture
     b2CircleShape b2Shape;
@@ -46,9 +46,13 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
     sensorFixture = body->CreateFixture(&sensor);
 
     // Create SFML shape
-    sfShape = new sf::CircleShape(radius);
-    sfShape->setOrigin(radius, radius);
+    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
+    sfShape->setOrigin(width/2, height/2);
     sfShape->setTexture(&configGame->wolfTexture);
+
+    sf_HitSensor = new sf::CircleShape(radius);
+    sf_HitSensor->setFillColor(sf::Color::Transparent);
+    sf_HitSensor->setOrigin(radius, radius);
 
     // Set HP
     HP = 10;
@@ -100,29 +104,44 @@ void Wolf::switchAction() {
 
 void Wolf::render(sf::RenderWindow *window) {
 
-    x = SCALE * body->GetPosition().x;
-    y = SCALE * body->GetPosition().y;
+    // Render sfShape
+    float delta_Y = sfShape->getLocalBounds().height/2 - bodyFixture->GetShape()->m_radius * SCALE;
+    b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
 
-    sfShape->setPosition(x, y);
+    float shape_x = offsetPoint.x * SCALE;
+    float shape_y = offsetPoint.y * SCALE;
+
+    sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
     window->draw(*sfShape);
 
     if (configGame->showLabels) {
 
+        // Draw SFShape debug
+        sfShape->setOutlineThickness(2);
+        sfShape->setOutlineColor(sf::Color::Black);
+
+        // Draw hitSensor debug
+        sf_HitSensor->setOutlineThickness(2);
+        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_HitSensor);
+
+        // Draw label_ID
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
         label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                            body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label_ID->setRotation(sfShape->getRotation());
         window->draw(*label_ID);
 
+        // Draw label_HP
         label_HP->setString(std::to_string(HP));
         label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
         label_HP->setRotation(sfShape->getRotation());
         window->draw(*label_HP);
 
-        sfShape->setOutlineColor(sf::Color::Black);
-        sfShape->setOutlineThickness(2);
+
     } else {
         sfShape->setOutlineThickness(0);
     }
@@ -146,8 +165,10 @@ void Wolf::performAction() {
 
 void Wolf::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
-        case ID::PLANET:
+        case ID::PLANET:{
+            sf_HitSensor->setOutlineColor(sf::Color::White);
             break;
+        }
         case ID::FARMER: {
 
             b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
@@ -187,6 +208,18 @@ void Wolf::startContact(Entity *contactEntity) {
 }
 
 void Wolf::endContact(Entity *contactEntity) {
+    switch(contactEntity->getID()){
+        case ID::PLANET:{
+            sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
+            break;
+        }
+        case ID::FARMER:break;
+        case ID::ALPACA:break;
+        case ID::WOLF:break;
+        case ID::SHOTGUN:break;
+        case ID::BULLET:break;
+        case ID::VOID:break;
+    }
 }
 
 bool Wolf::deadCheck() {

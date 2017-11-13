@@ -54,6 +54,8 @@ public:
     float mouseXpos = 0;
     float mouseYpos = 0;
 
+    bool mouseInLeftSide = false;
+
     /**
      * Run the given configurations.
      * @param window the shared window.
