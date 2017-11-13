@@ -26,11 +26,16 @@ public:
 
     bool farmerTouch = false;
 
+    //b2FixtureDef getBodySensor() const { return bodySensor; };
+
 private:
 
     /// AI Status
     enum class Behavior{NORMAL, AFRAID};
     Behavior currentBehavior = Behavior::NORMAL;
+
+    /// Sensors
+    b2FixtureDef bodySensor;
 
     /// Entity properties
     const int id;
@@ -80,9 +85,11 @@ private:
 
 public:
 
-    void startContact(Entity *contactEntity) override;
+    /// Body Sensor Contact
+    void startContact(CollisionID typeFixture, Entity *contactEntity) override;
+    void endContact(Entity *contactEntity) override ;
 
-    void endContact(Entity *contactEntity) override;
+
 
 
 };

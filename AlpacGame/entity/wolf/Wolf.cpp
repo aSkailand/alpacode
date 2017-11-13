@@ -43,7 +43,7 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
 
     // Connect fixture to body
     bodyFixture = body->CreateFixture(&fixtureDef);
-    sensorFixture = body->CreateFixture(&sensor);
+    bodySensorFixture = body->CreateFixture(&sensor);
 
     // Create SFML shape
     sfShape = new sf::CircleShape(radius);
@@ -133,7 +133,7 @@ void Wolf::performAction() {
     }
 }
 
-void Wolf::startContact(Entity *contactEntity) {
+void Wolf::startContact(CollisionID typeFixture, Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET:
             currentStatus = Status ::GROUNDED;
@@ -154,6 +154,7 @@ void Wolf::startContact(Entity *contactEntity) {
 
         }
         case ID::ALPACA: {
+
             b2Vec2 delta =  getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
             float mass = contactEntity->getBody()->GetMass();
             float tempAngle = attackAngle;
@@ -171,7 +172,6 @@ void Wolf::startContact(Entity *contactEntity) {
         case ID::WOLF:
             break;
     }
-
 }
 
 void Wolf::endContact(Entity *contactEntity) {

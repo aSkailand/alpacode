@@ -38,9 +38,16 @@ private:
      * @param contact the Box2D object handling touch.
      * @return entity B
      */
+
     Entity *getEntity_B(b2Contact *contact);
+
+    /**
+     * Get CollisionID of the Entity A
+     */
+    Entity::CollisionID getCollisionType_A(b2Contact *contact);
+    Entity::CollisionID getCollisionType_B(b2Contact *contact);
 
 };
 
 
-#endif //ALPACGAME_COLLISIONLISTENER_H
+#endif // ALPACGAME_COLLISIONLISTENER_H

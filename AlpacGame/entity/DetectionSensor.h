@@ -1,0 +1,10 @@
+
+
+#ifndef ALPACGAME_DETECTSSENSOR_H
+#define ALPACGAME_DETECTSSENSOR_H
+
+
+
+
+
+#endif

@@ -23,7 +23,7 @@ public:
         PLANET = 0x0001,
         FARMER = 0x0002,
         ALPACA = 0x0004,
-        WOLF = 0x0008
+        WOLF = 0x0008,
     };
 
     enum class Direction{
@@ -31,9 +31,16 @@ public:
         LEFT = 1
     };
 
+    enum class CollisionID{
+        BODY = 0,
+        HIT = 1,
+        DETECTION = 2
+    };
+
     /// Fixture pointers
     b2Fixture *bodyFixture;
-    b2Fixture *sensorFixture;
+    b2Fixture *bodySensorFixture;
+    b2Fixture *detectSensorFixture;
 
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
@@ -71,9 +78,23 @@ public:
         Entity::body = body;
     }
 
+    /// For Detection
+    void* convertToVoidPtr(int enumValue){
+        return reinterpret_cast<void *>(enumValue);
+    };
+
+    static CollisionID convertToCollisionID(void* voidPtr){
+        return (CollisionID&) voidPtr;
+    };
+
     /// Contact Functions
-    virtual void startContact(Entity *contactEntity) = 0;
+    virtual void startContact(CollisionID typeFixture, Entity *contactEntity) = 0;
     virtual void endContact(Entity *contactEntity) = 0;
+
+    //virtual void startDetect(Entity *contactEntity) = 0;
+    //virtual void endDetect(Entity *contactEntity) = 0;
+
+
 
 protected:
 

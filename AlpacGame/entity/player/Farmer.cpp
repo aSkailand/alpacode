@@ -40,13 +40,23 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     sensor.filter.categoryBits = (uint16) ID::FARMER;
     sensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF;
 
+    // Create Test Detect Sensor
+    b2CircleShape b2Shape3;
+    b2FixtureDef detectSensor;
+    b2Shape3.m_radius = (radius  + 200)/ SCALE;
+    detectSensor.shape = &b2Shape3;
+    detectSensor.isSensor = true;
+    detectSensor.filter.categoryBits = (uint16 ) ID::FARMER;
+    detectSensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF;
+
     // Store information
     setID(Entity::ID::FARMER);
     body->SetUserData((void *) this);
 
     // Connect fixture to body
     bodyFixture = body->CreateFixture(&fixtureDef);
-    sensorFixture = body->CreateFixture(&sensor);
+    bodySensorFixture = body->CreateFixture(&sensor);
+    detectSensorFixture = body->CreateFixture(&detectSensor);
 
     // Create SFML shape
     sfShape = new sf::CircleShape(radius);
@@ -187,7 +197,7 @@ void Farmer::performAction() {
 
 }
 
-void Farmer::endContact(Entity *contactEntity) {
+void Farmer::endContact( Entity *contactEntity) {
 
     ID contactID = contactEntity->getID();
     sfShape->setOutlineColor(sf::Color::Black);
@@ -219,35 +229,55 @@ void Farmer::endContact(Entity *contactEntity) {
     }
 }
 
-void Farmer::startContact(Entity *contactEntity) {
+void Farmer::startContact(CollisionID typeFixture, Entity *contactEntity) {
 //    std::cout << "Farmer Start Contact" << std::endl;
 
     ID contactID = contactEntity->getID();
 
-    switch (contactID) {
-        case ID::PLANET: {
-            sfShape->setOutlineColor(sf::Color::Black);
-            currentStatus = Status::GROUNDED;
-            body->SetLinearVelocity(b2Vec2(0, 0));
-            break;
-        }
-        case ID::FARMER:
-            break;
-        case ID::ALPACA: {
+    if(typeFixture == CollisionID::HIT){
+        switch (contactEntity->getID()) {
+            case ID::PLANET: {
+                sfShape->setOutlineColor(sf::Color::Black);
+                currentStatus = Status::GROUNDED;
+                body->SetLinearVelocity(b2Vec2(0, 0));
+                break;
+            }
+            case ID::FARMER:
+                break;
+            case ID::ALPACA: {
 
-            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) == currentlyTouchingEntities.end()) {
-                currentlyTouchingEntities.push_back(contactEntity);
-                // todo: Add farmerTouch to entity?
-                auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
-                contactAlpaca->farmerTouch = true;
-                sfShape->setOutlineColor(sf::Color::Green);
+                if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) == currentlyTouchingEntities.end()) {
+                    currentlyTouchingEntities.push_back(contactEntity);
+                    // todo: Add farmerTouch to entity?
+                    auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
+                    contactAlpaca->farmerTouch = true;
+                    sfShape->setOutlineColor(sf::Color::Green);
 
-                std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
+                    //std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
+                }
+            }
+
+            case ID::WOLF:{
+                break;
             }
         }
+    }
+    if(typeFixture == CollisionID::DETECTION){
+        switch (contactID) {
+            case ID::PLANET: {
+                break;
+            }
+            case ID::FARMER:
+                break;
+            case ID::ALPACA: {
+                break;
+            }
 
-        case ID::WOLF:{
-            break;
+            case ID::WOLF:{
+                break;
+            }
         }
     }
+
+
 }

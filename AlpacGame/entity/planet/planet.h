@@ -39,10 +39,13 @@ private:
 
 
 public:
+    void startContact(CollisionID typeFixture, Entity *contactEntity) override;
 
-    void startContact(Entity *contactEntity) override;
+
+   // void endContact(Entity::CollisionID selfFixtureID, Entity *contactEntity) override;
 
     void endContact(Entity *contactEntity) override;
+
 
 };
 

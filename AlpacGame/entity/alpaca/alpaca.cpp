@@ -28,31 +28,55 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
     fixtureDef.filter.maskBits = maskBits;
     fixtureDef.shape = &b2Shape;
 
-    // Create Sensor
+    /// BODY  Sensor
     b2CircleShape b2Shape2;
     b2Shape2.m_radius = radius / SCALE;
-    b2FixtureDef sensor;
-    sensor.shape = &b2Shape2;
-    sensor.isSensor = true;
-    sensor.filter.categoryBits = (uint16) ID::ALPACA;
-    sensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF;
+    //b2FixtureDef bodySensor;
+    bodySensor.shape = &b2Shape2;
+    bodySensor.isSensor = true;
+    bodySensor.filter.categoryBits = (uint16) ID::ALPACA;
+    bodySensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF;
+
+
+    // TODO: Add Detect Sensor
+   // DETECTION Sensor
+    b2CircleShape b2Shape3;
+    b2FixtureDef detectSensor;
+    b2Shape3.m_radius = (radius  + 200)/ SCALE;
+    detectSensor.shape = &b2Shape3;
+    detectSensor.isSensor = true;
+    detectSensor.filter.categoryBits = (uint16 ) ID::ALPACA;
+    detectSensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF;
 
     // Store information
     setID(Entity::ID::ALPACA);
-    body->SetUserData((void *) this);
+    // TODO: Add different FixtureDef for the detect sensor
+    /// SetUserData (this) implies for the whole class, which merges the two fixtureDef together
+
+    body->SetUserData((void *)this) ;
 
     // Connect fixture to body
     bodyFixture = body->CreateFixture(&fixtureDef);
-    sensorFixture = body->CreateFixture(&sensor);
+    bodySensorFixture = body->CreateFixture(&bodySensor);
+    detectSensorFixture = body->CreateFixture(&detectSensor);
+
+    /// Set Hit and Detect Fixture as Sensors
+    bodyFixture->SetUserData(convertToVoidPtr((int) CollisionID::BODY));
+    // Body Hit Sensor
+    bodySensorFixture->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
+    // Detect Sensor
+    detectSensorFixture->SetUserData(convertToVoidPtr((int) CollisionID::DETECTION));
+
+
 
     // Creating SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
     sfShape->setTexture(&configGame->alpacaTexture);
 
+
     // Create ID text
     createLabel(std::to_string(id), &this->configGame->fontID);
-
 }
 
 int Alpaca::nextId = 0;
@@ -155,20 +179,66 @@ void Alpaca::endContact(Entity *contactEntity) {
 
 }
 
-void Alpaca::startContact(Entity *contactEntity) {
-    switch (contactEntity->getID()) {
-        case ID::PLANET: {
-            currentStatus = Status::GROUNDED;
-            break;
+void Alpaca::startContact(CollisionID typeFixture, Entity *contactEntity) {
+    std::cout << (int)typeFixture << std::endl;
+    if(typeFixture == CollisionID::BODY){
+        switch (contactEntity->getID() ) {
+            case ID::PLANET: {
+                //currentStatus = Status::GROUNDED;
+                break;
+            }
+            case ID::FARMER: {
+                std::cout << "BODY SENSE" << std::endl;
+                //farmerTouch = true;
+                break;
+            }
+            case ID::ALPACA:
+                break;
+            case ID::WOLF:
+                break;
         }
-        case ID::FARMER: {
-            farmerTouch = true;
-            break;
-        }
-        case ID::ALPACA:
-            break;
-        case ID::WOLF:
-            break;
     }
+    if(typeFixture == CollisionID::HIT){
+        switch (contactEntity->getID() ) {
+            case ID::PLANET: {
+                currentStatus = Status::GROUNDED;
+                break;
+            }
+            case ID::FARMER: {
+                std::cout << "HIT SENSE" << std::endl;
+                farmerTouch = true;
+                break;
+            }
+            case ID::ALPACA:
+                break;
+            case ID::WOLF:
+
+                break;
+        }
+    }
+    if(typeFixture == CollisionID::DETECTION){
+        switch (contactEntity->getID() ) {
+            case ID::PLANET: {
+                //currentStatus = Status::GROUNDED;
+                break;
+            }
+            case ID::FARMER: {
+                std::cout << "DETECT SENSE" << std::endl;
+                farmerTouch = true;
+                break;
+            }
+            case ID::ALPACA:
+                break;
+            case ID::WOLF:
+
+                break;
+        }
+    }
+
+
+
+
+    /// Detect SENSOR
+
 }
 
