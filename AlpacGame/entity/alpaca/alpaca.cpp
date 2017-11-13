@@ -5,6 +5,7 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
 
     // Assign Pointers
     this->configGame = configGame;
+    mapPtr = configGame->alpacaSprites;
 
     // Convert angle and store unit vectors
     convertAngleToVectors((int) Action::WALKING, walkAngle);
@@ -125,12 +126,14 @@ void Alpaca::performAction() {
             case Action::WALKING: {
                 if(currentStatus == Status::GROUNDED){
                     forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                    //TODO: Running/moving animation
                 }
                 break;
             }
             case Action::JUMP:
                 break;
             case Action::IDLE:
+                // TODO: Idle Animation
                 break;
         }
     }
@@ -140,7 +143,12 @@ void Alpaca::endContact(Entity *contactEntity) {
 
     switch (contactEntity->getID()) {
         case ID::PLANET: {
+            /// AIRBORNE
             currentStatus = Status::AIRBORNE;
+            if(currentAction == Action::WALKING){
+                sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+            }
+
             break;
         }
         case ID::FARMER: {
@@ -158,7 +166,16 @@ void Alpaca::endContact(Entity *contactEntity) {
 void Alpaca::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET: {
+            /// GROUNDED
             currentStatus = Status::GROUNDED;
+
+            if(currentAction == Action::WALKING){
+                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+            }
+            else if(currentAction == Action::IDLE){
+                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+            }
+
             break;
         }
         case ID::FARMER: {

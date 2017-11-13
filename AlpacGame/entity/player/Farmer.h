@@ -80,6 +80,12 @@ private:
     /// Pointers
     ConfigGame *configGame;
 
+    /// Animation
+    bool spriteSwitch = false;
+    bool holdingSwitch = false;
+
+    std::map<EntityWarm::Action , AnimationInfo> mapPtr;
+
 
 
 public:

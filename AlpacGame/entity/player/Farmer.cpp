@@ -4,6 +4,7 @@
 Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
 
     this->configGame = configGame;
+    mapPtr = configGame->farmerSprites;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);
     convertAngleToVectors((int) Action::JUMP, jumpAngle);
@@ -130,14 +131,15 @@ void Farmer::performAction() {
 
             case Action::WALKING: {
                 forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                // TODO: Walking ANimation
                 break;
             }
             case Action::JUMP: {
                 forcePushBody((int) Action::JUMP, getBody(), jumpForce, currentDirection);
-
                 break;
             }
             case Action::IDLE: {
+                //TODO: IDle Animation
                 break;
             }
 
@@ -166,6 +168,14 @@ void Farmer::performAction() {
 
                 // Lock the entity delta length above farmer's origin
                 holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta+offset))), getBody()->GetAngle());
+                // TODO: HOlding animation
+                if(currentAction == Action::WALKING){
+
+                }
+                else if(currentAction == Action::IDLE){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+                }
+                holdingSwitch = true;
             }
             break;
         }
@@ -176,6 +186,14 @@ void Farmer::performAction() {
             forcePushBody((int) Grasp::THROWING, holdingEntity->getBody(), throwForce, currentDirection);
             holdingEntity = nullptr;
             currentGrasp = Grasp::EMPTY;
+
+            if(currentAction == Action::WALKING){
+                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+            }
+            else if(currentAction == Action::IDLE){
+                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+            }
+            holdingSwitch = false;
             break;
         }
 
@@ -196,6 +214,30 @@ void Farmer::endContact(Entity *contactEntity) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Red);
             currentStatus = Status::AIRBORNE;
+            // TODO: Jump ANimation
+
+            if(holdingSwitch){
+                if(!spriteSwitch){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(4));
+                    spriteSwitch = true;
+                }
+                else{
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(5));
+                    spriteSwitch = false;
+                }
+            }
+            else{
+                if(!spriteSwitch){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+                    spriteSwitch = true;
+                }
+                else{
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(2));
+                    spriteSwitch = false;
+                }
+            }
+
+
             break;
         }
         case ID::FARMER:
@@ -228,6 +270,27 @@ void Farmer::startContact(Entity *contactEntity) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Black);
             currentStatus = Status::GROUNDED;
+
+            // TODO: Ground Animation
+            if(holdingSwitch){
+                if(currentAction == Action::WALKING){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(3));
+                }
+                else if(currentAction == Action::IDLE){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+                }
+            }
+            else{
+                if(currentAction == Action::WALKING){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                }
+                else if(currentAction == Action::IDLE){
+                    sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                }
+            }
+
+
+
             body->SetLinearVelocity(b2Vec2(0, 0));
             break;
         }

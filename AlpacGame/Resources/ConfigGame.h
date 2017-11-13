@@ -87,6 +87,11 @@ public:
     sf::Texture alpacaTexture;
     sf::Texture wolfTexture;
 
+    /// Map of every entities sprites.
+    std::map<EntityWarm::Action , AnimationInfo> wolfSprites;
+    std::map<EntityWarm::Action , AnimationInfo> alpacaSprites;
+    std::map<EntityWarm::Action , AnimationInfo> farmerSprites;
+
 private:
 
     /**
@@ -97,18 +102,25 @@ private:
     /**
      * Load all necessary textures used during the game.
      */
-    void loadTexture(std::string filename, std::map<EntityWarm::Action, AnimationInfo>& sprites, int mode, int width, int height,int y);
+    void loadTexture(std::string filename, std::map<EntityWarm::Action, AnimationInfo>& sprites, int width, int height,int top, int mode);
     void loadAllTextures();
 
 protected:
-    /// Frame Size:
-    int spriteX = 153;
-    int spriteY = 122;
+    /// Frame Size of different entities.
 
-    /// Map of every entities sprites.
-    std::map<EntityWarm::Action , AnimationInfo> wolfSprites;
-    std::map<EntityWarm::Action , AnimationInfo> alpacaSprites;
-    std::map<EntityWarm::Action , AnimationInfo> farmerSprites;
+    /// wolf sizes: walking, width = 145, height = 80
+    int wolfWalkWidth = 145;
+    int wolfWalkHeight = 80;
+    /// wolf sizes: idle, width = 135, height = 95
+    int wolfIdleWidth = 135;
+    int wolfIdleheigth = 95;
+    /// alpaca sizes: width = 100, height = 110
+    int alpacaWidth = 100;
+    int alpacaHeight = 110;
+    /// farmer sizes: width = 50, height = 70
+    int farmerWidth = 50;
+    int farmerHeight =70;
+
 };
 
 

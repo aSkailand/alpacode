@@ -92,11 +92,6 @@ private:
      */
     sf::Clock movementTriggerClock{};
 
-    /**
-     * Clock used to determine switching texture for sprites(Animation)
-     */
-
-    sf::Clock AnimationClock{};
 
 };
 

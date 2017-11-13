@@ -78,6 +78,11 @@ private:
     /// Pointers
     ConfigGame *configGame;
 
+    /// Animation tool
+    bool spriteSwitch = false;
+
+    std::map<EntityWarm::Action , AnimationInfo> mapPtr;
+
 public:
 
     void startContact(Entity *contactEntity) override;
