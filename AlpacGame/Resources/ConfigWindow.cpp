@@ -34,6 +34,7 @@ void ConfigWindow::setWindowResolution(ConfigWindow::Resolution resolution, uint
     unsigned int height = static_cast<unsigned int>(std::stoi(s.substr(s.find(delimiter)+1, s.find(delimiter))));
 
     window.create(sf::VideoMode(width, height, 32), "AlpaGame", style);
+    window.setFramerateLimit(144);
 
 }
 

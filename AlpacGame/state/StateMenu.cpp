@@ -13,6 +13,8 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     menuGUI->add(machine->configMenu->getPictureMenu());
     menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::MAINMENU]);
 
+    window->setMouseCursorVisible(true);
+
     while (pollMenu()) {
         drawMenu();
     }
