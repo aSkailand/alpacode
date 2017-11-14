@@ -132,20 +132,22 @@ void ConfigMenu::videoSettingsLayout() {
 
     // ComboBox
     tgui::ComboBox::Ptr resolutionBox = theme->load("ComboBox");
-    resolutionBox->addItem("800x600");
-    resolutionBox->addItem("1280x720");
-    resolutionBox->addItem("1920x1080");
-    resolutionBox->setSelectedItem("800x600");
+
+    // Add all possible options inside ComboBox
+    for (auto &iter : machine->configWindow.mapResolution) {
+        resolutionBox->addItem(iter.second);
+    }
+
+    // Set initial selection
+    resolutionBox->setSelectedItem(machine->configWindow.mapResolution[machine->configWindow.currentResolution]);
+
+    // Setup selection mechanism
     resolutionBox->connect("ItemSelected",
                            [&](std::string itemSelected) {
-                               if (itemSelected == "800x600") {
-                                   setCurrentResolution(resolution::RES800x600);
-                               } else if (itemSelected == "1280x720") {
-                                   setCurrentResolution(resolution::RES1280x720);
-                               } else if (itemSelected == "1920x1080") {
-                                   setCurrentResolution(resolution::RES1920x1080);
+                               for (auto &iter : machine->configWindow.mapResolution) {
+                                   if(itemSelected == iter.second)
+                                       setCurrentResolution(iter.first);
                                }
-                               std::cout << (int) getCurrentResolution() << std::endl;
                            });
 
     // Resolution label
@@ -226,15 +228,15 @@ void ConfigMenu::soundSettingsLayout() {
     mapLayouts.emplace(layouts::SOUND, layout);
 }
 
-ConfigMenu::resolution ConfigMenu::getCurrentResolution() const {
-    return currentResolution;
+ConfigWindow::Resolution ConfigMenu::getCurrentResolution() const {
+    return machine->configWindow.currentResolution;
 }
 
-void ConfigMenu::setCurrentResolution(ConfigMenu::resolution currentResolution) {
-    ConfigMenu::currentResolution = currentResolution;
+void ConfigMenu::setCurrentResolution(ConfigWindow::Resolution currentResolution) {
+    machine->configWindow.currentResolution = currentResolution;
 }
 
-void ConfigMenu::createSlider(ConfigMenu::buttons sliderType) {
+void ConfigMenu::createSlider(buttons sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
     mapSliders.emplace(sliderType, tempSlider);

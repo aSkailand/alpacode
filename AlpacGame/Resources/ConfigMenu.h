@@ -3,9 +3,11 @@
 
 #include "map"
 #include "SFML/Graphics.hpp"
+#include "ConfigWindow.h"
 #include <TGUI/TGUI.hpp>
 
 class StateMachine;
+class ConfigWindow;
 
 /**
  * This class creates and holds all of the layouts and widgets of the menu GUI.
@@ -38,23 +40,17 @@ public:
         EFFECT_SLIDER
     };
 
-    enum class resolution {
-        RES800x600,
-        RES1280x720,
-        RES1920x1080
-    };
-
     /**
      * Getter for the current RESOLUTION enum class
      * @return returns the current resolution
      */
-    resolution getCurrentResolution() const;
+    ConfigWindow::Resolution getCurrentResolution() const;
 
     /**
      * Sets the current resolution
      * @param currentResolution
      */
-    void setCurrentResolution(resolution currentResolution);
+    void setCurrentResolution(ConfigWindow::Resolution currentResolution);
 
     /// Mappings of the different layouts and widgets
     std::map<buttons, tgui::Button::Ptr> mapButtons;
@@ -110,7 +106,8 @@ public:
     bool checkBoxFullScreenChecked = false;
 
 private:
-    resolution currentResolution = resolution::RES800x600;
+//    resolution currentResolution = resolution::RES800x600;
+
     tgui::VerticalLayout::Ptr tempVerticalLayout;
     tgui::Picture::Ptr pictureMenu;
     tgui::Button::Ptr masterButton;

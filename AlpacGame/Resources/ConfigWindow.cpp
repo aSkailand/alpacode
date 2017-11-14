@@ -1,12 +1,21 @@
 #include "ConfigWindow.h"
 
 void ConfigWindow::run() {
-    sf::VideoMode windowResolution = sf::VideoMode(screenWidth, screenHeight, 32);// todo: place this line another place
-    window.create(windowResolution, "AlpaGame");
+
+    // Fill map with resolutions
+    mapResolution[Resolution::RES800x600] = "800x600";
+    mapResolution[Resolution::RES1280x720] = "1280x720";
+    mapResolution[Resolution::RES1920x1080] = "1920x1080";
+
+    // Set default resolution
+    setWindowResolution(currentResolution, sf::Style::Default);
     window.setFramerateLimit(144);
+
+    // Setup TGUI
     menuGUI = new tgui::Gui();
     menuGUI->removeAllWidgets();
     menuGUI->setWindow(window);
+
 }
 
 sf::RenderWindow &ConfigWindow::getWindow() {
@@ -17,22 +26,14 @@ tgui::Gui *ConfigWindow::getMenuGUI() {
     return menuGUI;
 }
 
-void ConfigWindow::setWindowResolution(ConfigMenu::resolution resolution, uint32_t style) {
+void ConfigWindow::setWindowResolution(ConfigWindow::Resolution resolution, uint32_t style) {
 
-    switch (resolution) {
-        case ConfigMenu::resolution::RES800x600: {
-            window.create(sf::VideoMode(800, 600, 32), "AlpaGame", style);
-            break;
-        }
-        case ConfigMenu::resolution::RES1280x720: {
-            window.create(sf::VideoMode(1280, 720, 32), "AlpaGame", style);
-            break;
-        }
-        case ConfigMenu::resolution::RES1920x1080: {
-            window.create(sf::VideoMode(1920, 1080, 32), "AlpaGame", style);
-            break;
-        }
-    }
+    std::string s = mapResolution[resolution];
+    std::string delimiter = "x";
+    unsigned int width = static_cast<unsigned int>(std::stoi(s.substr(0, s.find(delimiter))));
+    unsigned int height = static_cast<unsigned int>(std::stoi(s.substr(s.find(delimiter)+1, s.find(delimiter))));
+
+    window.create(sf::VideoMode(width, height, 32), "AlpaGame", style);
 
 }
 
