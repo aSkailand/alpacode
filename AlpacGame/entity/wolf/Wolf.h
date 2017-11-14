@@ -76,6 +76,9 @@ private:
      */
     float moveAvailableTick = 0.4f;
 
+    /// Animation tools
+    std::map<EntityWarm::Action , AnimationInfo> wolfMapPtr;
+
 public:
 
     void startContact(Entity *contactEntity) override;

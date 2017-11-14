@@ -84,7 +84,7 @@ private:
     bool spriteSwitch = false;
     bool holdingSwitch = false;
 
-    std::map<EntityWarm::Action , AnimationInfo> mapPtr;
+    std::map<EntityWarm::Action , AnimationInfo> farmerMapPtr;
 
 
 

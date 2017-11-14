@@ -4,7 +4,7 @@
 Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
 
     this->configGame = configGame;
-    mapPtr = configGame->farmerSprites;
+    farmerMapPtr = configGame->farmerSprites;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);
     convertAngleToVectors((int) Action::JUMP, jumpAngle);
@@ -52,7 +52,9 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     // Create SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
-    sfShape->setTexture(&configGame->farmerTexture);
+    //getting the starting sprite for farmer from spriteMap;
+    sfShape->setTexture(farmerMapPtr[Action::IDLE].sprites.at(0));
+    //sfShape->setTexture(&configGame->farmerTexture);
 
     // Create ID text
     createLabel("P1", &this->configGame->fontID);
@@ -173,7 +175,7 @@ void Farmer::performAction() {
 
                 }
                 else if(currentAction == Action::IDLE){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));
                 }
                 holdingSwitch = true;
             }
@@ -188,10 +190,10 @@ void Farmer::performAction() {
             currentGrasp = Grasp::EMPTY;
 
             if(currentAction == Action::WALKING){
-                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
             }
             else if(currentAction == Action::IDLE){
-                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
             }
             holdingSwitch = false;
             break;
@@ -218,22 +220,31 @@ void Farmer::endContact(Entity *contactEntity) {
 
             if(holdingSwitch){
                 if(!spriteSwitch){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(4));
-                    spriteSwitch = true;
+                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
+                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(4));
+                        spriteSwitch = true;
+                    }
                 }
                 else{
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(5));
-                    spriteSwitch = false;
+                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
+                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(5));
+                        spriteSwitch = false;
+                    }
                 }
             }
             else{
                 if(!spriteSwitch){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
-                    spriteSwitch = true;
+                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
+                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));
+                        spriteSwitch = true;
+                    }
+
                 }
                 else{
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(2));
-                    spriteSwitch = false;
+                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
+                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(2));
+                        spriteSwitch = false;
+                    }
                 }
             }
 
@@ -274,18 +285,18 @@ void Farmer::startContact(Entity *contactEntity) {
             // TODO: Ground Animation
             if(holdingSwitch){
                 if(currentAction == Action::WALKING){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(3));
+                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(3));
                 }
                 else if(currentAction == Action::IDLE){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));
                 }
             }
             else{
                 if(currentAction == Action::WALKING){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
                 }
                 else if(currentAction == Action::IDLE){
-                    sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
                 }
             }
 

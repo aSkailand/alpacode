@@ -5,7 +5,7 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
 
     // Assign Pointers
     this->configGame = configGame;
-    mapPtr = configGame->alpacaSprites;
+    alpacaMapPtr = configGame->alpacaSprites;
 
     // Convert angle and store unit vectors
     convertAngleToVectors((int) Action::WALKING, walkAngle);
@@ -49,7 +49,9 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
     // Creating SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
-    sfShape->setTexture(&configGame->alpacaTexture);
+    // Getting starting sprite for alpaca from spriteMap;
+    sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(0));
+    //sfShape->setTexture(&configGame->alpacaTexture);
 
     // Create ID text
     createLabel(std::to_string(id), &this->configGame->fontID);
@@ -146,7 +148,7 @@ void Alpaca::endContact(Entity *contactEntity) {
             /// AIRBORNE
             currentStatus = Status::AIRBORNE;
             if(currentAction == Action::WALKING){
-                sfShape->setTexture(mapPtr[currentAction].sprites.at(1));
+                sfShape->setTexture(alpacaMapPtr[currentAction].sprites.at(1));
             }
 
             break;
@@ -170,10 +172,10 @@ void Alpaca::startContact(Entity *contactEntity) {
             currentStatus = Status::GROUNDED;
 
             if(currentAction == Action::WALKING){
-                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                sfShape->setTexture(alpacaMapPtr[currentAction].sprites.at(0));
             }
             else if(currentAction == Action::IDLE){
-                sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+                sfShape->setTexture(alpacaMapPtr[currentAction].sprites.at(0));
             }
 
             break;
