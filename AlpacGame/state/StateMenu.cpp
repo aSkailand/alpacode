@@ -9,8 +9,8 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     window->setView(sf::View(window->getDefaultView()));
     menuGUI = machine->configWindow.getMenuGUI();
 
+    // TGUI setup
     menuGUI->removeAllWidgets();
-
     menuGUI->add(machine->configMenu.getPictureMenu());
     menuGUI->add(machine->configMenu.mapLayouts.find(ConfigMenu::MAP_LAYOUTS::MAINMENU)->second);
 
@@ -22,7 +22,11 @@ void StateMenu::goNext(StateMachine &stateMachine) {
 bool StateMenu::pollMenu() {
     sf::Event event;
     window->pollEvent(event);
-    if (event.type == sf::Event::Closed) window->close();
+    if (event.type == sf::Event::Closed) {
+        window->close();
+        machine->setCurrentState(StateMachine::stateID::EXIT);
+        return false;
+    };
     menuGUI->handleEvent(event);
     return machine->getCurrentState() == StateMachine::stateID::MENU;
 }

@@ -12,7 +12,6 @@
  */
 class StateMenu : public State {
 public:
-
     /**
      * Draw menu and check for input before moving to next state.
      * @param stateMachine the StateMachine controlling this state.
@@ -21,11 +20,10 @@ public:
 
 private:
     // Pointers
-
     /**
      * Pointer to the one and only StateMachine.
      */
-     StateMachine *machine;
+    StateMachine *machine;
 
     /**
      * Pointer to the one and only Window.
@@ -36,17 +34,6 @@ private:
      * Pointer to the one and only menuGUI
      */
     tgui::Gui *menuGUI;
-
-    /**
-     * tgui layout pointer
-     */
-    tgui::VerticalLayout::Ptr layoutMenu;
-
-    /**
-     *
-     */
-    tgui::Layout windowWidth;
-    tgui::Layout windowHeight;
 
     // Menu functions
     /**
@@ -59,15 +46,6 @@ private:
      * Draw the menu with all possible menu choices.
      */
     void drawMenu();
-
-    void changeOption();
-
-    // TGUI setup
-    // Creates a theme
-    tgui::Theme::Ptr theme = tgui::Theme::create("Resources/BabyBlue.txt");
-
-    tgui::Picture::Ptr pictureMenu;
 };
-
 
 #endif //ALPACGAME_STATEMENU_H

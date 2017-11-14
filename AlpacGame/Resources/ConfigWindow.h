@@ -12,30 +12,6 @@ public:
     sf::RenderWindow &getWindow();
 
     /**
-     * Getter for screenWidth
-     * @return screenWidth
-     */
-    int getScreenWidth() const;
-
-    /**
-     * Getter for screenHeight
-     * @return screenHeight
-     */
-    int getScreenHeight() const;
-
-    /**
-     * Setter for screenWidth
-     * @param screenWidth
-     */
-    void setScreenWidth(int screenWidth);
-
-    /**
-     * Setter for screenHeight
-     * @param screenHeight
-     */
-    void setScreenHeight(int screenHeight);
-
-    /**
      * Runs and creates the window
      */
     void run();
@@ -45,22 +21,20 @@ public:
      * @param screenWidth
      * @param screenHeight
      */
-    void setWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
+    void setWindowResolution(int resolution);
 
     /**
      * Sets the window resolution to the desired width and height with a fullscreen style
      * @param screenWidth
      * @param screenHeight
      */
-    void setFullscreeWindowResolution(int unsigned screenWidth, int unsigned screenHeight);
+    void setFullScreenWindowResolution(int resolution);
 
 private:
-
     int screenWidth = 800;
     int screenHeight = 600;
     sf::RenderWindow window;
     tgui::Gui *menuGUI;
-    tgui::Picture::Ptr picture;
 };
 
 

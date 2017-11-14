@@ -1,4 +1,3 @@
-
 #ifndef ALPACGAME_STATEMACHINE_H
 #define ALPACGAME_STATEMACHINE_H
 
@@ -12,15 +11,12 @@
 #include "../Resources/ConfigWindow.h"
 #include "../Resources/ConfigMenu.h"
 #include "../Resources/ConfigGame.h"
-
-
+#include "../Resources/ConfigSound.h"
 
 class State;
 
 class StateMachine {
-
 public:
-
     /**
      * Keeps all the stateIDs for all possible states.
      */
@@ -28,6 +24,7 @@ public:
         INITIAL, MENU, SINGLEPLAYER, PAUSE, OPTION, EXIT
     };
 
+    stateID getCurrentState() const;
     /**
      * Initiate starter values for the StateMachine, then turns itself on.
      */
@@ -52,18 +49,13 @@ public:
     ConfigWindow configWindow;
     ConfigMenu configMenu;
     ConfigGame configGame;
-
+    ConfigSound configSound;
 
 private:
-
     /**
      * The current state the StateMachine is running.
      */
     stateID currentState;
-public:
-    stateID getCurrentState() const;
-
-private:
 
     /**
      * Mappings of stateIDs with corresponding states.
