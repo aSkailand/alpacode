@@ -17,22 +17,22 @@ tgui::Gui *ConfigWindow::getMenuGUI() {
     return menuGUI;
 }
 
-void ConfigWindow::setWindowResolution(int resolution) {
-    if (resolution == 0) {
-        window.create(sf::VideoMode(800, 600, 32), "AlpaGame", sf::Style::Default);
-    } else if (resolution == 1) {
-        window.create(sf::VideoMode(1280, 720, 32), "AlpaGame", sf::Style::Default);
-    } else if (resolution == 2) {
-        window.create(sf::VideoMode(1920, 1080, 32), "AlpaGame", sf::Style::Default);
+void ConfigWindow::setWindowResolution(ConfigMenu::resolution resolution, uint32_t style) {
+
+    switch (resolution) {
+        case ConfigMenu::resolution::RES800x600: {
+            window.create(sf::VideoMode(800, 600, 32), "AlpaGame", style);
+            break;
+        }
+        case ConfigMenu::resolution::RES1280x720: {
+            window.create(sf::VideoMode(1280, 720, 32), "AlpaGame", style);
+            break;
+        }
+        case ConfigMenu::resolution::RES1920x1080: {
+            window.create(sf::VideoMode(1920, 1080, 32), "AlpaGame", style);
+            break;
+        }
     }
+
 }
 
-void ConfigWindow::setFullScreenWindowResolution(int resolution) {
-    if (resolution == 0) {
-        window.create(sf::VideoMode(800, 600, 32), "AlpaGame", sf::Style::Fullscreen);
-    } else if (resolution == 1) {
-        window.create(sf::VideoMode(1280, 720, 32), "AlpaGame", sf::Style::Fullscreen);
-    } else if (resolution == 2) {
-        window.create(sf::VideoMode(1920, 1080, 32), "AlpaGame", sf::Style::Fullscreen);
-    }
-}

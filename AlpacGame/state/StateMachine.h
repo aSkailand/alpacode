@@ -47,7 +47,7 @@ public:
     void setCurrentState(stateID currentState);
 
     ConfigWindow configWindow;
-    ConfigMenu configMenu;
+    ConfigMenu *configMenu = nullptr;
     ConfigGame configGame;
     ConfigSound configSound;
 

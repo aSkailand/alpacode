@@ -9,8 +9,8 @@ void StateOption::goNext(StateMachine &stateMachine) {
 
     /// TGUI setup
     menuGUI->removeAllWidgets();
-    menuGUI->add(machine->configMenu.getPictureMenu());
-    menuGUI->add(machine->configMenu.mapLayouts.find(ConfigMenu::MAP_LAYOUTS::SETTINGS)->second);
+    menuGUI->add(machine->configMenu->getPictureMenu());
+    menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::SETTINGS]);
 
     while (PollOption()) {
         drawOption();
@@ -21,9 +21,7 @@ bool StateOption::PollOption() {
     sf::Event event;
     window->pollEvent(event);
     if (event.type == sf::Event::Closed) {
-        window->close();
         machine->setCurrentState(StateMachine::stateID::EXIT);
-        return false;
     }
     menuGUI->handleEvent(event);
     return machine->getCurrentState() == StateMachine::stateID::OPTION;

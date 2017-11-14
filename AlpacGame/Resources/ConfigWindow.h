@@ -2,6 +2,7 @@
 #define ALPACGAME_CONFIG_H
 
 #include <TGUI/TGUI.hpp>
+#include "ConfigMenu.h"
 
 class ConfigWindow {
 public:
@@ -21,14 +22,7 @@ public:
      * @param screenWidth
      * @param screenHeight
      */
-    void setWindowResolution(int resolution);
-
-    /**
-     * Sets the window resolution to the desired width and height with a fullscreen style
-     * @param screenWidth
-     * @param screenHeight
-     */
-    void setFullScreenWindowResolution(int resolution);
+    void setWindowResolution(ConfigMenu::resolution resolution, uint32_t style);
 
 private:
     int screenWidth = 800;
