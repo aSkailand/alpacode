@@ -83,9 +83,7 @@ public:
 
     /// Textures
     sf::Texture planetTexture;
-    sf::Texture farmerTexture;
-    sf::Texture alpacaTexture;
-    sf::Texture wolfTexture;
+
 
     /// Map of every entities sprites.
     std::map<EntityWarm::Action , AnimationInfo> wolfSprites;
@@ -102,7 +100,7 @@ private:
     /**
      * Load all necessary textures used during the game.
      */
-    void loadTexture(std::string filename, std::map<EntityWarm::Action, AnimationInfo>& sprites, int width, int height,int top, int mode);
+    void loadTexture(std::string filename, std::map<EntityWarm::Action, AnimationInfo>& sprites, int width, int height,int top, EntityWarm::Action action);
     void loadAllTextures();
 
 protected:

@@ -5,7 +5,11 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
 
     // Assign Pointers
     this->configGame = configGame;
+<<<<<<< HEAD
     mapPtr = configGame->wolfSprites;
+=======
+    wolfMapPtr = configGame->wolfSprites;
+>>>>>>> feature/ALPACODE-98-creating-a-general-animation
 
     // Convert angle and store unit vectors
     convertAngleToVectors(((int) Action::WALKING), walkAngle);
@@ -49,8 +53,9 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
     // Create SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
-    //sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
-    sfShape->setTexture(&configGame->wolfTexture);
+    // Getting starting sprite for wolf from spriteMap;
+    sfShape->setTexture(wolfMapPtr[Action::IDLE].sprites.at(0));
+
 
     // Create ID text
     createLabel(std::to_string(id), &this->configGame->fontID);

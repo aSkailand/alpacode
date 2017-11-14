@@ -76,7 +76,8 @@ private:
 
     /// Animation tools
 
-    std::map<EntityWarm::Action , AnimationInfo> mapPtr;
+    std::map<EntityWarm::Action , AnimationInfo> wolfMapPtr;
+
 
 public:
 
