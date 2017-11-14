@@ -63,8 +63,6 @@ private:
      */
     void render(sf::RenderWindow *window) override;
 
-
-
     /// Movement tools
     /**
      * The time before current action is switched (in seconds).
@@ -75,6 +73,10 @@ private:
      * The time before next movement is permitted to be performed (in seconds).
      */
     float moveAvailableTick = 0.4f;
+
+    /// Animation tools
+
+    std::map<EntityWarm::Action , AnimationInfo> mapPtr;
 
 public:
 

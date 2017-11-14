@@ -52,7 +52,8 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     // Create SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
-    sfShape->setTexture(&configGame->farmerTexture);
+    sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+    //sfShape->setTexture(&configGame->farmerTexture);
 
     // Create ID text
     createLabel("P1", &this->configGame->fontID);

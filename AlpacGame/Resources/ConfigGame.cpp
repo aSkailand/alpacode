@@ -88,15 +88,15 @@ void ConfigGame::loadAllTextures() {
     /// alpaca sizes: width = 100, height = 110
     /// farmer sizes: width = 50, height = 70
 
-    std::string wolfSpriteSheet = "entity/wolf/wolf-sprite.png";
+    /*std::string wolfSpriteSheet = "entity/wolf/wolf-sprite.png";
     wolfSprites[EntityWarm::Action::WALKING].startFrame = 0;
-    wolfSprites[EntityWarm::Action::WALKING].endFrame = 7;
+    wolfSprites[EntityWarm::Action::WALKING].endFrame = 6;
     loadTexture(wolfSpriteSheet,wolfSprites,wolfWalkWidth,wolfWalkHeight,95,0);
 
     wolfSprites[EntityWarm::Action::IDLE].startFrame = 0;
     wolfSprites[EntityWarm::Action::IDLE].endFrame = 6;
     loadTexture(wolfSpriteSheet,wolfSprites,wolfIdleWidth,wolfIdleheigth,0,1);
-
+*/
     std::string alpacaSpriteSheet = "entity/alpaca/alpaca-sprite.png";
     alpacaSprites[EntityWarm::Action::WALKING].startFrame = 0;
     alpacaSprites[EntityWarm::Action::WALKING].endFrame = 2;
@@ -125,8 +125,8 @@ void ConfigGame::loadAllTextures() {
 
     // Getting the starting sprite.
     planetTexture.loadFromFile("entity/planet/planet.png");
-    wolfTexture.loadFromFile("entity/wolf/wolf-sprite.png", sf::IntRect{0,0,145,95});
+    wolfTexture.loadFromFile("entity/wolf/wolfy.png");
     alpacaTexture.loadFromFile("entity/alpaca/alpaca-sprite.png",sf::IntRect{0,0,100,110});
-    farmerTexture.loadFromFile("entity/player/farmer-sprite.png",sf::IntRect{0,0,50,70});
+    //farmerTexture.loadFromFile("entity/player/farmer-sprite.png",sf::IntRect{0,0,50,70});
 
 }

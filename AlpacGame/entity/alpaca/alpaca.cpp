@@ -49,7 +49,8 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
     // Creating SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
-    sfShape->setTexture(&configGame->alpacaTexture);
+    sfShape->setTexture(mapPtr[currentAction].sprites.at(0));
+    //sfShape->setTexture(&configGame->alpacaTexture);
 
     // Create ID text
     createLabel(std::to_string(id), &this->configGame->fontID);
