@@ -174,7 +174,7 @@ void Wolf::startContact(CollisionID typeFixture, Entity *contactEntity) {
     }
 }
 
-void Wolf::endContact(Entity *contactEntity) {
+void Wolf::endContact(CollisionID typeCollision, Entity *contactEntity) {
     switch (contactEntity->getID()){
         case ID::PLANET:{
             currentStatus = Status::AIRBORNE;

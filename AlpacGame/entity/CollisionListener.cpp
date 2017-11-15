@@ -8,7 +8,7 @@ void CollisionListener::BeginContact(b2Contact *contact) {
     Entity *entity_A = getEntity_A(contact);
     Entity *entity_B = getEntity_B(contact);
 
-    // Get the Collision Types [HIT, DETECT]
+    // Get the Sensor Types [HIT, DETECT]
     Entity::CollisionID typeCollision_A = getCollisionType_A(contact);
     Entity::CollisionID typeCollision_B = getCollisionType_B(contact);
 
@@ -25,9 +25,13 @@ void CollisionListener::EndContact(b2Contact *contact) {
     Entity *entity_A = getEntity_A(contact);
     Entity *entity_B = getEntity_B(contact);
 
+    // Get the Sensor Types [HIT, DETECT]
+    Entity::CollisionID typeCollision_A = getCollisionType_A(contact);
+    Entity::CollisionID typeCollision_B = getCollisionType_B(contact);
+
     // Give each entity the info about the other
-    entity_A->endContact(entity_B);
-    entity_B->endContact(entity_A);
+    entity_A->endContact(typeCollision_A, entity_B);
+    entity_B->endContact(typeCollision_B, entity_A);
 }
 
 Entity *CollisionListener::getEntity_A(b2Contact *contact) {
@@ -46,7 +50,4 @@ Entity::CollisionID CollisionListener::getCollisionType_B(b2Contact *contact) {
     return static_cast<Entity::CollisionID> (Entity::convertToCollisionID(contact->GetFixtureB()->GetUserData()));
 }
 
-
-//auto apple_A = Entity::convertToCollisionID(contact->GetFixtureA()->GetUserData());
-//auto apple_B = Entity::convertToCollisionID(contact->GetFixtureB()->GetUserData());
 

@@ -80,7 +80,7 @@ public:
 
     void startContact(CollisionID typeFixture, Entity *contactEntity) override;
 
-    void endContact(Entity *contactEntity) override;
+    void endContact(CollisionID typeCollision, Entity *contactEntity) override;
 };
 
 #endif //ALPACGAME_WOLFSTATE_H

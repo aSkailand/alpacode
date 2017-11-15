@@ -75,6 +75,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             if (warm_e != nullptr) {
                 warm_e->switchAction();
                 warm_e->performAction();
+
             }
 
             // Adjust SFML shape to Box2D body's position and rotation, then draw it.

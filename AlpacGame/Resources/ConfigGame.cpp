@@ -38,4 +38,6 @@ void ConfigGame::loadAllTextures() {
     farmerTexture.loadFromFile("entity/player/farmer.png");
     alpacaTexture.loadFromFile("entity/alpaca/alpaca.png");
     wolfTexture.loadFromFile("entity/wolf/wolfy.png");
+    alertRedTexture.loadFromFile("entity/alpaca/redAlert.png");
+    alertYelTexture.loadFromFile("entity/alpaca/yellowAlert.png");
 }

@@ -44,7 +44,7 @@ public:
 
    // void endContact(Entity::CollisionID selfFixtureID, Entity *contactEntity) override;
 
-    void endContact(Entity *contactEntity) override;
+    void endContact(CollisionID typeCollision, Entity *contactEntity) override;
 
 
 };

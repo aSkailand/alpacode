@@ -83,12 +83,13 @@ int Alpaca::nextId = 0;
 
 void Alpaca::switchAction() {
 
-    // Check if the randomActionClock has triggered
-    if (currentStatus == Status::GROUNDED && randomActionTriggered(randomActionTick)) {
+    /// Normal Behavior, Check if the randomActionClock has triggered
 
+    if (currentBehavior == Behavior::NORMAL &&
+            currentStatus == Status::GROUNDED &&
+            randomActionTriggered(randomActionTick)) {
         currentAction = (Action) randomNumberGenerator(0, 1);
-
-
+        std::cout << "Normal" << std::endl;
         switch (currentAction) {
 
             case Action::IDLE: {
@@ -114,12 +115,45 @@ void Alpaca::switchAction() {
             }
         }
     }
+    if(currentBehavior == Behavior::AWARE){
+        std::cout << "Aware" << std::endl;
+        // TODO: 1. Print Alert sign
+
+        // Number tick
+        if(randomActionTriggered(awareActionTick)){
+            currentBehavior = Behavior::AFRAID;
+
+            if(currentDirection == Direction::LEFT){
+                currentDirection = Direction ::RIGHT;
+                sfShape->setScale(1.f, 1.f);
+            } else {
+                currentDirection = Direction ::LEFT;
+                sfShape->setScale(-1.f, 1.f);
+            }
+        }
+
+    }
+
+    if(currentBehavior == Behavior::AFRAID){
+        std::cout << "Afraid" << std::endl;
+        currentAction = Action::WALKING;
+        // TODO: 1. Print Red Alert Sign
+
+        if(randomActionTriggered(runningActionTick)){
+            currentBehavior = Behavior::NORMAL;
+            currentAction = Action::IDLE;
+
+        }
+
+
+    }
 }
 
 void Alpaca::render(sf::RenderWindow *window) {
 
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
+
 
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
@@ -160,7 +194,9 @@ void Alpaca::performAction() {
     }
 }
 
-void Alpaca::endContact(Entity *contactEntity) {
+
+
+void Alpaca::endContact(CollisionID typeCollision, Entity *contactEntity) {
 
     switch (contactEntity->getID()) {
         case ID::PLANET: {
@@ -179,62 +215,46 @@ void Alpaca::endContact(Entity *contactEntity) {
 
 }
 
-void Alpaca::startContact(CollisionID typeFixture, Entity *contactEntity) {
-    std::cout << (int)typeFixture << std::endl;
-    if(typeFixture == CollisionID::BODY){
-        switch (contactEntity->getID() ) {
-            case ID::PLANET: {
-                //currentStatus = Status::GROUNDED;
-                break;
-            }
-            case ID::FARMER: {
-                std::cout << "BODY SENSE" << std::endl;
-                //farmerTouch = true;
-                break;
-            }
-            case ID::ALPACA:
-                break;
-            case ID::WOLF:
-                break;
+void Alpaca::startContact(CollisionID typeCollision, Entity *contactEntity) {
+
+
+
+    switch (contactEntity->getID() ) {
+        case ID::PLANET: {
+            currentStatus = Status::GROUNDED;
+            break;
         }
-    }
-    if(typeFixture == CollisionID::HIT){
-        switch (contactEntity->getID() ) {
-            case ID::PLANET: {
-                currentStatus = Status::GROUNDED;
-                break;
-            }
-            case ID::FARMER: {
+        case ID::FARMER: {
+            if(typeCollision == CollisionID::HIT){
                 std::cout << "HIT SENSE" << std::endl;
-                farmerTouch = true;
-                break;
             }
-            case ID::ALPACA:
-                break;
-            case ID::WOLF:
-
-                break;
-        }
-    }
-    if(typeFixture == CollisionID::DETECTION){
-        switch (contactEntity->getID() ) {
-            case ID::PLANET: {
-                //currentStatus = Status::GROUNDED;
-                break;
-            }
-            case ID::FARMER: {
+            /// Detects Farmer with Detect Sensor
+            if(typeCollision == CollisionID::DETECTION){
                 std::cout << "DETECT SENSE" << std::endl;
-                farmerTouch = true;
-                break;
+                // Becomes Aware, turns its towards the farmer
+                if(currentBehavior == Behavior::NORMAL){
+                    currentBehavior = Behavior::AWARE;
+                    b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
+                    if(delta.x > 0) {   /// Detects from the left side
+                        sfShape->setScale(1.f, 1.f);
+                        currentDirection = Direction ::RIGHT;
+                    } else {
+                        sfShape->setScale(-1.f, 1.f);
+                        currentDirection = Direction ::LEFT;
+                    }
+                }
+
             }
-            case ID::ALPACA:
-                break;
-            case ID::WOLF:
 
-                break;
+            farmerTouch = true;
+            break;
         }
-    }
+        case ID::ALPACA:
+            break;
+        case ID::WOLF:
 
+            break;
+    }
 
 
 

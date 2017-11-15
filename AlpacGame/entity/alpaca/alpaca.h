@@ -31,8 +31,8 @@ public:
 private:
 
     /// AI Status
-    enum class Behavior{NORMAL, AFRAID};
-    Behavior currentBehavior = Behavior::NORMAL;
+    enum class Behavior{NORMAL, AWARE, AFRAID, FOLLOWING};
+    Behavior currentBehavior;
 
     /// Sensors
     b2FixtureDef bodySensor;
@@ -58,6 +58,13 @@ private:
     float randomActionTick = 3.0f;
 
     /**
+     * The time for Alpaca to change behaviors
+     */
+    float awareActionTick = 3.0f;
+    float runningActionTick = 5.0f;
+
+
+    /**
      * The time before next movement is permitted to be performed (in seconds).
      */
     float moveAvailableTick = 0.5f;
@@ -75,6 +82,7 @@ private:
      */
     void performAction() override;
 
+
     /**
      * Randomize the entity's current action and direction.
      */
@@ -86,8 +94,8 @@ private:
 public:
 
     /// Body Sensor Contact
-    void startContact(CollisionID typeFixture, Entity *contactEntity) override;
-    void endContact(Entity *contactEntity) override ;
+    void startContact(CollisionID typeCollision, Entity *contactEntity) override;
+    void endContact(CollisionID typeCollision, Entity *contactEntity) override ;
 
 
 

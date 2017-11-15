@@ -83,6 +83,8 @@ public:
     sf::Texture farmerTexture;
     sf::Texture alpacaTexture;
     sf::Texture wolfTexture;
+    sf::Texture alertRedTexture;
+    sf::Texture alertYelTexture;
 
 private:
 

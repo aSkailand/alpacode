@@ -84,9 +84,9 @@ private:
 
 public:
 
-    void startContact(CollisionID typeFixture, Entity *contactEntity) override;
+    void startContact(CollisionID typeCollision, Entity *contactEntity) override;
 
-    void endContact( Entity *contactEntity) override;
+    void endContact(CollisionID typeCollision, Entity *contactEntity) override;
 
 };
 

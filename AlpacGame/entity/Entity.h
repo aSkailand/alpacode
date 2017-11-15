@@ -88,8 +88,8 @@ public:
     };
 
     /// Contact Functions
-    virtual void startContact(CollisionID typeFixture, Entity *contactEntity) = 0;
-    virtual void endContact(Entity *contactEntity) = 0;
+    virtual void startContact(CollisionID typeCollision, Entity *contactEntity) = 0;
+    virtual void endContact(CollisionID typeCollision, Entity *contactEntity) = 0;
 
     //virtual void startDetect(Entity *contactEntity) = 0;
     //virtual void endDetect(Entity *contactEntity) = 0;
