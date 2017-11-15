@@ -1,13 +1,16 @@
 #ifndef ALPACGAME_CONFIGMENU_H
 #define ALPACGAME_CONFIGMENU_H
 
-#include "map"
-#include "SFML/Graphics.hpp"
-#include "ConfigWindow.h"
+#include <map>
+#include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
+#include "ConfigWindow.h"
 
+/**
+ * Using a forward-declaration here to avoid a recursion of includes between ConfigMenu and
+ * StateMachine.
+ */
 class StateMachine;
-class ConfigWindow;
 
 /**
  * This class creates and holds all of the layouts and widgets of the menu GUI.
@@ -15,8 +18,7 @@ class ConfigWindow;
 class ConfigMenu {
 public:
 
-    StateMachine *machine = nullptr;
-
+    /// Enums
     enum class layouts {
         MAINMENU,
         SETTINGS,
@@ -25,7 +27,7 @@ public:
         CONTROLS
     };
 
-    enum class buttons {
+    enum class buttonID {
         PLAYGAME,
         SETTINGS,
         QUIT,
@@ -40,51 +42,44 @@ public:
         EFFECT_SLIDER
     };
 
+    /// Public Functions
     /**
-     * Getter for the current RESOLUTION enum class
-     * @return returns the current resolution
+     * Defines the GUI of menu and create all needed buttons, then bind it to the common window.
+     * @param stateMachine the reference to the common stateMachine.
      */
-    ConfigWindow::Resolution getCurrentResolution() const;
+    void run(StateMachine &stateMachine);
 
+    /// Public Getter
     /**
-     * Sets the current resolution
-     * @param currentResolution
-     */
-    void setCurrentResolution(ConfigWindow::Resolution currentResolution);
-
-    /// Mappings of the different layouts and widgets
-    std::map<buttons, tgui::Button::Ptr> mapButtons;
-    std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
-    std::map<buttons, tgui::Slider::Ptr> mapSliders;
-
-    /**
-     * Getter for the background picture, this image is only loaded once to save resources
+     * Getter for the background picture, this image is only loaded once to save resources.
      * @return returns a tgui::Picture
      */
     tgui::Picture::Ptr &getPictureMenu();
 
-    void run(StateMachine &stateMachine);
+    /// Mappings of the different layouts and widgets
+    std::map<buttonID, tgui::Button::Ptr> mapButtons;
+    std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
+    std::map<buttonID, tgui::Slider::Ptr> mapSliders;
 
-    /**
-     * Creates a button
-     * @param buttonType
-     * @param buttonName
-     * @param typeActivation how the button is activated, E.g. pressed, released
-     * @param func binds a function to the button, this function runs when the button is pressed
-     */
-    void createButton(
-            buttons buttonType,
-            const std::string &buttonName,
-            const std::string &typeActivation,
-            const std::function<void()> &func
-    );
+private:
 
-    /**
-     * Creates a slider
-     * @param sliderType enum class, the key value to the <map> the slider is emplaced in
-     */
-    void createSlider(buttons sliderType);
+    /// Pointers
+    StateMachine *machine = nullptr;
 
+    /// TGUI objects
+    tgui::VerticalLayout::Ptr tempVerticalLayout;
+    tgui::Picture::Ptr pictureMenu;
+    tgui::Button::Ptr masterButton;
+    tgui::Theme::Ptr theme;
+    tgui::Layout windowWidth;
+    tgui::Layout windowHeight;
+
+    /// CheckBox
+    bool checkBoxMuteChecked = false;
+
+    bool checkBoxFullScreenChecked = false;
+
+    /// Layout Functions
     /**
      * Creates the main menu layout and settings menu layout
      * @param Width from the SFML window
@@ -101,19 +96,39 @@ public:
      */
     void soundSettingsLayout();
 
-    bool checkBoxMuteChecked = false;
+    /// Button Functions
+    /**
+     * Creates a button with the given parameters, then store it in a map for later accessing.
+     * @param buttonID the button identifier, which is an enum.
+     * @param buttonName the button name, which will be visually presented during run-time.
+     * @param typeActivation how the button is activated, E.g. pressed, released.
+     * @param func binds a function to the button, this function runs when the button is activated
+     */
+    void createButton(
+            buttonID buttonID,
+            const std::string &buttonName,
+            const std::string &typeActivation,
+            const std::function<void()> &func
+    );
 
-    bool checkBoxFullScreenChecked = false;
+    /**
+   * Creates a slider
+   * @param sliderType the slider identifier, used as the key in the mappings.
+   */
+    void createSlider(buttonID sliderType);
 
-private:
-//    resolution currentResolution = resolution::RES800x600;
+    /// Private Setters and Getters
+    /**
+ * Getter for the current resolution.
+ * @return returns the current resolution
+ */
+    ConfigWindow::Resolution getCurrentResolution() const;
 
-    tgui::VerticalLayout::Ptr tempVerticalLayout;
-    tgui::Picture::Ptr pictureMenu;
-    tgui::Button::Ptr masterButton;
-    tgui::Theme::Ptr theme;
-    tgui::Layout windowWidth;
-    tgui::Layout windowHeight;
+    /**
+     * Sets the current resolution
+     * @param currentResolution
+     */
+    void setCurrentResolution(ConfigWindow::Resolution currentResolution);
 
 };
 

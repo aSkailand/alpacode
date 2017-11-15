@@ -1,3 +1,4 @@
+
 #include "ConfigMenu.h"
 #include "../state/StateMachine.h"
 
@@ -9,19 +10,19 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
 
-    createButton(buttons::PLAYGAME, "Play game!", "pressed",
+    createButton(buttonID::PLAYGAME, "Play game!", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
 
-    createButton(buttons::SETTINGS, "Settings", "pressed",
+    createButton(buttonID::SETTINGS, "Settings", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::OPTION); });
 
-    createButton(buttons::QUIT, "Quit", "pressed",
+    createButton(buttonID::QUIT, "Quit", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
 
-    createButton(buttons::BACK_TO_MAIN, "Back", "pressed",
+    createButton(buttonID::BACK_TO_MAIN, "Back", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::MENU); });
 
-    createButton(buttons::VIDEO, "Video", "pressed",
+    createButton(buttonID::VIDEO, "Video", "pressed",
                  [&] {
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
@@ -29,10 +30,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(mapLayouts[ConfigMenu::layouts::VIDEO]);
                  });
 
-    createButton(buttons::CONTROLS, "Controls", "pressed",
+    createButton(buttonID::CONTROLS, "Controls", "pressed",
                  [&] {});
 
-    createButton(buttons::SOUND, "Sound", "pressed",
+    createButton(buttonID::SOUND, "Sound", "pressed",
                  [&] {
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
@@ -42,7 +43,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  });
 
 
-    createButton(buttons::APPLY_VIDEO_SETTINGS, "Apply changes", "pressed",
+    createButton(buttonID::APPLY_VIDEO_SETTINGS, "Apply changes", "pressed",
                  [&] {
                      if (checkBoxFullScreenChecked) {
                          machine->configWindow.setWindowResolution(getCurrentResolution(), sf::Style::Fullscreen);
@@ -51,16 +52,16 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      }
                  });
 
-    createButton(buttons::APPLY_SOUND_SETTINGS, "Apply changes", "pressed",
+    createButton(buttonID::APPLY_SOUND_SETTINGS, "Apply changes", "pressed",
                  [&] {
-                     machine->configSound.setMasterVolume(mapSliders[buttons::MASTER_SLIDER]->getValue());
-                     machine->configSound.setMusicVolume(mapSliders[buttons::MUSIC_SLIDER]->getValue());
-                     machine->configSound.setSoundEffects(mapSliders[buttons::EFFECT_SLIDER]->getValue());
+                     machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
+                     machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
+                     machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
                  });
 
-    createSlider(buttons::MASTER_SLIDER);
-    createSlider(buttons::MUSIC_SLIDER);
-    createSlider(buttons::EFFECT_SLIDER);
+    createSlider(buttonID::MASTER_SLIDER);
+    createSlider(buttonID::MUSIC_SLIDER);
+    createSlider(buttonID::EFFECT_SLIDER);
 
     mainMenuLayout(machine->configWindow.getMenuGUI());
 }
@@ -69,14 +70,14 @@ tgui::Picture::Ptr &ConfigMenu::getPictureMenu() {
     return pictureMenu;
 }
 
-void ConfigMenu::createButton(buttons buttonType,
+void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &buttonName,
                               const std::string &typeActivation,
                               const std::function<void()> &func) {
     tgui::Button::Ptr tempButton = tgui::Button::copy(masterButton);
     tempButton->setText(buttonName);
     tempButton->connect(typeActivation, func);
-    mapButtons.emplace(buttonType, tempButton);
+    mapButtons.emplace(buttonID, tempButton);
 }
 
 
@@ -92,11 +93,11 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->setSize(windowWidth * 2 / 3, windowHeight / 2);
     tempVerticalLayout->setPosition(windowWidth / 6, windowHeight / 6);
 
-    tempVerticalLayout->add(mapButtons[buttons::PLAYGAME]);
+    tempVerticalLayout->add(mapButtons[buttonID::PLAYGAME]);
     tempVerticalLayout->addSpace();
-    tempVerticalLayout->add(mapButtons[buttons::SETTINGS]);
+    tempVerticalLayout->add(mapButtons[buttonID::SETTINGS]);
     tempVerticalLayout->addSpace();
-    tempVerticalLayout->add(mapButtons[buttons::QUIT]);
+    tempVerticalLayout->add(mapButtons[buttonID::QUIT]);
 
     // Adds the main menu layout to the map
     mapLayouts.emplace(layouts::MAINMENU, tempVerticalLayout);
@@ -107,13 +108,13 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     optionsVerticalLayout->setPosition(windowWidth - (windowWidth - 10), 0);
     optionsVerticalLayout->removeAllWidgets();
     optionsVerticalLayout->addSpace(0.5f);
-    optionsVerticalLayout->add(mapButtons[buttons::VIDEO]);
+    optionsVerticalLayout->add(mapButtons[buttonID::VIDEO]);
     optionsVerticalLayout->addSpace(2);
-    optionsVerticalLayout->add(mapButtons[buttons::CONTROLS]);
+    optionsVerticalLayout->add(mapButtons[buttonID::CONTROLS]);
     optionsVerticalLayout->addSpace(2);
-    optionsVerticalLayout->add(mapButtons[buttons::SOUND]);
+    optionsVerticalLayout->add(mapButtons[buttonID::SOUND]);
     optionsVerticalLayout->addSpace(6);
-    optionsVerticalLayout->add(mapButtons[buttons::BACK_TO_MAIN]);
+    optionsVerticalLayout->add(mapButtons[buttonID::BACK_TO_MAIN]);
     optionsVerticalLayout->addSpace(0.5f);
 
     // Adds the settings layout to the map
@@ -134,17 +135,17 @@ void ConfigMenu::videoSettingsLayout() {
     tgui::ComboBox::Ptr resolutionBox = theme->load("ComboBox");
 
     // Add all possible options inside ComboBox
-    for (auto &iter : machine->configWindow.mapResolution) {
+    for (auto &iter : machine->configWindow.mapResolutionString) {
         resolutionBox->addItem(iter.second);
     }
 
     // Set initial selection
-    resolutionBox->setSelectedItem(machine->configWindow.mapResolution[machine->configWindow.currentResolution]);
+    resolutionBox->setSelectedItem(machine->configWindow.mapResolutionString[machine->configWindow.currentResolution]);
 
     // Setup selection mechanism
     resolutionBox->connect("ItemSelected",
                            [&](std::string itemSelected) {
-                               for (auto &iter : machine->configWindow.mapResolution) {
+                               for (auto &iter : machine->configWindow.mapResolutionString) {
                                    if(itemSelected == iter.second)
                                        setCurrentResolution(iter.first);
                                }
@@ -173,7 +174,7 @@ void ConfigMenu::videoSettingsLayout() {
     hori->addSpace(5);
     videoSettingsLayout->add(hori);
     videoSettingsLayout->addSpace(5);
-    videoSettingsLayout->add(mapButtons[buttons::APPLY_VIDEO_SETTINGS]);
+    videoSettingsLayout->add(mapButtons[buttonID::APPLY_VIDEO_SETTINGS]);
 
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
@@ -215,15 +216,15 @@ void ConfigMenu::soundSettingsLayout() {
     layout->addSpace();
     layout->addSpace();
     layout->add(masterLabel);
-    layout->add(mapSliders[buttons::MASTER_SLIDER]);
+    layout->add(mapSliders[buttonID::MASTER_SLIDER]);
     layout->addSpace();
     layout->add(musicLabel);
-    layout->add(mapSliders[buttons::MUSIC_SLIDER]);
+    layout->add(mapSliders[buttonID::MUSIC_SLIDER]);
     layout->addSpace();
     layout->add(sfxLabel);
-    layout->add(mapSliders[buttons::EFFECT_SLIDER]);
+    layout->add(mapSliders[buttonID::EFFECT_SLIDER]);
     layout->addSpace();
-    layout->add(mapButtons[buttons::APPLY_SOUND_SETTINGS]);
+    layout->add(mapButtons[buttonID::APPLY_SOUND_SETTINGS]);
 
     mapLayouts.emplace(layouts::SOUND, layout);
 }
@@ -236,7 +237,7 @@ void ConfigMenu::setCurrentResolution(ConfigWindow::Resolution currentResolution
     machine->configWindow.currentResolution = currentResolution;
 }
 
-void ConfigMenu::createSlider(buttons sliderType) {
+void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
     mapSliders.emplace(sliderType, tempSlider);
