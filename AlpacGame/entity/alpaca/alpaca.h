@@ -81,7 +81,7 @@ private:
     /// Animation tool
     bool spriteSwitch = false;
 
-    std::map<EntityWarm::Action , AnimationInfo> alpacaMapPtr;
+    std::map<EntityWarm::Action , SpriteInfo> alpacaMapPtr;
 
 public:
 

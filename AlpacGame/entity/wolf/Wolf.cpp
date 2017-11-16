@@ -105,6 +105,19 @@ void Wolf::render(sf::RenderWindow *window) {
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
+    // Switch Texture
+    if(currentStatus == Status::AIRBORNE){
+        if(spriteSwitch){
+            sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(4));
+        } else{
+            sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(6));
+        }
+
+    }
+    else if (currentAction == Action::IDLE){
+        sfShape->setTexture(wolfMapPtr[Action::IDLE].sprites.at(0));
+    }
+
     window->draw(*sfShape);
 
     if (configGame->showLabels) {
@@ -140,14 +153,7 @@ void Wolf::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET:
             currentStatus = Status ::GROUNDED;
-
-            if(currentAction == Action::WALKING){
-                sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(0));
-            }
-            else if(currentAction == Action::IDLE){
-                sfShape->setTexture(wolfMapPtr[Action::IDLE].sprites.at(0));
-            }
-
+            spriteSwitch = !spriteSwitch;
             break;
         case ID::FARMER: {
             b2Vec2 delta =  getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
@@ -189,25 +195,6 @@ void Wolf::endContact(Entity *contactEntity) {
     switch (contactEntity->getID()){
         case ID::PLANET:{
             currentStatus = Status::AIRBORNE;
-
-            /*if(currentAction == Action::WALKING){
-                sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(4));
-                spriteSwitch = true;
-            }
-            */
-            if(!spriteSwitch){
-                if(currentAction == Action::WALKING){
-                    sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(4));
-                    spriteSwitch = true;
-                }
-            }
-            else{
-                if(currentAction == Action::WALKING){
-                    sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(6));
-                    spriteSwitch = false;
-                }
-            }
-
             break;
         }
         case ID::ALPACA:{

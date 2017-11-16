@@ -64,20 +64,37 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
 
 
 void Farmer::render(sf::RenderWindow *window) {
+
     x = SCALE * body->GetPosition().x;
     y = SCALE * body->GetPosition().y;
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
+    // Switch Texture
+    if (holdingEntity == nullptr) {
+        if (currentAction == Action::WALKING || currentAction == Action::JUMP) {
+            sfShape->setTexture(farmerMapPtr[Action::WALKING].sprites.at(0 + static_cast<unsigned int>(spriteSwitch)));
+        } else if (currentStatus == Status::GROUNDED) {
+            sfShape->setTexture(farmerMapPtr[Action::IDLE].sprites.at(0));
+        }
+    } else {
+        if (currentAction == Action::WALKING || currentAction == Action::JUMP) {
+            sfShape->setTexture(farmerMapPtr[Action::WALKING].sprites.at(2 + static_cast<unsigned int>(spriteSwitch)));
+        } else if (currentStatus == Status::GROUNDED) {
+            sfShape->setTexture(farmerMapPtr[Action::IDLE].sprites.at(1));
+        }
+    }
+
     window->draw(*sfShape);
 
-    if(configGame->showLabels){
+    if (configGame->showLabels) {
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                           body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label->setRotation(sfShape->getRotation());
         window->draw(*label);
         sfShape->setOutlineThickness(2);
-    } else{
+    } else {
         sfShape->setOutlineThickness(0);
     }
 
@@ -126,13 +143,12 @@ void Farmer::switchAction() {
 
 void Farmer::performAction() {
 
-    if (currentAction != Action::IDLE  && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
+    if (currentAction != Action::IDLE && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
 
         switch (currentAction) {
 
             case Action::WALKING: {
                 forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
-                // TODO: Walking ANimation
                 break;
             }
             case Action::JUMP: {
@@ -140,7 +156,6 @@ void Farmer::performAction() {
                 break;
             }
             case Action::IDLE: {
-                //TODO: IDle Animation
                 break;
             }
 
@@ -157,7 +172,7 @@ void Farmer::performAction() {
                 holdingEntity = currentlyTouchingEntities.front();
                 currentlyTouchingEntities.pop_front();
 
-                dynamic_cast<EntityWarm*> (holdingEntity)->currentStatus = Status::AIRBORNE;
+                dynamic_cast<EntityWarm *> (holdingEntity)->currentStatus = Status::AIRBORNE;
 
                 graspClock.restart();
             }
@@ -168,33 +183,18 @@ void Farmer::performAction() {
                 float32 delta = bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
 
                 // Lock the entity delta length above farmer's origin
-                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta+offset))), getBody()->GetAngle());
-                // TODO: HOlding animation
-                if(currentAction == Action::WALKING){
+                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta + offset))),
+                                                       getBody()->GetAngle());
 
-                }
-                else if(currentAction == Action::IDLE){
-                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));
-                }
-                holdingSwitch = true;
             }
             break;
         }
 
         case Grasp::THROWING: {
-
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
             forcePushBody((int) Grasp::THROWING, holdingEntity->getBody(), throwForce, currentDirection);
             holdingEntity = nullptr;
             currentGrasp = Grasp::EMPTY;
-
-            if(currentAction == Action::WALKING){
-                sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
-            }
-            else if(currentAction == Action::IDLE){
-                sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
-            }
-            holdingSwitch = false;
             break;
         }
 
@@ -215,39 +215,6 @@ void Farmer::endContact(Entity *contactEntity) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Red);
             currentStatus = Status::AIRBORNE;
-            // TODO: Jump ANimation
-
-            if(holdingSwitch){
-                if(!spriteSwitch){
-                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
-                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(4));
-                        spriteSwitch = true;
-                    }
-                }
-                else{
-                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
-                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(5));
-                        spriteSwitch = false;
-                    }
-                }
-            }
-            else{
-                if(!spriteSwitch){
-                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
-                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));
-                        spriteSwitch = true;
-                    }
-
-                }
-                else{
-                    if(currentAction == Action::WALKING || currentAction == Action::JUMP){
-                        sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(2));
-                        spriteSwitch = false;
-                    }
-                }
-            }
-
-
             break;
         }
         case ID::FARMER:
@@ -280,35 +247,15 @@ void Farmer::startContact(Entity *contactEntity) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Black);
             currentStatus = Status::GROUNDED;
-
-            // TODO: Ground Animation
-            if(holdingSwitch){
-                if(currentAction == Action::WALKING){
-                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
-                }
-                else if(currentAction == Action::IDLE){
-                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));
-                }
-            }
-            else{
-                if(currentAction == Action::WALKING){
-                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
-                }
-                else if(currentAction == Action::IDLE){
-                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
-                }
-            }
-
-
-
-            body->SetLinearVelocity(b2Vec2(0, 0));
+            spriteSwitch = !spriteSwitch;
             break;
         }
         case ID::FARMER:
             break;
         case ID::ALPACA: {
 
-            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) == currentlyTouchingEntities.end()) {
+            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) ==
+                currentlyTouchingEntities.end()) {
                 currentlyTouchingEntities.push_back(contactEntity);
                 // todo: Add farmerTouch to entity?
                 auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
@@ -319,7 +266,7 @@ void Farmer::startContact(Entity *contactEntity) {
             }
         }
 
-        case ID::WOLF:{
+        case ID::WOLF: {
             break;
         }
     }

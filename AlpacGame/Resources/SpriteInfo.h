@@ -1,12 +1,9 @@
 #ifndef ALPACGAME_ANIMATIONINFO_H
 #define ALPACGAME_ANIMATIONINFO_H
 
-#include <SFML/Graphics/Texture.hpp>
+//#include <SFML/Graphics/Texture.hpp>
 
-class AnimationInfo
-{
-public:
-
+struct SpriteInfo {
     int startFrame;
     int endFrame;
     std::vector<sf::Texture*> sprites;

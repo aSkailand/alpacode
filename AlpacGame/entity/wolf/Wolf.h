@@ -76,7 +76,7 @@ private:
 
     /// Animation tools
     bool spriteSwitch = false;
-    std::map<EntityWarm::Action , AnimationInfo> wolfMapPtr;
+    std::map<EntityWarm::Action , SpriteInfo> wolfMapPtr;
 
 
 public:

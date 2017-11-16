@@ -7,7 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include "../entity/EntityWarm.h"
-#include "../entity/AnimationInfo.h"
+#include "../Resources/SpriteInfo.h"
 
 /**
  * Common resources accessible by all game entities.
@@ -21,8 +21,7 @@ public:
      */
     unsigned int planetRadius = 600;
 
-    b2Body* planetBody;
-
+    b2Body *planetBody;
 
     /**
      * Show in-game labels or not.
@@ -84,11 +83,10 @@ public:
     /// Textures
     sf::Texture planetTexture;
 
-
     /// Map of every entities sprites.
-    std::map<EntityWarm::Action , AnimationInfo> wolfSprites;
-    std::map<EntityWarm::Action , AnimationInfo> alpacaSprites;
-    std::map<EntityWarm::Action , AnimationInfo> farmerSprites;
+    std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
+    std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
+    std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
 private:
 
@@ -98,26 +96,22 @@ private:
     void loadAllFonts();
 
     /**
-     * Load all necessary textures used during the game.
+     * Load the given sprites into a vector, and then map it to the corresponding entity.
+     * @param filename the path of the file containing the sprites.
+     * @param spriteMap the corresponding map holding the sprites.
+     * @param width the width of the sprite.
+     * @param height the height of the sprite.
+     * @param top //todo delete
+     * @param action the key to associate the sprite with.
      */
-    void loadTexture(std::string filename, std::map<EntityWarm::Action, AnimationInfo>& sprites, int width, int height,int top, EntityWarm::Action action);
+    void loadTexture(std::string filename, std::map<EntityWarm::Action, SpriteInfo> &spriteMap, int width,
+                     int height,
+                     int top, EntityWarm::Action action);
+
+    /**
+     * Load all sprites and then map them in categorized fashion.
+     */
     void loadAllTextures();
-
-protected:
-    /// Frame Size of different entities.
-
-    /// wolf sizes: walking, width = 145, height = 80
-    int wolfWalkWidth = 145;
-    int wolfWalkHeight = 80;
-    /// wolf sizes: idle, width = 135, height = 95
-    int wolfIdleWidth = 135;
-    int wolfIdleheigth = 95;
-    /// alpaca sizes: width = 100, height = 110
-    int alpacaWidth = 100;
-    int alpacaHeight = 110;
-    /// farmer sizes: width = 50, height = 70
-    int farmerWidth = 50;
-    int farmerHeight =70;
 
 };
 

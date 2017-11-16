@@ -49,8 +49,9 @@ Alpaca::Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, fl
     // Creating SFML shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
-    // Getting starting sprite for alpaca from spriteMap;
-    sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(0));
+
+//     Getting starting sprite for alpaca from spriteMap;
+//    sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(0));
 
     // Create ID text
     createLabel(std::to_string(id), &this->configGame->fontID);
@@ -102,6 +103,16 @@ void Alpaca::render(sf::RenderWindow *window) {
     sfShape->setPosition(x, y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
+    // Switch Texture
+    if (currentStatus == Status::GROUNDED) {
+        sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(0));
+    } else if(farmerTouch){
+        sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(3));
+    } else{
+        sfShape->setTexture(alpacaMapPtr[Action::WALKING].sprites.at(1));
+    }
+
+
     window->draw(*sfShape);
 
     if (configGame->showLabels) {
@@ -125,16 +136,14 @@ void Alpaca::performAction() {
     if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
         switch (currentAction) {
             case Action::WALKING: {
-                if(currentStatus == Status::GROUNDED){
+                if (currentStatus == Status::GROUNDED) {
                     forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
-                    //TODO: Running/moving animation
                 }
                 break;
             }
             case Action::JUMP:
                 break;
             case Action::IDLE:
-                // TODO: Idle Animation
                 break;
         }
     }
@@ -144,12 +153,7 @@ void Alpaca::endContact(Entity *contactEntity) {
 
     switch (contactEntity->getID()) {
         case ID::PLANET: {
-            /// AIRBORNE
             currentStatus = Status::AIRBORNE;
-            if(currentAction == Action::WALKING){
-                sfShape->setTexture(alpacaMapPtr[currentAction].sprites.at(1));
-            }
-
             break;
         }
         case ID::FARMER: {
@@ -167,16 +171,7 @@ void Alpaca::endContact(Entity *contactEntity) {
 void Alpaca::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET: {
-            /// GROUNDED
             currentStatus = Status::GROUNDED;
-
-            if(currentAction == Action::WALKING){
-                sfShape->setTexture(alpacaMapPtr[currentAction].sprites.at(0));
-            }
-            else if(currentAction == Action::IDLE){
-                sfShape->setTexture(alpacaMapPtr[currentAction].sprites.at(0));
-            }
-
             break;
         }
         case ID::FARMER: {
