@@ -284,7 +284,7 @@ void Farmer::startContact(Entity *contactEntity) {
             // TODO: Ground Animation
             if(holdingSwitch){
                 if(currentAction == Action::WALKING){
-                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(3));
+                    sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(0));
                 }
                 else if(currentAction == Action::IDLE){
                     sfShape->setTexture(farmerMapPtr[currentAction].sprites.at(1));

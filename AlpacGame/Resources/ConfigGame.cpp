@@ -70,14 +70,14 @@ void ConfigGame::loadAllTextures() {
     /// farmer sizes: width = 50, height = 70
 
     /// Adding sprites into vector for Wolf.
-    std::string wolfSpriteSheet = "entity/wolf/wolf-sprite.png";
+    std::string wolfSpriteSheet = "entity/wolf/wolf-sprite2.png";
     wolfSprites[EntityWarm::Action::WALKING].startFrame = 0;
     wolfSprites[EntityWarm::Action::WALKING].endFrame = 7;
     loadTexture(wolfSpriteSheet,wolfSprites,wolfWalkWidth,wolfWalkHeight,95,EntityWarm::Action::WALKING);
 
     wolfSprites[EntityWarm::Action::IDLE].startFrame = 0;
-    wolfSprites[EntityWarm::Action::IDLE].endFrame = 6;
-    loadTexture(wolfSpriteSheet,wolfSprites,wolfIdleWidth,wolfIdleheigth,0,EntityWarm::Action::IDLE);
+    wolfSprites[EntityWarm::Action::IDLE].endFrame = 1;
+    loadTexture(wolfSpriteSheet,wolfSprites,wolfWalkWidth,wolfWalkHeight,95,EntityWarm::Action::IDLE);
 
     /// Adding sprites into vector for Alpaca.
     std::string alpacaSpriteSheet = "entity/alpaca/alpaca-sprite.png";

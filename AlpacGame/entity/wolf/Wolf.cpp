@@ -5,11 +5,7 @@ Wolf::Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float 
 
     // Assign Pointers
     this->configGame = configGame;
-<<<<<<< HEAD
-    mapPtr = configGame->wolfSprites;
-=======
     wolfMapPtr = configGame->wolfSprites;
->>>>>>> feature/ALPACODE-98-creating-a-general-animation
 
     // Convert angle and store unit vectors
     convertAngleToVectors(((int) Action::WALKING), walkAngle);
@@ -144,6 +140,14 @@ void Wolf::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET:
             currentStatus = Status ::GROUNDED;
+
+            if(currentAction == Action::WALKING){
+                sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(0));
+            }
+            else if(currentAction == Action::IDLE){
+                sfShape->setTexture(wolfMapPtr[Action::IDLE].sprites.at(0));
+            }
+
             break;
         case ID::FARMER: {
             b2Vec2 delta =  getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
@@ -185,6 +189,25 @@ void Wolf::endContact(Entity *contactEntity) {
     switch (contactEntity->getID()){
         case ID::PLANET:{
             currentStatus = Status::AIRBORNE;
+
+            /*if(currentAction == Action::WALKING){
+                sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(4));
+                spriteSwitch = true;
+            }
+            */
+            if(!spriteSwitch){
+                if(currentAction == Action::WALKING){
+                    sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(4));
+                    spriteSwitch = true;
+                }
+            }
+            else{
+                if(currentAction == Action::WALKING){
+                    sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(6));
+                    spriteSwitch = false;
+                }
+            }
+
             break;
         }
         case ID::ALPACA:{

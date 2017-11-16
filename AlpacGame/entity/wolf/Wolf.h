@@ -75,7 +75,7 @@ private:
     float moveAvailableTick = 0.4f;
 
     /// Animation tools
-
+    bool spriteSwitch = false;
     std::map<EntityWarm::Action , AnimationInfo> wolfMapPtr;
 
 
