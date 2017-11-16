@@ -14,6 +14,8 @@
 class Alpaca : public Mob {
 public:
 
+    bool held = true;
+
     ~Alpaca() override;
 
     /**

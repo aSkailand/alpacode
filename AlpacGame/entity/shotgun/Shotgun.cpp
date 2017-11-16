@@ -47,7 +47,7 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     sfShape = new sf::RectangleShape(sf::Vector2f(length, height));
     sfShape->setOrigin(length / 2, height / 2);
     sfShape->setOutlineColor(sf::Color::Black);
-    sfShape->setTexture(&configGame->shotgunTexture);
+//    sfShape->setTexture(&configGame->shotgunHeldTexture);
 
     sf_HitSensor = new sf::CircleShape(length / 2);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
@@ -64,13 +64,18 @@ void Shotgun::render(sf::RenderWindow *window) {
     sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-    if(farmerTouch)
+    if(held){
         sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
+        sfShape->setTexture(&configGame->shotgunHeldTexture);
+    }
+    else{
+        sfShape->setScale(1.f, 1.f);
+        sfShape->setTexture(&configGame->shotgunDropTexture);
+    }
 
     window->draw(*sfShape);
 
     if(configGame->showLabels){
-
         // Draw sfShape Debug
         sfShape->setOutlineThickness(2);
 

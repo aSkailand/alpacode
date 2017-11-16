@@ -186,6 +186,7 @@ void Wolf::startContact(Entity *contactEntity) {
         }
         case ID::FARMER: {
 
+            // Todo Fix wolf push
             b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
             b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
             beta.Normalize();
@@ -200,15 +201,17 @@ void Wolf::startContact(Entity *contactEntity) {
                 tempAngle = 180 - tempAngle;
             }
 
-            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(b2Vec2( -cos(tempAngle *b2_pi/180), -sin( tempAngle* b2_pi/180)));
-
+            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(b2Vec2( -cos(tempAngle / DEGtoRAD), -sin( tempAngle / DEGtoRAD)));
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
+//            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * delta, true);
 
             break;
 
         }
         case ID::ALPACA: {
+
+            // Todo Fix wolf push
             b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
             b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
             beta.Normalize();
@@ -228,9 +231,9 @@ void Wolf::startContact(Entity *contactEntity) {
             // todo fix damage
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
 
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
+//            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
 
-//            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
 
             dynamic_cast<EntityWarm*>(contactEntity)->HP -= 1;
 

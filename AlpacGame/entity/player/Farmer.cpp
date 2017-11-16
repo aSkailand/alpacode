@@ -73,29 +73,14 @@ void Farmer::render(sf::RenderWindow *window) {
     sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-//    // Switch Texture
-//    if (holdingEntity == nullptr) {
-//        if (currentAction == Action::WALKING || currentAction == Action::JUMP) {
-//            sfShape->setTexture(farmerMapPtr[Action::WALKING].sprites.at(0 + static_cast<unsigned int>(spriteSwitch)));
-//        } else if (currentStatus == Status::GROUNDED) {
-//            sfShape->setTexture(farmerMapPtr[Action::IDLE].sprites.at(0));
-//        }
-//    } else {
-//        if (currentAction == Action::WALKING || currentAction == Action::JUMP) {
-//            sfShape->setTexture(farmerMapPtr[Action::WALKING].sprites.at(2 + static_cast<unsigned int>(spriteSwitch)));
-//        } else if (currentStatus == Status::GROUNDED) {
-//            sfShape->setTexture(farmerMapPtr[Action::IDLE].sprites.at(1));
-//        }
-//    }
-
     // Switch Texture
-    if (holdingEntity == nullptr) {
+    if (holdingEntity == nullptr || dynamic_cast<Shotgun*>(holdingEntity)) {
         if (currentStatus == Status::AIRBORNE) {
             sfShape->setTexture(farmerMapPtr[Action::WALKING].sprites.at(0 + static_cast<unsigned int>(spriteSwitch)));
         } else if (currentStatus == Status::GROUNDED) {
             sfShape->setTexture(farmerMapPtr[Action::IDLE].sprites.at(0));
         }
-    } else {
+    } else{
         if (currentStatus == Status::AIRBORNE) {
             sfShape->setTexture(farmerMapPtr[Action::WALKING].sprites.at(2 + static_cast<unsigned int>(spriteSwitch)));
         } else if (currentStatus == Status::GROUNDED) {
@@ -209,6 +194,18 @@ void Farmer::performAction() {
 
                 holdingEntity->physicsSensitive = false;
 
+                switch(holdingEntity->getID()){
+                    case ID::ALPACA:{
+                        dynamic_cast<Alpaca*>(holdingEntity)->held = true;
+                    }
+                    case ID::SHOTGUN:{
+                        dynamic_cast<Shotgun*>(holdingEntity)->held = true;
+                        break;
+                    }
+                    default:
+                        break;
+                }
+
                 auto *warm = dynamic_cast<EntityWarm *> (holdingEntity);
                 if (warm) {
                     warm->currentStatus = Status::AIRBORNE;
@@ -243,7 +240,7 @@ void Farmer::performAction() {
                         float angle = atan2(-toTarget.x, toTarget.y) - 90 / DEGtoRAD;
 
                         b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
-                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, 1.f));
+                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, 0.7f));
                         holdingEntity->getBody()->SetTransform(center + offset, angle);
 
                         break;
@@ -262,8 +259,16 @@ void Farmer::performAction() {
 
             holdingEntity->physicsSensitive = true;
 
-            if (dynamic_cast<Shotgun *>(holdingEntity)) {
-                dynamic_cast<Shotgun *>(holdingEntity)->farmerTouch = false;
+            switch(holdingEntity->getID()){
+                case ID::ALPACA:{
+                    dynamic_cast<Alpaca*>(holdingEntity)->held = false;
+                }
+                case ID::SHOTGUN:{
+                    dynamic_cast<Shotgun*>(holdingEntity)->held = false;
+                    break;
+                }
+                default:
+                    break;
             }
 
             // Reset Rotation (So that throwing angle works as intended)

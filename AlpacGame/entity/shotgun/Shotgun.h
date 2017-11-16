@@ -15,6 +15,8 @@ public:
 
     bool farmerTouch = false;
 
+    bool held = false;
+
     float length;
 
     ConfigGame *configGame;

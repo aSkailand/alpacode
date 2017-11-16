@@ -101,7 +101,8 @@ public:
 
     /// Textures
     sf::Texture planetTexture;
-    sf::Texture shotgunTexture;
+    sf::Texture shotgunHeldTexture;
+    sf::Texture shotgunDropTexture;
 
     /// Map of every entities sprites.
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
