@@ -20,10 +20,13 @@ public:
 
     /// Enums
     enum class ID {
-        PLANET = 0x0001,
-        FARMER = 0x0002,
-        ALPACA = 0x0004,
-        WOLF = 0x0008
+        VOID    = 0x0000,
+        PLANET  = 0x0001,
+        FARMER  = 0x0002,
+        ALPACA  = 0x0004,
+        WOLF    = 0x0008,
+        SHOTGUN = 0x0010,
+        BULLET  = 0x0100
     };
 
     enum class Direction{
@@ -34,6 +37,10 @@ public:
     /// Fixture pointers
     b2Fixture *bodyFixture;
     b2Fixture *sensorFixture;
+
+    bool physicsSensitive = true;
+
+    sf::CircleShape *sf_HitSensor = nullptr;
 
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
@@ -75,20 +82,20 @@ public:
     virtual void startContact(Entity *contactEntity) = 0;
     virtual void endContact(Entity *contactEntity) = 0;
 
+    /// Death
+    virtual bool deadCheck() = 0;
+
+    virtual ~Entity() = default;
+
 protected:
 
     /// Important Entity Properties
 
-    /**
-     * The x- and y-position of the entity's origin in pixels.
-     */
-    float x{}, y{};
+    ID id = ID::VOID;
 
-    ID id{};
+    b2Body *body = nullptr;
 
-    b2Body *body{};
-
-    sf::Shape *sfShape{};
+    sf::Shape *sfShape = nullptr;
 
     /// Unit Vector + Force functions
 
@@ -137,5 +144,7 @@ private:
 
 
 };
+
+
 
 #endif //ALPACGAME_ENTITY_H

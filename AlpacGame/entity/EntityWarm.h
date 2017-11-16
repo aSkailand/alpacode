@@ -15,12 +15,15 @@ class EntityWarm : public Entity
 
 public:
 
+    int HP = 0;
+
     /**
      * The label above entities' head in-game.
      */
-    sf::Text *label = new sf::Text();
+    sf::Text *label_ID = new sf::Text();
+    sf::Text *label_HP = new sf::Text();
 
-    void createLabel(std::string text, sf::Font *font){
+    void createLabel(sf::Text *label, sf::Font *font, std::string text) {
         label->setString(text);
         label->setFont(*font);
         label->setCharacterSize(40);
@@ -54,7 +57,7 @@ public:
 
     Direction currentDirection = Direction::RIGHT;
     Action currentAction = Action::IDLE;
-    Status currentStatus;
+    Status currentStatus = Status::AIRBORNE;
 
 protected:
 

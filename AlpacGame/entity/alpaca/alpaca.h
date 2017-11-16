@@ -14,6 +14,8 @@
 class Alpaca : public Mob {
 public:
 
+    ~Alpaca() override;
+
     /**
      * CONSTRUCTOR: Creates an alpaca and adds it to the world.
      * @param world the world to add the alpaca to.
@@ -22,26 +24,30 @@ public:
      * @param x the x-coordinate of the origin of the alpaca, in pixels.
      * @param y the y-coordinate of the origin of the alpaca, in pixels.
      */
-    Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
     bool farmerTouch = false;
 
-private:
+    static int nextId;
 
     /// AI Status
     enum class Behavior{NORMAL, AFRAID};
     Behavior currentBehavior = Behavior::NORMAL;
 
+private:
+
     /// Entity properties
     const int id;
-    static int nextId;
 
     float density = 1.0f;
     float friction = 1.0f;
     float restitution = 0.0f;
 
     uint16 categoryBits = (uint16) ID::ALPACA;
-    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
+
+    uint16 maskBits =   (uint16) ID::PLANET
+                      | (uint16) ID::WOLF
+                      | (uint16) ID::BULLET;
 
     float walkForce = 5.f;
     float walkAngle = 70.f;   // Right, Degrees
@@ -74,6 +80,11 @@ private:
      * Randomize the entity's current action and direction.
      */
     void switchAction() override;
+
+public:
+    bool deadCheck() override;
+
+private:
 
     /// Pointers
     ConfigGame *configGame;

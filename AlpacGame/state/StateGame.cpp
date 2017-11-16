@@ -1,31 +1,47 @@
 
 #include "StateGame.h"
 
+
 void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Assign pointers
     machine = &stateMachine;
-    window = &machine->configWindow.getWindow();
     configGame = &machine->configGame;
 
-    /// Initiating World (With no innate gravitation)
-    world = new b2World(b2Vec2(0, 0));
-    world->SetContactListener(new CollisionListener());
+    /// Reset Game
+    if (configGame->newGame) {
 
-    /// Instantiating initial entities
-    planet = new Planet(world, configGame, configGame->planetRadius, configGame->planetCenter.x, configGame->planetCenter.y);
-    farmer = new Farmer(world, configGame, 50, 0, -200);
-    entities.push_back(planet);
-    entities.push_back(farmer);
+        configGame->reset();
 
-    configGame->planetBody = planet->getBody();
+        /// Assign pointers
+        window = &machine->configWindow.getWindow();
+        world = configGame->world;
+        entities = configGame->entities;
+        planet = configGame->planet;
+        farmer = dynamic_cast<Farmer *> (configGame->farmer);
+
+        configGame->newGame = false;
+    }
 
     /// View
     view = sf::View(window->getDefaultView());
     view.zoom(viewNonZoomed);
 
+    window->setMouseCursorVisible(false);
+
     /// Poll game
     while (pollGame()) {
+
+        /// Save current mouse coordinates relatively to view
+        sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+        sf::Vector2f worldPos = window->mapPixelToCoords(pixelPos);
+        configGame->mouseXpos = worldPos.x;
+        configGame->mouseYpos = worldPos.y;
+
+        double mouse = sf::Mouse::getPosition(*configGame->window).x;
+        double center = configGame->window->getSize().x / 2;
+        configGame->mouseInLeftSide = mouse < center;
+
 
         /// Save current input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
@@ -40,9 +56,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
 
+
         /// Box2D Physics Calculations
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
+
+            auto *entityInfo = (Entity *) bodyIter->GetUserData();
+            if (!entityInfo->physicsSensitive)
+                continue;
 
             // Calculate Radial Gravitation on all bodies
             float gravitationForce = 10.0f;
@@ -62,13 +83,33 @@ void StateGame::goNext(StateMachine &stateMachine) {
             bodyIter->ApplyAngularImpulse(impulse, true);
         }
 
+
+
+
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
 
         /// Render Phase
         window->clear(sf::Color::Blue);
 
-        for (Entity *e : entities) {
+        /// Delete Dead Entities
+        for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
+            if ((*entityIter)->deadCheck()) {
+
+                world->DestroyBody((*entityIter)->getBody());
+
+                delete (*entityIter);
+
+                entityIter = entities->erase(entityIter);
+
+                if (entityIter == entities->end()) {
+                    break;
+                }
+
+            }
+        }
+
+        for (Entity *e : *entities) {
 
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
@@ -80,6 +121,15 @@ void StateGame::goNext(StateMachine &stateMachine) {
             // Adjust SFML shape to Box2D body's position and rotation, then draw it.
             e->render(window);
         }
+
+        // todo fix aim
+        sf::CircleShape mouseAim;
+        mouseAim.setRadius(5);
+        mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
+        mouseAim.setFillColor(sf::Color::Red);
+        mouseAim.setOutlineColor(sf::Color::Black);
+        mouseAim.setOutlineThickness(5);
+        window->draw(mouseAim);
 
         /// Update View
         window->display();
@@ -94,7 +144,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         float viewX = configGame->calcX(angle * DEGtoRAD);
         float viewY = configGame->calcY(angle * DEGtoRAD);
 
-        view.setCenter(viewX , viewY);
+        view.setCenter(viewX, viewY);
 
         view.setRotation(angle * DEGtoRAD);
 
@@ -102,7 +152,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     }
 }
-
 
 bool StateGame::pollGame() {
     sf::Event event{};
@@ -132,29 +181,54 @@ bool StateGame::pollGame() {
             }
         }
     }
-    return true;
+
+    return !configGame->newGame;
+
 }
 
 
 void StateGame::keyPressedHandler(sf::Event event) {
-    switch(event.key.code){
+    switch (event.key.code) {
         case sf::Keyboard::I: {
             configGame->showLabels = !configGame->showLabels;
             break;
         }
-        case sf::Keyboard::Z:{
-            if(zoomed){
+        case sf::Keyboard::R: {
+            configGame->newGame = true;
+
+            break;
+        }
+        case sf::Keyboard::P: {
+            printf("X pos: %f\n", configGame->mouseXpos);
+            printf("Y pos: %f\n\n", configGame->mouseYpos);
+            break;
+        }
+        case sf::Keyboard::Num1: {
+            entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Num2: {
+            entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Num3: {
+            entities->emplace_back(
+                    new Shotgun(configGame, 80, 20, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Z: {
+            if (zoomed) {
                 zoomed = false;
                 view = sf::View(window->getDefaultView());
                 view.zoom(viewNonZoomed);
-            } else{
+            } else {
                 zoomed = true;
                 view = sf::View(window->getDefaultView());
                 view.zoom(viewZoomed);
             }
             break;
         }
-        default:{
+        default: {
             break;
         }
     }
@@ -163,18 +237,15 @@ void StateGame::keyPressedHandler(sf::Event event) {
 
 void StateGame::mousePressedHandler(sf::Event event) {
 
-    // Save Mouse Coordinates
-    int mouseX = sf::Mouse::getPosition(*window).x;
-    int mouseY = sf::Mouse::getPosition(*window).y;
-
-
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            entities.push_back(new Alpaca(world, configGame, 50, mouseX, mouseY));
+
+            if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
+                dynamic_cast<Usable *>(farmer->holdingEntity)->use();
+            }
             break;
         }
         case sf::Mouse::Right: {
-            entities.push_back(new Wolf(world, configGame, 50, mouseX, mouseY));
             break;
         }
         default: {
