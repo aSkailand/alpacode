@@ -266,15 +266,15 @@ void ConfigMenu::defeatScreenLayout() {
 
     tgui::EditBox::Ptr nameEditBox = theme->load("EditBox");
     nameEditBox->setDefaultText("Enter name...");
+    nameEditBox->setMaximumCharacters(20);
+
     nameEditBox->enable();
 
     tgui::Button::Ptr returnToMenu = theme->load("Button");
     returnToMenu->setText("Return to menu...");
-    returnToMenu->connect("Pressed", [&]{machine->setCurrentState(StateMachine::stateID::MENU);});
+    returnToMenu->connect("pressed", [&]{std::cout << "Hello" << std::endl; machine->setCurrentState(StateMachine::stateID::EXIT); std::cout << ", World!" << std::endl;});
 
-
-
-
+    
     tempLayout->add(defeatLabel);
     tempLayout->addSpace(2);
     tempLayout->add(nameLabel);

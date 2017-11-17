@@ -162,7 +162,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
 bool StateGame::pollGame() {
     sf::Event event{};
     while (window->pollEvent(event)) {
-        menuGUI->handleEvent(event);
         switch (event.type) {
             case sf::Event::Closed: {
                 machine->setCurrentState(StateMachine::stateID::EXIT);
@@ -185,6 +184,7 @@ bool StateGame::pollGame() {
                 mousePressedHandler(event);
             }
             default: {
+                menuGUI->handleEvent(event);
                 return true;
             }
         }
