@@ -7,6 +7,7 @@
 
 #include <Box2D/Box2D.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/Chronometer.hpp>
 
 /**
  * The abstract, base class for all entities.
@@ -88,8 +89,8 @@ public:
     };
 
     /// Contact Functions
-    virtual void startContact(CollisionID typeCollision, Entity *contactEntity) = 0;
-    virtual void endContact(CollisionID typeCollision, Entity *contactEntity) = 0;
+    virtual void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) = 0;
+    virtual void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) = 0;
 
     //virtual void startDetect(Entity *contactEntity) = 0;
     //virtual void endDetect(Entity *contactEntity) = 0;

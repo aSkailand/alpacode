@@ -82,6 +82,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             e->render(window);
         }
 
+
         /// Update View
         window->display();
 
@@ -184,3 +185,4 @@ void StateGame::mousePressedHandler(sf::Event event) {
     }
 
 }
+

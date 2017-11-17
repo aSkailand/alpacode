@@ -50,11 +50,11 @@ void Planet::render(sf::RenderWindow *window) {
     window->draw(*sfShape);
 }
 
-void Planet::startContact(CollisionID typeFixture, Entity *contactEntity) {
+void Planet::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
 
 }
 
-void Planet::endContact(CollisionID typeCollision, Entity *contactEntity) {
+void Planet::endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
 
 }
 

@@ -192,7 +192,7 @@ void Farmer::performAction() {
 
 }
 
-void Farmer::endContact(CollisionID typeCollision, Entity *contactEntity) {
+void Farmer::endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
 
     ID contactID = contactEntity->getID();
     sfShape->setOutlineColor(sf::Color::Black);
@@ -206,6 +206,7 @@ void Farmer::endContact(CollisionID typeCollision, Entity *contactEntity) {
         case ID::FARMER:
             break;
         case ID::ALPACA: {
+
 
             if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) !=
                 currentlyTouchingEntities.end()) {
@@ -224,23 +225,24 @@ void Farmer::endContact(CollisionID typeCollision, Entity *contactEntity) {
     }
 }
 
-void Farmer::startContact(CollisionID typeCollision, Entity *contactEntity) {
+void Farmer::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
 //    std::cout << "Farmer Start Contact" << std::endl;
 
     switch (contactEntity->getID()) {
         case ID::PLANET: {
             sfShape->setOutlineColor(sf::Color::Black);
             currentStatus = Status::GROUNDED;
-            body->SetLinearVelocity(b2Vec2(0, 0));
+            body->SetLinearVelocity(b2Vec2(0,0));
+
             break;
         }
         case ID::FARMER:
             break;
         case ID::ALPACA: {
-
+            if(otherCollision == CollisionID::DETECTION) break;
 
             if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) == currentlyTouchingEntities.end() &&
-                    typeCollision == CollisionID::HIT) {
+                    selfCollision == CollisionID::HIT) {
 
                 currentlyTouchingEntities.push_back(contactEntity) ;
                 // todo: Add farmerTouch to entity?

@@ -4,6 +4,7 @@
 
 #include "Entity.h"
 
+
 /**
  * This class is a derived class of the class Entity.
  * The definition of a warm entity is:
@@ -55,7 +56,12 @@ public:
     Action currentAction = Action::IDLE;
     Status currentStatus;
 
+
+
 protected:
+
+    sftools::Chronometer behaviorClock;
+
 
 
     /**
@@ -82,6 +88,8 @@ protected:
         }
         return triggered;
     }
+
+    sf::CircleShape *sf_DetectSensor = nullptr;
 
 private:
 

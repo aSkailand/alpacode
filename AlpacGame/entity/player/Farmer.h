@@ -36,7 +36,7 @@ private:
     float walkForce = 5.f;
     float walkAngle = 45.f;   // Right, Degrees
 
-    float jumpForce = 8.f;
+    float jumpForce = 12.f;
     float jumpAngle = 60.f;   // Right, Degrees
 
     float throwForce = 10.f;
@@ -60,11 +60,11 @@ private:
     std::list<Entity *> currentlyTouchingEntities;
 
     /// Functions
-
     /**
      * Adjust SFML shape accordingly to the Box2D body, then draw it.
      * @param window the window to draw the SFML shape on.
      */
+
     void render(sf::RenderWindow *window) override;
 
     /**
@@ -84,9 +84,9 @@ private:
 
 public:
 
-    void startContact(CollisionID typeCollision, Entity *contactEntity) override;
+    void startContact( CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
 
-    void endContact(CollisionID typeCollision, Entity *contactEntity) override;
+    void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
 
 };
 

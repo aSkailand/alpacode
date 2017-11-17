@@ -30,12 +30,10 @@ public:
 
 private:
 
-    /// AI Status
+    /// AI Behavior
     enum class Behavior{NORMAL, AWARE, AFRAID, FOLLOWING};
     Behavior currentBehavior;
 
-    /// Sensors
-    b2FixtureDef bodySensor;
 
     /// Entity properties
     const int id;
@@ -51,6 +49,8 @@ private:
     float walkForce = 5.f;
     float walkAngle = 70.f;   // Right, Degrees
 
+    float runForce = 7.f;
+
     /// Movement tools
     /**
      * The time before current action is switched (in seconds).
@@ -60,8 +60,9 @@ private:
     /**
      * The time for Alpaca to change behaviors
      */
-    float awareActionTick = 3.0f;
-    float runningActionTick = 5.0f;
+    float awareActionTick = 1.0f;
+    float afraidActionTick = 3.0f;
+    bool detectedWithinCircle;
 
 
     /**
@@ -94,8 +95,8 @@ private:
 public:
 
     /// Body Sensor Contact
-    void startContact(CollisionID typeCollision, Entity *contactEntity) override;
-    void endContact(CollisionID typeCollision, Entity *contactEntity) override ;
+    void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
+    void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override ;
 
 
 

@@ -13,6 +13,11 @@
 class ConfigGame {
 public:
 
+    /// Day / Night Cycle
+    enum class Cycle{DAY, NIGHT};
+    Cycle currentCycle;
+
+
     /// Customizable Properties
     /**
      * The radius of the planet.
@@ -85,6 +90,22 @@ public:
     sf::Texture wolfTexture;
     sf::Texture alertRedTexture;
     sf::Texture alertYelTexture;
+
+    sf::Texture morning_1;
+    sf::Texture morning_2;
+    sf::Texture morning_3;
+    sf::Texture afternoon_4;
+    sf::Texture afternoon_5;
+    sf::Texture afternoon_6;
+    sf::Texture evening_7;
+    sf::Texture evening_8;
+    sf::Texture evening_9;
+    sf::Texture night_10;
+    sf::Texture night_11;
+    sf::Texture night_12;
+
+
+
 
 private:
 

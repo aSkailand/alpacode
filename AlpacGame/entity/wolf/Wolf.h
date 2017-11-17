@@ -43,8 +43,16 @@ private:
     float attackForce = 8.f;
     float attackAngle = 25.f;
 
+
     /// Pointers
     ConfigGame *configGame;
+
+    /// Behavior
+    enum class Behavior{NORMAL, HUNTING, AFRAID};
+    Behavior currentBehavior;
+
+    /// Wolf Base
+    sf::CircleShape *wolfBase;
 
     /// Functions
     /**
@@ -78,9 +86,9 @@ private:
 
 public:
 
-    void startContact(CollisionID typeFixture, Entity *contactEntity) override;
+    void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
 
-    void endContact(CollisionID typeCollision, Entity *contactEntity) override;
+    void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
 };
 
 #endif //ALPACGAME_WOLFSTATE_H

@@ -13,8 +13,8 @@ void CollisionListener::BeginContact(b2Contact *contact) {
     Entity::CollisionID typeCollision_B = getCollisionType_B(contact);
 
     // Give each entity the info about the other
-    entity_A->startContact(typeCollision_A, entity_B);
-    entity_B->startContact(typeCollision_B, entity_A);
+    entity_A->startContact(typeCollision_A, typeCollision_B, entity_B);
+    entity_B->startContact(typeCollision_B, typeCollision_A, entity_A);
 
 
 }
@@ -30,8 +30,8 @@ void CollisionListener::EndContact(b2Contact *contact) {
     Entity::CollisionID typeCollision_B = getCollisionType_B(contact);
 
     // Give each entity the info about the other
-    entity_A->endContact(typeCollision_A, entity_B);
-    entity_B->endContact(typeCollision_B, entity_A);
+    entity_A->endContact(typeCollision_A, typeCollision_B, entity_B);
+    entity_B->endContact(typeCollision_B, typeCollision_A, entity_A);
 }
 
 Entity *CollisionListener::getEntity_A(b2Contact *contact) {
