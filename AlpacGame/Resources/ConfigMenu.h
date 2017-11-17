@@ -24,7 +24,8 @@ public:
         SETTINGS,
         VIDEO,
         SOUND,
-        CONTROLS
+        CONTROLS,
+        DEFEAT
     };
 
     enum class buttonID {
@@ -41,6 +42,7 @@ public:
         MUSIC_SLIDER,
         EFFECT_SLIDER
     };
+
 
     /// Public Functions
     /**
@@ -95,6 +97,8 @@ private:
      * Creates the sound settings layout
      */
     void soundSettingsLayout();
+
+    void defeatScreenLayout();
 
     /// Button Functions
     /**

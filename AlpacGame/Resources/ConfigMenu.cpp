@@ -62,6 +62,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createSlider(buttonID::MASTER_SLIDER);
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
+    defeatScreenLayout();
 
     mainMenuLayout(machine->configWindow.getMenuGUI());
 }
@@ -146,7 +147,7 @@ void ConfigMenu::videoSettingsLayout() {
     resolutionBox->connect("ItemSelected",
                            [&](std::string itemSelected) {
                                for (auto &iter : machine->configWindow.mapResolutionString) {
-                                   if(itemSelected == iter.second)
+                                   if (itemSelected == iter.second)
                                        setCurrentResolution(iter.first);
                                }
                            });
@@ -241,5 +242,45 @@ void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
     mapSliders.emplace(sliderType, tempSlider);
+}
+
+void ConfigMenu::defeatScreenLayout() {
+
+    tgui::Label::Ptr tempLabel = theme->load("Label");
+    tgui::VerticalLayout::Ptr defeatLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr tempLayout = tgui::VerticalLayout::create();
+    tempLayout->setPosition(machine->configWindow.getWindow().getSize().x / 4,
+                            machine->configWindow.getWindow().getSize().y / 4);
+    tempLayout->setSize(400, 300);
+
+
+    tgui::Label::Ptr defeatLabel = tgui::Label::copy(tempLabel);
+    defeatLabel->setText("Defeat!");
+    defeatLabel->setPosition(tempLayout->getSize().x / 2, tempLayout->getSize().y / 2);
+    defeatLabel->setTextSize(32);
+
+    tgui::Label::Ptr nameLabel = tgui::Label::copy(tempLabel);
+    nameLabel->setText("Enter name:");
+    nameLabel->setTextSize(24);
+
+
+    tgui::EditBox::Ptr nameEditBox = theme->load("EditBox");
+    nameEditBox->setDefaultText("Enter name...");
+    nameEditBox->enable();
+
+    tgui::Button::Ptr returnToMenu = theme->load("Button");
+    returnToMenu->setText("Return to menu...");
+    returnToMenu->connect("Pressed", [&]{machine->setCurrentState(StateMachine::stateID::MENU);});
+
+
+
+
+    tempLayout->add(defeatLabel);
+    tempLayout->addSpace(2);
+    tempLayout->add(nameLabel);
+    tempLayout->add(nameEditBox, "Enter name...");
+    tempLayout->addSpace();
+    tempLayout->add(returnToMenu);
+    mapLayouts.emplace(layouts::DEFEAT, tempLayout);
 }
 

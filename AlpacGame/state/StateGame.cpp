@@ -3,10 +3,10 @@
 
 
 void StateGame::goNext(StateMachine &stateMachine) {
-
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
+    menuGUI = machine->configWindow.getMenuGUI();
 
     /// Reset Game
     if (configGame->newGame) {
@@ -27,7 +27,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
     view = sf::View(window->getDefaultView());
     view.zoom(viewNonZoomed);
 
-    window->setMouseCursorVisible(false);
+    //window->setMouseCursorVisible(false);
+
+    menuGUI->removeAllWidgets();
+    menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
 
     /// Poll game
     while (pollGame()) {
@@ -92,6 +95,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Render Phase
         window->clear(sf::Color::Blue);
 
+
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
             if ((*entityIter)->deadCheck()) {
@@ -131,6 +135,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
         mouseAim.setOutlineThickness(5);
         window->draw(mouseAim);
 
+        menuGUI->draw();
+
         /// Update View
         window->display();
 
@@ -156,6 +162,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 bool StateGame::pollGame() {
     sf::Event event{};
     while (window->pollEvent(event)) {
+        menuGUI->handleEvent(event);
         switch (event.type) {
             case sf::Event::Closed: {
                 machine->setCurrentState(StateMachine::stateID::EXIT);
@@ -168,6 +175,7 @@ bool StateGame::pollGame() {
                 } else if (event.key.code == sf::Keyboard::Space) {
                     // todo: Add actual pause.
 //                    machine->setCurrentState(StateMachine::stateID::PAUSE);
+                    testDefeat = !testDefeat;
                     return false;
                 } else {
                     keyPressedHandler(event);
