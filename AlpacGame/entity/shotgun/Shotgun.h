@@ -9,13 +9,14 @@
 #include "../EntityCold.h"
 #include "../../Resources/ConfigGame.h"
 #include "../Usable.h"
+#include "../Holdable.h"
 
-class Shotgun : public EntityCold, public Usable {
+class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
 
     bool farmerTouch = false;
 
-    bool held = false;
+//    bool isHeld = false;
 
     float length;
 

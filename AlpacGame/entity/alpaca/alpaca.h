@@ -10,11 +10,12 @@
 
 #include "../EntityWarm.h"
 #include "../Mob.h"
+#include "../Holdable.h"
 
-class Alpaca : public Mob {
+class Alpaca : public Mob, public Holdable {
 public:
 
-    bool held = true;
+//    bool isHeld = true;
 
     ~Alpaca() override;
 

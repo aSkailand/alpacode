@@ -67,14 +67,12 @@ void ConfigGame::loadAllTextures() {
     // Planet
     planetTexture.loadFromFile("entity/planet/planet.png");
 
-
     // ShotGun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
 
-
     // Farmer
-    std::string farmerSpriteSheet = "entity/player/farmer-sprite - Copy.png";
+    std::string farmerSpriteSheet = "entity/player/FarmerNoHands.png";
 
     int farmerWidth = 50;
     int farmerHeight = 70;

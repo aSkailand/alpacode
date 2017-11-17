@@ -196,10 +196,10 @@ void Farmer::performAction() {
 
                 switch(holdingEntity->getID()){
                     case ID::ALPACA:{
-                        dynamic_cast<Alpaca*>(holdingEntity)->held = true;
+                        dynamic_cast<Alpaca*>(holdingEntity)->isHeld = true;
                     }
                     case ID::SHOTGUN:{
-                        dynamic_cast<Shotgun*>(holdingEntity)->held = true;
+                        dynamic_cast<Shotgun*>(holdingEntity)->isHeld = true;
                         break;
                     }
                     default:
@@ -233,8 +233,6 @@ void Farmer::performAction() {
                         break;
                     case ID::SHOTGUN: {
 
-                        dynamic_cast<Shotgun *>(holdingEntity)->farmerTouch = true;
-
                         b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() -
                                           b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
                         float angle = atan2(-toTarget.x, toTarget.y) - 90 / DEGtoRAD;
@@ -261,10 +259,10 @@ void Farmer::performAction() {
 
             switch(holdingEntity->getID()){
                 case ID::ALPACA:{
-                    dynamic_cast<Alpaca*>(holdingEntity)->held = false;
+                    dynamic_cast<Alpaca*>(holdingEntity)->isHeld = false;
                 }
                 case ID::SHOTGUN:{
-                    dynamic_cast<Shotgun*>(holdingEntity)->held = false;
+                    dynamic_cast<Shotgun*>(holdingEntity)->isHeld = false;
                     break;
                 }
                 default:

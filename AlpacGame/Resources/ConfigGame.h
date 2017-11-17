@@ -125,7 +125,9 @@ private:
      * @param top //todo delete
      * @param action the key to associate the sprite with.
      */
-    void loadTexture(std::string filename, std::map<EntityWarm::Action, SpriteInfo> &spriteMap, int width,
+    void loadTexture(std::string filename,
+                     std::map<EntityWarm::Action, SpriteInfo> &spriteMap,
+                     int width,
                      int height,
                      int top, EntityWarm::Action action);
 

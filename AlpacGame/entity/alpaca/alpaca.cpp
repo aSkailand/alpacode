@@ -117,7 +117,7 @@ void Alpaca::render(sf::RenderWindow *window) {
     // Switch Texture
     if (currentStatus == Status::GROUNDED) {
         sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(0));
-    } else if(farmerTouch){
+    } else if(isHeld){
         sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(3));
     } else{
         sfShape->setTexture(alpacaMapPtr[Action::WALKING].sprites.at(1));
