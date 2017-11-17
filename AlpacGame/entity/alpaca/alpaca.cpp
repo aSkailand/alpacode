@@ -105,7 +105,7 @@ void Alpaca::switchAction() {
 void Alpaca::render(sf::RenderWindow *window) {
 
     // Render sfShape
-    float delta_Y = sfShape->getLocalBounds().height/2 - bodyFixture->GetShape()->m_radius * SCALE;
+    float delta_Y = sfShape->getLocalBounds().height / 2 - bodyFixture->GetShape()->m_radius * SCALE;
     b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
 
     float shape_x = offsetPoint.x * SCALE;
@@ -115,12 +115,16 @@ void Alpaca::render(sf::RenderWindow *window) {
     sfShape->setRotation(body->GetAngle() * DEGtoRAD);
 
     // Switch Texture
-    if (currentStatus == Status::GROUNDED) {
-        sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(0));
-    } else if(isHeld){
-        sfShape->setTexture(alpacaMapPtr[Action::IDLE].sprites.at(3));
-    } else{
-        sfShape->setTexture(alpacaMapPtr[Action::WALKING].sprites.at(1));
+    switch (currentStatus) {
+        case Status::GROUNDED: {
+            sfShape->setTexture(alpacaMapPtr[Action::IDLE][0]);
+            break;
+        }
+        case Status::AIRBORNE: {
+            if (isHeld) sfShape->setTexture(alpacaMapPtr[Action::IDLE][3]);
+            else sfShape->setTexture(alpacaMapPtr[Action::WALKING][1]);
+            break;
+        }
     }
 
 
@@ -153,9 +157,19 @@ void Alpaca::render(sf::RenderWindow *window) {
         label_HP->setRotation(sfShape->getRotation());
         window->draw(*label_HP);
 
-//        if (farmerTouch) sfShape->setOutlineColor(sf::Color::Green);
-//        else sfShape->setOutlineColor(sf::Color::Black);
+        if (farmerTouch) sfShape->setOutlineColor(sf::Color::Yellow);
+        else sfShape->setOutlineColor(sf::Color::Black);
 
+        switch (currentStatus) {
+            case Status::GROUNDED:{
+                sf_HitSensor->setOutlineColor(sf::Color::White);
+                break;
+            }
+            case Status::AIRBORNE:{
+                sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
+                break;
+            }
+        }
 
     } else {
         sfShape->setOutlineThickness(0);
@@ -186,7 +200,7 @@ void Alpaca::endContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET: {
             currentStatus = Status::AIRBORNE;
-            sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
+
             break;
         }
         case ID::FARMER: {
@@ -208,7 +222,7 @@ void Alpaca::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET: {
             currentStatus = Status::GROUNDED;
-            sf_HitSensor->setOutlineColor(sf::Color::White);
+
             break;
         }
         case ID::FARMER: {

@@ -83,9 +83,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
             bodyIter->ApplyAngularImpulse(impulse, true);
         }
 
-
-
-
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
 
@@ -131,10 +128,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
         mouseAim.setOutlineThickness(5);
         window->draw(mouseAim);
 
-        /// Update View
-        window->display();
-
-
         // Finding angle of farmer
         b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
         delta.Normalize();
@@ -149,6 +142,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
         view.setRotation(angle * DEGtoRAD);
 
         window->setView(view);
+
+        /// Update View
+        window->display();
 
     }
 }

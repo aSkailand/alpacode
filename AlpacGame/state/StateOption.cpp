@@ -28,7 +28,6 @@ bool StateOption::PollOption() {
 }
 
 void StateOption::drawOption() {
-    window->clear(sf::Color::Black);
     menuGUI->draw();
     window->display();
 }

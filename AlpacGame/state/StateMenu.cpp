@@ -31,7 +31,6 @@ bool StateMenu::pollMenu() {
 }
 
 void StateMenu::drawMenu() {
-    window->clear(sf::Color::Black);
     menuGUI->draw();
     window->display();
 }

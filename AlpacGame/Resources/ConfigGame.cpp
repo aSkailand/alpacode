@@ -4,7 +4,6 @@
 #include "ConfigGame.h"
 #include "../entity/CollisionListener.h"
 #include "../entity/planet/planet.h"
-#include "../entity/player/farmer.h" // todo delete
 
 void ConfigGame::run(sf::RenderWindow &window) {
 
@@ -56,7 +55,6 @@ void ConfigGame::loadTexture(std::string filename,
         }
 
         spriteMap[action].sprites.push_back(texture);
-
     }
 }
 
@@ -67,24 +65,35 @@ void ConfigGame::loadAllTextures() {
     // Planet
     planetTexture.loadFromFile("entity/planet/planet.png");
 
-    // ShotGun
+    // Shotgun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
 
     // Farmer
-    std::string farmerSpriteSheet = "entity/player/FarmerNoHands.png";
-
     int farmerWidth = 50;
     int farmerHeight = 70;
 
-    farmerSprites[EntityWarm::Action::IDLE].startFrame = 0;
-    farmerSprites[EntityWarm::Action::IDLE].endFrame = 1;
-    loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0, EntityWarm::Action::IDLE);
+    std::string farmerSpriteNoHandsSheet = "entity/player/FarmerNoHands.png";
+    farmerSpritesWithoutHands[EntityWarm::Action::IDLE].startFrame = 0;
+    farmerSpritesWithoutHands[EntityWarm::Action::IDLE].endFrame = 1;
+    loadTexture(farmerSpriteNoHandsSheet, farmerSpritesWithoutHands, farmerWidth, farmerHeight, 0,
+                EntityWarm::Action::IDLE);
 
-    farmerSprites[EntityWarm::Action::WALKING].startFrame = 2;
-    farmerSprites[EntityWarm::Action::WALKING].endFrame = 5;
-    loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0, EntityWarm::Action::WALKING);
+    farmerSpritesWithoutHands[EntityWarm::Action::WALKING].startFrame = 2;
+    farmerSpritesWithoutHands[EntityWarm::Action::WALKING].endFrame = 5;
+    loadTexture(farmerSpriteNoHandsSheet, farmerSpritesWithoutHands, farmerWidth, farmerHeight, 0,
+                EntityWarm::Action::WALKING);
 
+    std::string farmerSpriteWithHandsSheet = "entity/player/FarmerWithHands.png";
+    farmerSpritesWithHands[EntityWarm::Action::IDLE].startFrame = 0;
+    farmerSpritesWithHands[EntityWarm::Action::IDLE].endFrame = 1;
+    loadTexture(farmerSpriteWithHandsSheet, farmerSpritesWithHands, farmerWidth, farmerHeight, 0,
+                EntityWarm::Action::IDLE);
+
+    farmerSpritesWithHands[EntityWarm::Action::WALKING].startFrame = 2;
+    farmerSpritesWithHands[EntityWarm::Action::WALKING].endFrame = 5;
+    loadTexture(farmerSpriteWithHandsSheet, farmerSpritesWithHands, farmerWidth, farmerHeight, 0,
+                EntityWarm::Action::WALKING);
 
     // Alpaca
     std::string alpacaSpriteSheet = "entity/alpaca/alpaca-sprite.png";
@@ -133,7 +142,7 @@ void ConfigGame::reset() {
     farmer = new Farmer(this, 30, 100, 100, 100, -200);
 
     delete entities;
-    entities = new std::vector<Entity*>;
+    entities = new std::vector<Entity *>;
     entities->push_back(farmer);
     entities->push_back(planet);
 

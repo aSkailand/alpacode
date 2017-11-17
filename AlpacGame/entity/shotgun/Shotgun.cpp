@@ -21,7 +21,7 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     b2FixtureDef fixtureDef;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 1.0f;
-    fixtureDef.restitution = 0.0;
+    fixtureDef.restitution = 0.5f;
     fixtureDef.shape = &b2shape;
     fixtureDef.filter.categoryBits = (uint16) ID::SHOTGUN;
     fixtureDef.filter.maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF | (uint16) ID::ALPACA;
@@ -47,7 +47,6 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     sfShape = new sf::RectangleShape(sf::Vector2f(length, height));
     sfShape->setOrigin(length / 2, height / 2);
     sfShape->setOutlineColor(sf::Color::Black);
-//    sfShape->setTexture(&configGame->shotgunHeldTexture);
 
     sf_HitSensor = new sf::CircleShape(length / 2);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
@@ -64,18 +63,17 @@ void Shotgun::render(sf::RenderWindow *window) {
     sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-    if(isHeld){
+    if (isHeld) {
         sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
         sfShape->setTexture(&configGame->shotgunHeldTexture);
-    }
-    else{
+    } else {
         sfShape->setScale(1.f, 1.f);
         sfShape->setTexture(&configGame->shotgunDropTexture);
     }
 
     window->draw(*sfShape);
 
-    if(configGame->showLabels){
+    if (configGame->showLabels) {
         // Draw sfShape Debug
         sfShape->setOutlineThickness(2);
 
@@ -84,8 +82,13 @@ void Shotgun::render(sf::RenderWindow *window) {
         sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
         sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
         window->draw(*sf_HitSensor);
-    }
-    else{
+
+        if (farmerTouch) {
+            sfShape->setOutlineColor(sf::Color::Yellow);
+        } else {
+            sfShape->setOutlineColor(sf::Color::Black);
+        }
+    } else {
         sfShape->setOutlineThickness(0);
     }
 }

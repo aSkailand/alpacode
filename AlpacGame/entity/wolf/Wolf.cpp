@@ -48,7 +48,7 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
 
     // Create SFML shape
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
-    sfShape->setOrigin(width/2, height/2);
+    sfShape->setOrigin(width / 2, height / 2);
 
     sf_HitSensor = new sf::CircleShape(radius);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
@@ -105,7 +105,7 @@ void Wolf::switchAction() {
 void Wolf::render(sf::RenderWindow *window) {
 
     // Render sfShape
-    float delta_Y = sfShape->getLocalBounds().height/2 - bodyFixture->GetShape()->m_radius * SCALE;
+    float delta_Y = sfShape->getLocalBounds().height / 2 - bodyFixture->GetShape()->m_radius * SCALE;
     b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
 
     float shape_x = offsetPoint.x * SCALE;
@@ -115,16 +115,20 @@ void Wolf::render(sf::RenderWindow *window) {
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
     // Switch Texture
-    if(currentStatus == Status::AIRBORNE){
-        if(spriteSwitch){
-            sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(4));
-        } else{
-            sfShape->setTexture(wolfMapPtr[Action::WALKING].sprites.at(6));
+    switch (currentStatus) {
+        case Status::GROUNDED: {
+            if(currentAction == Action::IDLE){
+                sfShape->setTexture(wolfMapPtr[Action::IDLE][0]);
+            }
+            else{
+                sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 4 : 6)]);
+            }
+            break;
         }
-
-    }
-    else if (currentAction == Action::IDLE){
-        sfShape->setTexture(wolfMapPtr[Action::IDLE].sprites.at(0));
+        case Status::AIRBORNE: {
+            sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 4 : 6)]);
+            break;
+        }
     }
 
     window->draw(*sfShape);
@@ -144,7 +148,7 @@ void Wolf::render(sf::RenderWindow *window) {
         // Draw label_ID
         float offset = bodyFixture->GetShape()->m_radius + 1.f;
         label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
-                           body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label_ID->setRotation(sfShape->getRotation());
         window->draw(*label_ID);
 
@@ -178,8 +182,8 @@ void Wolf::performAction() {
 
 void Wolf::startContact(Entity *contactEntity) {
     switch (contactEntity->getID()) {
-        case ID::PLANET:{
-            currentStatus = Status ::GROUNDED;
+        case ID::PLANET: {
+            currentStatus = Status::GROUNDED;
             spriteSwitch = !spriteSwitch;
             sf_HitSensor->setOutlineColor(sf::Color::White);
             break;
@@ -197,14 +201,15 @@ void Wolf::startContact(Entity *contactEntity) {
             float tempAngle = attackAngle;
 
             // Hit from the right side, force must be going left
-            if(delta.x > 0){
+            if (delta.x > 0) {
                 tempAngle = 180 - tempAngle;
             }
 
-            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(b2Vec2( -cos(tempAngle / DEGtoRAD), -sin( tempAngle / DEGtoRAD)));
+            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
+                    b2Vec2(-cos(tempAngle / DEGtoRAD), -sin(tempAngle / DEGtoRAD)));
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
 //            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * delta, true);
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
 
             break;
 
@@ -222,11 +227,12 @@ void Wolf::startContact(Entity *contactEntity) {
             float tempAngle = attackAngle;
 
             // Hit from the right side, force must be going left
-            if(delta.x > 0){
+            if (delta.x > 0) {
                 tempAngle = 180 - tempAngle;
             }
 
-            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(b2Vec2( -cos(tempAngle *b2_pi/180), -sin( tempAngle* b2_pi/180)));
+            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
+                    b2Vec2(-cos(tempAngle * b2_pi / 180), -sin(tempAngle * b2_pi / 180)));
 
             // todo fix damage
             contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
@@ -235,7 +241,7 @@ void Wolf::startContact(Entity *contactEntity) {
 
             contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
 
-            dynamic_cast<EntityWarm*>(contactEntity)->HP -= 1;
+            dynamic_cast<EntityWarm *>(contactEntity)->HP -= 1;
 
             break;
         }
@@ -250,18 +256,24 @@ void Wolf::startContact(Entity *contactEntity) {
 
 void Wolf::endContact(Entity *contactEntity) {
 
-    switch(contactEntity->getID()){
-        case ID::PLANET:{
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
             currentStatus = Status::AIRBORNE;
             sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
             break;
         }
-        case ID::FARMER:break;
-        case ID::ALPACA:break;
-        case ID::WOLF:break;
-        case ID::SHOTGUN:break;
-        case ID::BULLET:break;
-        case ID::VOID:break;
+        case ID::FARMER:
+            break;
+        case ID::ALPACA:
+            break;
+        case ID::WOLF:
+            break;
+        case ID::SHOTGUN:
+            break;
+        case ID::BULLET:
+            break;
+        case ID::VOID:
+            break;
     }
 }
 

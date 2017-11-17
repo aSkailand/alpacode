@@ -14,7 +14,7 @@
 class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
 
-    bool farmerTouch = false;
+//    bool farmerTouch = false;
 
 //    bool isHeld = false;
 

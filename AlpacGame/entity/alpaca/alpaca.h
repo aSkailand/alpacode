@@ -29,7 +29,6 @@ public:
      */
     Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
-    bool farmerTouch = false;
 
     static int nextId;
 

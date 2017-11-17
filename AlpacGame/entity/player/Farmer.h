@@ -85,12 +85,15 @@ private:
     /// Animation
     bool spriteSwitch = false;
 
-    std::map<EntityWarm::Action , SpriteInfo> farmerMapPtr;
+    std::map<EntityWarm::Action, SpriteInfo> farmerWithHandsMapPtr;
+    std::map<EntityWarm::Action, SpriteInfo> farmerWithoutHandsMapPtr;
 
     bool deadCheck() override;
 
 
 public:
+
+    bool checkIfTouching(Entity *entity);
 
     void startContact(Entity *contactEntity) override;
 
