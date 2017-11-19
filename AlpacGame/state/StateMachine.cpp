@@ -24,4 +24,8 @@ void StateMachine::proceed() {
     stateMap[currentState] -> goNext(*this);
 }
 
+StateMachine::stateID StateMachine::getCurrentState() const {
+    return currentState;
+}
+
 

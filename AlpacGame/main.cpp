@@ -1,13 +1,12 @@
 
 #include <iostream>
-#include <plog\log.h>
+#include <plog/log.h>
 #include <SFML/Graphics.hpp>
 #include "state/StateMachine.h"
 
 int main()
 {
-
-    // Initiating Plog
+    // Initiating Plog;
     plog::init(plog::debug,"Log.log");
     LOGI << "Initiating plog.";
 

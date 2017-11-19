@@ -21,10 +21,13 @@ public:
 
     /// Enums
     enum class ID {
-        PLANET = 0x0001,
-        FARMER = 0x0002,
-        ALPACA = 0x0004,
-        WOLF = 0x0008,
+        VOID    = 0x0000,
+        PLANET  = 0x0001,
+        FARMER  = 0x0002,
+        ALPACA  = 0x0004,
+        WOLF    = 0x0008,
+        SHOTGUN = 0x0010,
+        BULLET  = 0x0100
     };
 
     enum class Direction{
@@ -42,6 +45,10 @@ public:
     b2Fixture *bodyFixture;
     b2Fixture *bodySensorFixture;
     b2Fixture *detectSensorFixture;
+
+    bool physicsSensitive = true;
+
+    sf::CircleShape *sf_HitSensor = nullptr;
 
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
@@ -97,20 +104,20 @@ public:
 
 
 
+    /// Death
+    virtual bool deadCheck() = 0;
+
+    virtual ~Entity() = default;
+
 protected:
 
     /// Important Entity Properties
 
-    /**
-     * The x- and y-position of the entity's origin in pixels.
-     */
-    float x{}, y{};
+    ID id = ID::VOID;
 
-    ID id{};
+    b2Body *body = nullptr;
 
-    b2Body *body{};
-
-    sf::Shape *sfShape{};
+    sf::Shape *sfShape = nullptr;
 
     /// Unit Vector + Force functions
 
@@ -156,6 +163,10 @@ private:
     std::map<int, std::vector<b2Vec2>> angleVectors;
 
 
+
+
 };
+
+
 
 #endif //ALPACGAME_ENTITY_H

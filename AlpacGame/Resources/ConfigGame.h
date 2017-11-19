@@ -2,10 +2,13 @@
 #ifndef ALPACGAME_CONFIGGAME_H
 #define ALPACGAME_CONFIGGAME_H
 
-
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
+
+#include "../entity/Entity.h"
+#include "../entity/EntityWarm.h"
+#include "../Resources/SpriteInfo.h"
 
 /**
  * Common resources accessible by all game entities.
@@ -24,7 +27,18 @@ public:
      */
     unsigned int planetRadius = 600;
 
-    b2Body* planetBody;
+    bool newGame = true;
+
+    b2World* world = nullptr;
+    Entity* planet = nullptr;
+    Entity* farmer = nullptr;
+    b2Body* planetBody = nullptr;
+
+    void reset();
+
+    sf::RenderWindow *window = nullptr;
+
+    std::vector<Entity*> *entities = nullptr;
 
 
     /**
@@ -38,12 +52,25 @@ public:
     sf::Vector2f planetCenter;
 
     /**
+     * The current buffered input, used to
+     * determine which direction the farmer walks towards.
+     */
+    sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
+
+    /**
+     * Mouse Coordinates.
+     */
+    float mouseXpos = 0;
+    float mouseYpos = 0;
+
+    bool mouseInLeftSide = false;
+
+    /**
      * Run the given configurations.
      * @param window the shared window.
      */
     void run(sf::RenderWindow &window);
 
-    // todo: make into static?
     /**
      * Calculates the x position on the circle's outline given by the angle.
      * @param angle the angle to calculate with.
@@ -74,22 +101,11 @@ public:
      */
     float calcY(float degree, float radius);
 
-    /**
-     * The current buffered input, used to
-     * determine which direction the farmer walks towards.
-     */
-    sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
-
     /// Fonts
     sf::Font fontID;
 
     /// Textures
     sf::Texture planetTexture;
-    sf::Texture farmerTexture;
-    sf::Texture alpacaTexture;
-    sf::Texture wolfTexture;
-    sf::Texture alertRedTexture;
-    sf::Texture alertYelTexture;
 
     sf::Texture morning_1;
     sf::Texture morning_2;
@@ -104,7 +120,14 @@ public:
     sf::Texture night_11;
     sf::Texture night_12;
 
+    sf::Texture shotgunHeldTexture;
+    sf::Texture shotgunDropTexture;
 
+    /// Map of every entities sprites.
+    std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
+    std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
+    std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithoutHands;
+    std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithHands;
 
 
 private:
@@ -115,9 +138,25 @@ private:
     void loadAllFonts();
 
     /**
-     * Load all necessary textures used during the game.
+     * Load the given sprites into a vector, and then map it to the corresponding entity.
+     * @param filename the path of the file containing the sprites.
+     * @param spriteMap the corresponding map holding the sprites.
+     * @param width the width of the sprite.
+     * @param height the height of the sprite.
+     * @param top //todo delete
+     * @param action the key to associate the sprite with.
+     */
+    void loadTexture(std::string filename,
+                     std::map<EntityWarm::Action, SpriteInfo> &spriteMap,
+                     int width,
+                     int height,
+                     int top, EntityWarm::Action action);
+
+    /**
+     * Load all sprites and then map them in categorized fashion.
      */
     void loadAllTextures();
+
 };
 
 

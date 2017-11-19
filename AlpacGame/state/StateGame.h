@@ -16,19 +16,21 @@
 
 #include "../entity/planet/planet.h"
 #include "../entity/player/Farmer.h"
+
 #include "../entity/alpaca/Alpaca.h"
 #include "../entity/wolf/Wolf.h"
+#include "../entity/shotgun/Shotgun.h"
+
 
 class StateGame : public State{
 public:
 
     void goNext(StateMachine &stateMachine) override;
 
-    std::vector<Entity*> entities;
+    std::vector<Entity*> *entities;
 
-    // todo: Put planet and farmer in vector, then point to them with these pointers?
     Entity* planet;
-    Entity* farmer;
+    Farmer* farmer;
 
 
 

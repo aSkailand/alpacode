@@ -10,9 +10,14 @@
 
 #include "../EntityWarm.h"
 #include "../Mob.h"
+#include "../Holdable.h"
 
-class Alpaca : public Mob {
+class Alpaca : public Mob, public Holdable {
 public:
+
+//    bool isHeld = true;
+
+    ~Alpaca() override;
 
     /**
      * CONSTRUCTOR: Creates an alpaca and adds it to the world.
@@ -22,29 +27,33 @@ public:
      * @param x the x-coordinate of the origin of the alpaca, in pixels.
      * @param y the y-coordinate of the origin of the alpaca, in pixels.
      */
-    Alpaca(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
-    bool farmerTouch = false;
-
-    //b2FixtureDef getBodySensor() const { return bodySensor; };
+    static int nextId;
 
 private:
+
+
 
     /// AI Behavior
     enum class Behavior{NORMAL, AWARE, AFRAID, FOLLOWING};
     Behavior currentBehavior;
 
 
+private:
+
     /// Entity properties
     const int id;
-    static int nextId;
 
     float density = 1.0f;
     float friction = 1.0f;
     float restitution = 0.0f;
 
     uint16 categoryBits = (uint16) ID::ALPACA;
-    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
+
+    uint16 maskBits =   (uint16) ID::PLANET
+                      | (uint16) ID::WOLF
+                      | (uint16) ID::BULLET;
 
     float walkForce = 5.f;
     float walkAngle = 70.f;   // Right, Degrees
@@ -89,8 +98,18 @@ private:
      */
     void switchAction() override;
 
+public:
+    bool deadCheck() override;
+
+private:
+
     /// Pointers
     ConfigGame *configGame;
+
+    /// Animation tool
+    bool spriteSwitch = false;
+
+    std::map<EntityWarm::Action , SpriteInfo> alpacaMapPtr;
 
 public:
 

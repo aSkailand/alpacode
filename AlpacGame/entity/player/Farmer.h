@@ -20,19 +20,23 @@ public:
      * @param x the x-position of the farmer's origin, in pixels.
      * @param y the y-position of the farmer's origin, in pixels.
      */
-    Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y);
+
+    /**
+     * Current held entity.
+     */
+    Entity *holdingEntity = nullptr;
 
 private:
-
     /// Entity properties
     // Customizable
     float density = 1.0f;
     float friction = 1.0f;
+
     float restitution = 0.0f;
-
     uint16 categoryBits = (uint16) ID::FARMER;
-    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
 
+    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF;
     float walkForce = 5.f;
     float walkAngle = 45.f;   // Right, Degrees
 
@@ -52,10 +56,8 @@ private:
     enum class Grasp {
         EMPTY, HOLDING, THROWING = 3
     };
-
-    Entity *holdingEntity = nullptr;
     sf::Clock graspClock;
-    float graspCooldown = 0.1f;
+    float graspCooldown = 0.2f;
     Grasp currentGrasp = Grasp::EMPTY;
     std::list<Entity *> currentlyTouchingEntities;
 
@@ -80,11 +82,21 @@ private:
     /// Pointers
     ConfigGame *configGame;
 
+    /// Animation
+    bool spriteSwitch = false;
+
+    std::map<EntityWarm::Action, SpriteInfo> farmerWithHandsMapPtr;
+    std::map<EntityWarm::Action, SpriteInfo> farmerWithoutHandsMapPtr;
+
+    bool deadCheck() override;
 
 
 public:
 
     void startContact( CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
+
+    bool checkIfTouching(Entity *entity);
+
 
     void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
 

@@ -14,6 +14,8 @@
 class Wolf : public Mob{
 public:
 
+    virtual ~Wolf();
+
     /**
      * CONSTRUCTOR: Creates a wolf and adds it to the world.
      * @param world the world to add the wolf to.
@@ -22,20 +24,25 @@ public:
      * @param x the x-coordinate of the origin of the wolf, in pixels.
      * @param y the y-coordinate of the origin of the wolf, in pixels.
      */
-    Wolf(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
-private:
-
-    /// Entity Properties
-    const int id;
     static int nextId;
 
+    bool deadCheck() override;
+
+private:
+    /// Entity Properties
+    const int id;
     float density = 1.0f;
     float friction = 1.0f;
     float restitution = 0.0f;
 
     uint16 categoryBits = (uint16) ID::WOLF;
-    uint16 maskBits = (uint16) ID::PLANET | (uint16) ID::FARMER | (uint16) ID::ALPACA;
+
+    uint16 maskBits =   (uint16) ID::PLANET
+                      | (uint16) ID::FARMER
+                      | (uint16) ID::ALPACA
+                      | (uint16) ID::BULLET;
 
     float walkForce = 5.f;
     float walkAngle = 30.f;   // Right, Degrees
@@ -71,8 +78,6 @@ private:
      */
     void render(sf::RenderWindow *window) override;
 
-
-
     /// Movement tools
     /**
      * The time before current action is switched (in seconds).
@@ -83,6 +88,11 @@ private:
      * The time before next movement is permitted to be performed (in seconds).
      */
     float moveAvailableTick = 0.4f;
+
+    /// Animation tools
+    bool spriteSwitch = false;
+    std::map<EntityWarm::Action , SpriteInfo> wolfMapPtr;
+
 
 public:
 

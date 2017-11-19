@@ -1,9 +1,11 @@
 #include "Farmer.h"
 #include "../alpaca/alpaca.h"
 
-Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
+Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y) {
 
     this->configGame = configGame;
+    farmerWithHandsMapPtr = configGame->farmerSpritesWithHands;
+    farmerWithoutHandsMapPtr = configGame->farmerSpritesWithoutHands;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);
     convertAngleToVectors((int) Action::JUMP, jumpAngle);
@@ -15,7 +17,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     bodyDef.type = b2_dynamicBody;
 
     // Create body
-    body = world->CreateBody(&bodyDef);
+    body = configGame->world->CreateBody(&bodyDef);
 
     // Creating Shape
     b2CircleShape b2Shape;
@@ -30,7 +32,6 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     fixtureDef.filter.maskBits = maskBits;
     fixtureDef.shape = &b2Shape;
 
-
     // Create sensor
     b2CircleShape b2Shape2;
     b2Shape2.m_radius = radius / SCALE;
@@ -38,7 +39,7 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     sensor.shape = &b2Shape2;
     sensor.isSensor = true;
     sensor.filter.categoryBits = (uint16) ID::FARMER;
-    sensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF;
+    sensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF | (uint16) ID::SHOTGUN;
 
 
 
@@ -54,33 +55,77 @@ Farmer::Farmer(b2World *world, ConfigGame *configGame, float radius, float x, fl
     bodySensorFixture->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
 
     // Create SFML shape
-    sfShape = new sf::CircleShape(radius);
-    sfShape->setOrigin(radius, radius);
-    sfShape->setTexture(&configGame->farmerTexture);
+    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
+    sfShape->setOrigin(width / 2, height / 2);
 
-    // Create ID text
-    createLabel("P1", &this->configGame->fontID);
+    sf_HitSensor = new sf::CircleShape(radius);
+    sf_HitSensor->setFillColor(sf::Color::Transparent);
+    sf_HitSensor->setOrigin(radius, radius);
 
-    /// Check if player starts in the air
-    currentStatus = Status::AIRBORNE;
+    createLabel(label_ID, &this->configGame->fontID, "P1");
+
 }
 
 
 void Farmer::render(sf::RenderWindow *window) {
-    x = SCALE * body->GetPosition().x;
-    y = SCALE * body->GetPosition().y;
-    sfShape->setPosition(x, y);
+
+    // Draw sfShape Debug
+    float delta_Y = sfShape->getLocalBounds().height / 2 - bodyFixture->GetShape()->m_radius * SCALE;
+    b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
+
+    float shape_x = offsetPoint.x * SCALE;
+    float shape_y = offsetPoint.y * SCALE;
+
+    sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+
+    // Switch Texture
+    bool isHolding = holdingEntity != nullptr;
+
+    if (isHolding) {
+        if (holdingEntity->getID() == ID::SHOTGUN) {
+            if (currentStatus == Status::AIRBORNE) {
+                sfShape->setTexture(farmerWithoutHandsMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
+            } else if (currentStatus == Status::GROUNDED) {
+                sfShape->setTexture(farmerWithoutHandsMapPtr[Action::IDLE][0]);
+            }
+        } else {
+            if (currentStatus == Status::AIRBORNE) {
+                sfShape->setTexture(farmerWithHandsMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
+            } else if (currentStatus == Status::GROUNDED) {
+                sfShape->setTexture(farmerWithHandsMapPtr[Action::IDLE][1]);
+            }
+        }
+    } else {
+        if (currentStatus == Status::AIRBORNE) {
+            sfShape->setTexture(farmerWithHandsMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
+        } else if (currentStatus == Status::GROUNDED) {
+            sfShape->setTexture(farmerWithHandsMapPtr[Action::IDLE][0]);
+        }
+    }
 
     window->draw(*sfShape);
 
-    if(configGame->showLabels){
-        float offset = bodyFixture->GetShape()->m_radius + 1.f;
-        label->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label->setRotation(sfShape->getRotation());
-        window->draw(*label);
+    if (configGame->showLabels) {
+
+        // Draw sfShape
         sfShape->setOutlineThickness(2);
-    } else{
+        sfShape->setOutlineColor(sf::Color::Black);
+
+        // Draw label_ID
+        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label_ID->setRotation(sfShape->getRotation());
+        window->draw(*label_ID);
+
+        // Draw hitSensor debug
+        sf_HitSensor->setOutlineThickness(2);
+        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_HitSensor);
+
+    } else {
         sfShape->setOutlineThickness(0);
     }
 
@@ -95,13 +140,11 @@ void Farmer::switchAction() {
             break;
         }
         case sf::Keyboard::Right: {
-            sfShape->setScale(1.f, 1.f);
             currentAction = Action::WALKING;
             currentDirection = Direction::RIGHT;
             break;
         }
         case sf::Keyboard::Left: {
-            sfShape->setScale(-1.f, 1.f);
             currentAction = Action::WALKING;
             currentDirection = Direction::LEFT;
             break;
@@ -124,12 +167,14 @@ void Farmer::switchAction() {
         }
     }
 
+    // Flip accordingly to mouse placement
+    sfShape->setScale(configGame->mouseInLeftSide ? -1.f : 1.f, 1.f);
 
 }
 
 void Farmer::performAction() {
 
-    if (currentAction != Action::IDLE  && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
+    if (currentAction != Action::IDLE && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
 
         switch (currentAction) {
 
@@ -138,8 +183,11 @@ void Farmer::performAction() {
                 break;
             }
             case Action::JUMP: {
-                forcePushBody((int) Action::JUMP, getBody(), jumpForce, currentDirection);
-
+                if (configGame->mouseInLeftSide) {
+                    forcePushBody((int) Action::JUMP, getBody(), jumpForce, Direction::LEFT);
+                } else {
+                    forcePushBody((int) Action::JUMP, getBody(), jumpForce, Direction::RIGHT);
+                }
                 break;
             }
             case Action::IDLE: {
@@ -157,30 +205,95 @@ void Farmer::performAction() {
             // If farmer is in holding-mode, but holds nothing = Give him an entity to hold
             if (holdingEntity == nullptr) {
                 holdingEntity = currentlyTouchingEntities.front();
-                currentlyTouchingEntities.pop_front();
 
-                dynamic_cast<EntityWarm*> (holdingEntity)->currentStatus = Status::AIRBORNE;
+                holdingEntity->physicsSensitive = false;
+                dynamic_cast<Holdable *>(holdingEntity)->isHeld = true;
+
+                auto *warm = dynamic_cast<EntityWarm *> (holdingEntity);
+                if (warm) {
+                    warm->currentStatus = Status::AIRBORNE;
+                }
 
                 graspClock.restart();
             }
                 // If farmer is in holding-mode, and holds something => keep holding
             else {
-                // Calculate the length between farmer and the held entity.
-                float offset = -1.f;
-                float32 delta = bodyFixture->GetShape()->m_radius + holdingEntity->bodyFixture->GetShape()->m_radius;
 
-                // Lock the entity delta length above farmer's origin
-                holdingEntity->getBody()->SetTransform(getBody()->GetWorldPoint(b2Vec2(0, -(delta+offset))), getBody()->GetAngle());
+                switch (holdingEntity->getID()) {
+                    case ID::PLANET:
+                        break;
+                    case ID::FARMER:
+                        break;
+                    case ID::ALPACA: {
+                        b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
+                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, -2.5f));
+                        holdingEntity->getBody()->SetTransform(center + offset, getBody()->GetAngle());
+                        break;
+                    }
+                    case ID::WOLF:
+                        break;
+                    case ID::SHOTGUN: {
+
+                        b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() -
+                                          b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+                        float angle = atan2(-toTarget.x, toTarget.y) - 90 / DEGtoRAD;
+
+                        b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
+                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, 0.7f));
+                        holdingEntity->getBody()->SetTransform(center + offset, angle);
+
+                        break;
+                    }
+                    case ID::BULLET:
+                        break;
+                    case ID::VOID:
+                        break;
+                }
+
             }
             break;
         }
 
         case Grasp::THROWING: {
 
+            holdingEntity->physicsSensitive = true;
+
+            switch (holdingEntity->getID()) {
+                case ID::ALPACA: {
+                    dynamic_cast<Alpaca *>(holdingEntity)->isHeld = false;
+                    break;
+                }
+                case ID::SHOTGUN: {
+                    dynamic_cast<Shotgun *>(holdingEntity)->isHeld = false;
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            // Reset Rotation (So that throwing angle works as intended)
+            holdingEntity->getBody()->SetTransform(holdingEntity->getBody()->GetWorldCenter(), getBody()->GetAngle());
+
+            // Reset Speed
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-            forcePushBody((int) Grasp::THROWING, holdingEntity->getBody(), throwForce, currentDirection);
+
+            // Get mouse angle
+            b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() -
+                              b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+            toTarget.Normalize();
+
+            float mass = holdingEntity->getBody()->GetMass();
+
+            // Push body
+            holdingEntity->getBody()->ApplyLinearImpulseToCenter(throwForce * mass * -toTarget, true);
+
+//             Reset touching in case it is dropped and is still in range
+//            currentlyTouchingEntities.push_back(holdingEntity);
+
+            // Reset variables
             holdingEntity = nullptr;
             currentGrasp = Grasp::EMPTY;
+
             break;
         }
 
@@ -194,46 +307,47 @@ void Farmer::performAction() {
 
 void Farmer::endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
 
-    ID contactID = contactEntity->getID();
-    sfShape->setOutlineColor(sf::Color::Black);
-
-    switch (contactID) {
+    switch (contactEntity->getID()) {
         case ID::PLANET: {
-            sfShape->setOutlineColor(sf::Color::Red);
             currentStatus = Status::AIRBORNE;
+            sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
             break;
         }
         case ID::FARMER:
             break;
         case ID::ALPACA: {
-
-
-            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) !=
-                currentlyTouchingEntities.end()) {
+            if (checkIfTouching(contactEntity)) {
                 currentlyTouchingEntities.remove(contactEntity);
-                auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
-                contactAlpaca->farmerTouch = false;
-                std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
-
+                dynamic_cast<Alpaca *> (contactEntity)->farmerTouch = false;
             }
-
             break;
 
         }
         case ID::WOLF:
             break;
+        case ID::SHOTGUN: {
+            if (checkIfTouching(contactEntity)) {
+                currentlyTouchingEntities.remove(contactEntity);
+                dynamic_cast<Shotgun *> (contactEntity)->farmerTouch = false;
+            }
+            break;
+        }
+        case ID::VOID:
+            break;
+        case ID::BULLET:
+            break;
     }
 }
 
+
 void Farmer::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
-//    std::cout << "Farmer Start Contact" << std::endl;
 
     switch (contactEntity->getID()) {
         case ID::PLANET: {
-            sfShape->setOutlineColor(sf::Color::Black);
             currentStatus = Status::GROUNDED;
             body->SetLinearVelocity(b2Vec2(0,0));
-
+            spriteSwitch = !spriteSwitch;
+            sf_HitSensor->setOutlineColor(sf::Color::White);
             break;
         }
         case ID::FARMER:
@@ -241,21 +355,35 @@ void Farmer::startContact(CollisionID selfCollision, CollisionID otherCollision,
         case ID::ALPACA: {
             if(otherCollision == CollisionID::DETECTION) break;
 
-            if (std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(), contactEntity) == currentlyTouchingEntities.end() &&
-                    selfCollision == CollisionID::HIT) {
-
-                currentlyTouchingEntities.push_back(contactEntity) ;
-                // todo: Add farmerTouch to entity?
-                auto contactAlpaca = dynamic_cast<Alpaca *> (contactEntity);
-                contactAlpaca->farmerTouch = true;
+            if (!checkIfTouching(contactEntity) && selfCollision == CollisionID::HIT) {
+                currentlyTouchingEntities.push_back(contactEntity);
+                dynamic_cast<Alpaca *> (contactEntity)->farmerTouch = true;
                 sfShape->setOutlineColor(sf::Color::Green);
-
-                //std::cout << "Touching " << currentlyTouchingEntities.size() << " entities." << std::endl;
             }
-        }
-
-        case ID::WOLF:{
             break;
         }
+        case ID::WOLF: {
+            break;
+        }
+        case ID::SHOTGUN: {
+            if (!checkIfTouching(contactEntity)) {
+                currentlyTouchingEntities.push_back(contactEntity);
+                dynamic_cast<Shotgun *> (contactEntity)->farmerTouch = true;
+            }
+            break;
+        }
+        case ID::VOID:
+            break;
+        case ID::BULLET:
+            break;
     }
+}
+
+bool Farmer::deadCheck() {
+    return false;
+}
+
+bool Farmer::checkIfTouching(Entity *entity) {
+    return std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
+                     entity) != currentlyTouchingEntities.end();
 }
