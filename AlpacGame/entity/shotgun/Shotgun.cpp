@@ -100,7 +100,7 @@ void Shotgun::render(sf::RenderWindow *window) {
 void Shotgun::use() {
 
     // Shoot bullets
-    shootBullets(40.f, 10.f, 5);
+    shootBullets(20.f, 10.f, 5);
 
     // Recoil push
     b2Body *farmerBody = configGame->farmer->getBody();

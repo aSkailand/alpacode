@@ -90,9 +90,12 @@ private:
 
     bool deadCheck() override;
 
+public:
+    void initDeath() override;
+    sftools::Chronometer deathClock;
+    float deathTick = 3.0f;
 
 public:
-
     bool checkIfTouching(Entity *entity);
 
     void startContact( CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;

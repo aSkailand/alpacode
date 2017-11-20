@@ -61,6 +61,8 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(radius, radius);
 
+    HP = 10;
+
     createLabel(label_ID, &this->configGame->fontID, "P1");
 
 }
@@ -132,6 +134,9 @@ void Farmer::render(sf::RenderWindow *window) {
 }
 
 void Farmer::switchAction() {
+
+    if(!alive)
+        return;
 
     switch (configGame->currentInput) {
         case sf::Keyboard::W: {
@@ -334,7 +339,7 @@ void Farmer::startContact(CollisionID selfCollision, CollisionID otherCollision,
 }
 
 bool Farmer::deadCheck() {
-    return false;
+    return !alive && deathClock.getElapsedTime().asSeconds() >= deathTick;
 }
 
 bool Farmer::checkIfTouching(Entity *entity) {
@@ -408,4 +413,17 @@ void Farmer::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
         default:
             break;
     }
+}
+
+void Farmer::initDeath() {
+
+    b2Filter deadFilter;
+    deadFilter.categoryBits = (uint16) ID::FARMER;
+    deadFilter.maskBits = (uint16) ID::PLANET;
+    fixture_body->SetFilterData(deadFilter);
+    fixture_hit->SetFilterData(deadFilter);
+
+//    body->SetTransform(body->GetWorldCenter(), )
+    sfShape->setFillColor(sf::Color(200,200,200,100));
+    deathClock.reset(true);
 }

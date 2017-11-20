@@ -17,6 +17,20 @@ class EntityWarm : public Entity
 public:
 
     int HP = 0;
+    bool alive = true;
+    void dealDamage(int damage){
+
+        if(!alive)
+            return;
+
+        HP -= damage;
+
+        if(HP <= 0){
+            alive = false;
+            initDeath();
+        }
+    }
+    virtual void initDeath() = 0;
 
     /**
      * The label above entities' head in-game.

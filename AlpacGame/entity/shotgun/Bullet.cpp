@@ -79,11 +79,14 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
         case ID::FARMER:
             break;
         case ID::ALPACA: {
-            dynamic_cast<EntityWarm*> (contactEntity)->HP -= 1;
+            dynamic_cast<EntityWarm*> (contactEntity)->dealDamage(1);
+            b2Vec2 force = contactEntity->getBody()->GetWorldVector(b2Vec2(0,-1.f));
+            float32 mass =contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * force ,true);
             break;
         }
         case ID::WOLF: {
-            dynamic_cast<EntityWarm*> (contactEntity)->HP -= 1;
+            dynamic_cast<EntityWarm*> (contactEntity)->dealDamage(1);
             break;
         }
         case ID::SHOTGUN:

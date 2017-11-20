@@ -151,6 +151,7 @@ void ConfigGame::reset() {
     planet = new Planet(world, this, planetRadius, planetCenter.x, planetCenter.y);
     planetBody = planet->getBody();
 
+    farmer = nullptr;
     delete farmer;
     farmer = new Farmer(this, 30, 100, 100, 100, -200);
 

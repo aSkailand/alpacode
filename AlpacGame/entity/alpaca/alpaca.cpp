@@ -65,13 +65,18 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
     sfShape->setOrigin(width / 2, height / 2);
 
+    ghostShape = new sf::RectangleShape(sf::Vector2f(width, height));
+    ghostShape->setOrigin(width / 2, height / 2);
+    ghostShape->setTexture(alpacaMapPtr[Action::IDLE][0]);
+    ghostShape->setFillColor(sf::Color(200, 200, 200, 100));
+
     sf_HitSensor = new sf::CircleShape(radius);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(radius, radius);
 
 
     // Set HP
-    HP = 10;
+    HP = 1;
 
 
     // Create ID text
@@ -93,6 +98,24 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
 int Alpaca::nextId = 0;
 
 void Alpaca::switchAction() {
+
+
+    switch (currentHealth) {
+        case Health::ALIVE: {
+            break;
+        }
+        case Health::DEAD: {
+            if (deathClock.getElapsedTime().asSeconds() >= ghostTick) {
+                currentHealth = Health::GHOST;
+                ghostShape->setPosition(sfShape->getPosition());
+                ghostShape->setRotation(sfShape->getRotation());
+            }
+            return;
+        }
+        case Health::GHOST:
+            return;
+    }
+
 
     switch (currentBehavior) {
         case Behavior::NORMAL: {
@@ -159,16 +182,7 @@ void Alpaca::switchAction() {
 
 void Alpaca::render(sf::RenderWindow *window) {
 
-    // Render sfShape
-    float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
-    b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
-
-    float shape_x = offsetPoint.x * SCALE;
-    float shape_y = offsetPoint.y * SCALE;
-
-    sfShape->setPosition(shape_x, shape_y);
-    sfShape->setRotation(body->GetAngle() * DEGtoRAD);
-
+    /// Render sfShape
 
     // Switch Texture
     switch (currentStatus) {
@@ -183,8 +197,23 @@ void Alpaca::render(sf::RenderWindow *window) {
         }
     }
 
+    float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
+    b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
+
+    float shape_x = offsetPoint.x * SCALE;
+    float shape_y = offsetPoint.y * SCALE;
+
+    if (currentHealth != Health::GHOST) {
+        sfShape->setPosition(shape_x, shape_y);
+        sfShape->setRotation(body->GetAngle() * DEGtoRAD);
+    } else {
+        ghostShape->setPosition(shape_x, shape_y);
+        ghostShape->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*ghostShape);
+    }
 
     window->draw(*sfShape);
+
 
     if (configGame->showLabels) {
 
@@ -240,6 +269,9 @@ void Alpaca::render(sf::RenderWindow *window) {
 
 void Alpaca::performAction() {
 
+    if (currentHealth != Health::ALIVE)
+        return;
+
     if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
         switch (currentAction) {
             case Action::WALKING: {
@@ -268,7 +300,7 @@ void Alpaca::endContact(CollisionID selfCollision, CollisionID otherCollision, E
             endContact_body(otherCollision, contactEntity);
             break;
         }
-        case CollisionID::HIT:{
+        case CollisionID::HIT: {
             endContact_hit(otherCollision, contactEntity);
             break;
         }
@@ -301,7 +333,6 @@ void Alpaca::startContact(CollisionID selfCollision, CollisionID otherCollision,
             if (selfCollision == CollisionID::DETECTION) {
                 // ignores detect sensor of Wolf
 
-
             }
 
             break;
@@ -312,18 +343,17 @@ void Alpaca::startContact(CollisionID selfCollision, CollisionID otherCollision,
 }
 
 bool Alpaca::deadCheck() {
-    return HP <= 0;
+    return currentHealth == Health::GHOST && deathClock.getElapsedTime().asSeconds() >= deathTick;
 }
 
 Alpaca::~Alpaca() {
-    printf("Alpaca %i killed.\n", id);
+    printf("Alpaca %i is dead.\n", id);
 }
 
 void Alpaca::startContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::PLANET: {
             currentStatus = Status::GROUNDED;
-            body->SetAwake(false);
             break;
         }
         default:
@@ -407,9 +437,26 @@ void Alpaca::endContact_body(Entity::CollisionID otherCollision, Entity *contact
 }
 
 void Alpaca::endContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch(contactEntity->getID()){
+    switch (contactEntity->getID()) {
         default:
             break;
     }
+}
+
+void Alpaca::initDeath() {
+    printf("Alpaca %i is dieing.\n", id);
+
+    b2Filter deadFilter;
+    deadFilter.categoryBits = (uint16) ID::ALPACA;
+    deadFilter.maskBits = (uint16) ID::PLANET;
+//    fixture_body->SetFilterData(deadFilter);
+    fixture_hit->SetFilterData(deadFilter);
+    fixture_detection->SetFilterData(deadFilter);
+
+    sfShape->setScale(1.f, -1.f);
+
+    currentHealth = Health::DEAD;
+
+    deathClock.reset(true);
 }
 

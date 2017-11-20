@@ -68,15 +68,39 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-            if(!bodyIter->IsAwake())
-                continue;
+//            if(!bodyIter->IsAwake())
+//                continue;
 
             // Calculate Radial Gravitation on all bodies
             float gravitationForce = 10.0f;
             float bodyMass = bodyIter->GetMass();
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
             delta.Normalize();
-            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, false);
+
+
+
+            Alpaca* alpaca = dynamic_cast<Alpaca*>((Entity*)bodyIter->GetUserData());
+            if(alpaca && alpaca->currentHealth == Alpaca::Health::GHOST) {
+                bodyIter->ApplyForceToCenter(1.f * bodyMass * -delta, true);
+            } else{
+                bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, true);
+            }
+
+
+
+//            EntityWarm* warm_e = dynamic_cast<EntityWarm*>((Entity*)bodyIter->GetUserData());
+//            if(warm_e && !warm_e->alive) {
+//                bodyIter->SetLinearVelocity(bodyIter->GetWorldVector(b2Vec2(0,-1.0f)));
+////                delta = bodyIter->GetWorldCenter() - planet->getBody()->GetWorldCenter();
+////                bodyIter->ApplyForceToCenter(0.1f * bodyMass * delta, true);
+//
+//            } else{
+//
+//
+//            }
+
+
+
 
             // Calibrate rotation of entity according to planet's center by force
             float desiredAngle = atan2f(-delta.x, delta.y);
@@ -86,7 +110,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
             while (totalRotation > 180 / DEGtoRAD) totalRotation -= 360 / DEGtoRAD;
             float desiredAngularVelocity = totalRotation * 60;
             float impulse = bodyIter->GetInertia() * desiredAngularVelocity;// disregard time factor
-            bodyIter->ApplyAngularImpulse(impulse, false);
+            bodyIter->ApplyAngularImpulse(impulse, true);
+
+
         }
 
         /// Box2D World Step
@@ -132,19 +158,21 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->draw(mouseAim);
 
         // Finding angle of farmer
-        b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
-        delta.Normalize();
-        float angle = atan2f(-delta.x, delta.y);
+        if(farmer->alive){
+            b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
+            delta.Normalize();
+            float angle = atan2f(-delta.x, delta.y);
 
-        // Coordinates of the surface in which the farmer is standing on
-        float viewX = configGame->calcX(angle * DEGtoRAD);
-        float viewY = configGame->calcY(angle * DEGtoRAD);
+            // Coordinates of the surface in which the farmer is standing on
+            float viewX = configGame->calcX(angle * DEGtoRAD);
+            float viewY = configGame->calcY(angle * DEGtoRAD);
 
-        view.setCenter(viewX, viewY);
+            view.setCenter(viewX, viewY);
 
-        view.setRotation(angle * DEGtoRAD);
+            view.setRotation(angle * DEGtoRAD);
 
-        window->setView(view);
+            window->setView(view);
+        }
 
         /// Update View
         window->display();

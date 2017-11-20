@@ -15,7 +15,13 @@
 class Alpaca : public Mob, public Holdable {
 public:
 
-//    bool isHeld = true;
+    enum class Health {
+        ALIVE = 0,
+        DEAD = 1,
+        GHOST = 2
+    };
+
+    Health currentHealth = Health ::ALIVE;
 
     ~Alpaca() override;
 
@@ -31,12 +37,23 @@ public:
 
     static int nextId;
 
+    bool ghost = false;
+
 private:
 
+    sf::RectangleShape *ghostShape = nullptr;
+
+    void initDeath() override;
+
+    sftools::Chronometer deathClock;
+    float ghostTick = 3.0f;
+    float deathTick = 6.0f;
 
 
     /// AI Behavior
-    enum class Behavior{NORMAL, AWARE, AFRAID, FOLLOWING};
+    enum class Behavior {
+        NORMAL, AWARE, AFRAID, FOLLOWING
+    };
     Behavior currentBehavior;
 
 
@@ -51,7 +68,7 @@ private:
 
     uint16 categoryBits = (uint16) ID::ALPACA;
 
-    uint16 maskBits =   (uint16) ID::PLANET
+    uint16 maskBits = (uint16) ID::PLANET
                       | (uint16) ID::WOLF
                       | (uint16) ID::BULLET;
 
@@ -108,7 +125,7 @@ private:
     /// Animation tool
     bool spriteSwitch = false;
 
-    std::map<EntityWarm::Action , SpriteInfo> alpacaMapPtr;
+    std::map<EntityWarm::Action, SpriteInfo> alpacaMapPtr;
 
 public:
 
@@ -116,16 +133,20 @@ public:
 
 
     void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
+
     void startContact_hit(CollisionID otherCollision, Entity *contactEntity);
+
     void startContact_body(CollisionID otherCollision, Entity *contactEntity);
+
     void startContact_detection(CollisionID otherCollision, Entity *contactEntity);
 
-    void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override ;
+    void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
+
     void endContact_hit(CollisionID otherCollision, Entity *contactEntity);
+
     void endContact_body(CollisionID otherCollision, Entity *contactEntity);
+
     void endContact_detection(CollisionID otherCollision, Entity *contactEntity);
-
-
 
 
 };
