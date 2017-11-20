@@ -6,12 +6,19 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     this->machine = &stateMachine;
 
-    theme = tgui::Theme::create("Resources/BabyBlue.txt");
+    theme = tgui::Theme::create("Resources/MenuUI.txt");
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
 
-    createButton(buttonID::PLAYGAME, "Play game!", "pressed",
+    createButton(buttonID::RESUME,"Resume","pressed",
+                 [&]{machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);});
+
+    createButton(buttonID::PLAYGAME, "New game", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
+
+    createButton(buttonID::HIGHSCORE,"High score", "pressed",
+                 [&]{ //Todo: Need to create state for high score.
+                 });
 
     createButton(buttonID::SETTINGS, "Settings", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::OPTION); });
@@ -75,9 +82,11 @@ void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &typeActivation,
                               const std::function<void()> &func) {
     tgui::Button::Ptr tempButton = tgui::Button::copy(masterButton);
+    tempButton->setSize(300,40);
     tempButton->setText(buttonName);
     tempButton->connect(typeActivation, func);
     mapButtons.emplace(buttonID, tempButton);
+
 }
 
 
@@ -90,14 +99,20 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->removeAllWidgets();
     windowWidth = tgui::bindWidth(*Width);
     windowHeight = tgui::bindHeight(*Width);
-    tempVerticalLayout->setSize(windowWidth * 2 / 3, windowHeight / 2);
-    tempVerticalLayout->setPosition(windowWidth / 6, windowHeight / 6);
+    tempVerticalLayout->setSize(windowWidth * 2 / 3, windowHeight /2);
+    tempVerticalLayout->setPosition(windowWidth / 6, windowHeight /6);
 
+
+    tempVerticalLayout->add(mapButtons[buttonID::RESUME]);
+    tempVerticalLayout->addSpace();
     tempVerticalLayout->add(mapButtons[buttonID::PLAYGAME]);
+    tempVerticalLayout->addSpace();
+    tempVerticalLayout->add(mapButtons[buttonID::HIGHSCORE]);
     tempVerticalLayout->addSpace();
     tempVerticalLayout->add(mapButtons[buttonID::SETTINGS]);
     tempVerticalLayout->addSpace();
     tempVerticalLayout->add(mapButtons[buttonID::QUIT]);
+    tempVerticalLayout->addSpace();
 
     // Adds the main menu layout to the map
     mapLayouts.emplace(layouts::MAINMENU, tempVerticalLayout);

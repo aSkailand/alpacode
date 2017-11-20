@@ -29,6 +29,8 @@ public:
 
     enum class buttonID {
         PLAYGAME,
+        RESUME,
+        HIGHSCORE,
         SETTINGS,
         QUIT,
         VIDEO,
@@ -67,6 +69,7 @@ private:
     StateMachine *machine = nullptr;
 
     /// TGUI objects
+
     tgui::VerticalLayout::Ptr tempVerticalLayout;
     tgui::Picture::Ptr pictureMenu;
     tgui::Button::Ptr masterButton;
