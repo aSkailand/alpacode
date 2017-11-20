@@ -21,48 +21,45 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     // Create Fixture
     b2CircleShape b2Shape;
     b2Shape.m_radius = radius / SCALE;
-    b2FixtureDef fixtureDef;
-    fixtureDef.density = density;
-    fixtureDef.friction = friction;
-    fixtureDef.restitution = restitution;
-    fixtureDef.filter.categoryBits = categoryBits;
-    fixtureDef.filter.maskBits = maskBits;
-    fixtureDef.shape = &b2Shape;
+    b2FixtureDef fixtureDef_body;
+    fixtureDef_body.density = density;
+    fixtureDef_body.friction = friction;
+    fixtureDef_body.restitution = restitution;
+    fixtureDef_body.filter.categoryBits = categoryBits;
+    fixtureDef_body.filter.maskBits = maskBits;
+    fixtureDef_body.shape = &b2Shape;
 
     /// Body Sensor
     b2CircleShape b2Shape2;
     b2Shape2.m_radius = radius / SCALE;
-    b2FixtureDef bodySensor;
-    bodySensor.shape = &b2Shape2;
-    bodySensor.isSensor = true;
-    bodySensor.filter.categoryBits = (uint16) ID::WOLF;
-    bodySensor.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA;
+    b2FixtureDef fixtureDef_hit;
+    fixtureDef_hit.shape = &b2Shape2;
+    fixtureDef_hit.isSensor = true;
+    fixtureDef_hit.filter.categoryBits = (uint16) ID::WOLF;
+    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA;
 
     /// Detect Sensor
     b2CircleShape b2Shape3;
-    b2FixtureDef detectSensor;
+    b2FixtureDef fixtureDef_detection;
     b2Shape3.m_radius = (radius + 300) / SCALE;
-    detectSensor.shape = &b2Shape3;
-    detectSensor.isSensor = true;
-    detectSensor.filter.categoryBits = (uint16) ID::WOLF;
-    detectSensor.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::FARMER;
-
+    fixtureDef_detection.shape = &b2Shape3;
+    fixtureDef_detection.isSensor = true;
+    fixtureDef_detection.filter.categoryBits = (uint16) ID::WOLF;
+    fixtureDef_detection.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::FARMER;
 
     // Store information
     setID(Entity::ID::WOLF);
     body->SetUserData((void *) this);
 
     // Connect fixture to body
-    bodyFixture = body->CreateFixture(&fixtureDef);
-    bodySensorFixture = body->CreateFixture(&bodySensor);
-    detectSensorFixture = body->CreateFixture(&detectSensor);
+    fixture_body = body->CreateFixture(&fixtureDef_body);
+    fixture_hit = body->CreateFixture(&fixtureDef_hit);
+    fixture_detection = body->CreateFixture(&fixtureDef_detection);
 
     // Set Hit and Detect Fixture as Sensor
-    bodyFixture->SetUserData(convertToVoidPtr((int) CollisionID::BODY));
-    bodySensorFixture->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
-    detectSensorFixture->SetUserData(convertToVoidPtr((int) CollisionID::DETECTION));
-
-
+    fixture_body->SetUserData(convertToVoidPtr((int) CollisionID::BODY));
+    fixture_hit->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
+    fixture_detection->SetUserData(convertToVoidPtr((int) CollisionID::DETECTION));
 
     // Create SFML shape
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
@@ -100,13 +97,11 @@ int Wolf::nextId = 0;
 void Wolf::switchAction() {
 
     // Check if it is time for randomizing the wolf's current state
-    if (currentBehavior == Behavior::NORMAL &&
-        randomActionTriggered(randomActionTick)) {
+    if (randomActionTriggered(randomActionTick) && currentBehavior == Behavior::NORMAL) {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
-
         switch (currentAction) {
-            case Wolf::Action::WALKING: {
+            case Action::WALKING: {
                 currentDirection = (Direction) randomNumberGenerator(0, 1);
                 switch (currentDirection) {
                     case Wolf::Direction::LEFT: {
@@ -123,7 +118,7 @@ void Wolf::switchAction() {
             case Action::JUMP: {
                 break;
             }
-            case Wolf::Action::IDLE: {
+            case Action::IDLE: {
                 break;
             }
 
@@ -150,31 +145,40 @@ void Wolf::switchAction() {
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
         currentBehavior = Behavior::AFRAID;
-
-
     }
-
 
     if (currentBehavior == Behavior::HUNTING) {
         currentAction = Action::WALKING;
     }
 
     if (currentBehavior == Behavior::AFRAID) {
-        //std::cout << "Afraid, Going Home" << std::endl;
-
         currentAction = Action::WALKING;
-
-
     }
 
 
 }
 
 
+void Wolf::performAction() {
+
+    // Check if the randomActionClock has triggered
+    if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
+        switch (currentAction) {
+            case Action::WALKING: {
+                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+}
+
 void Wolf::render(sf::RenderWindow *window) {
 
-    // Render sfShape
-    float delta_Y = sfShape->getLocalBounds().height / 2 - bodyFixture->GetShape()->m_radius * SCALE;
+    /// Render sfShape
+    float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
     b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
 
     float shape_x = offsetPoint.x * SCALE;
@@ -229,7 +233,7 @@ void Wolf::render(sf::RenderWindow *window) {
         window->draw(*sf_HitSensor);
 
         // Draw label_ID
-        float offset = bodyFixture->GetShape()->m_radius + 1.f;
+        float offset = fixture_body->GetShape()->m_radius + 1.f;
         label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                               body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label_ID->setRotation(sfShape->getRotation());
@@ -247,165 +251,171 @@ void Wolf::render(sf::RenderWindow *window) {
     }
 }
 
-void Wolf::performAction() {
-
-    // Check if the randomActionClock has triggered
-    if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
-        switch (currentAction) {
-            case Action::WALKING: {
-                forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    }
-}
-
-void Wolf::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
-        case ID::PLANET: {
-            currentStatus = Status::GROUNDED;
-            spriteSwitch = !spriteSwitch;
-            sf_HitSensor->setOutlineColor(sf::Color::White);
-            body->SetLinearVelocity(b2Vec2(0, 0));
-            break;
-        }
-        case ID::FARMER: {
-
-            if (selfCollision == CollisionID::DETECTION) break;
-
-            b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
-
-            /// Self sensor hits contact sensor
-            float mass = contactEntity->getBody()->GetMass();
-            float tempAngle = attackAngle;
-
-            if (delta.x > 0) { /// Hit from the right side, force must be going left
-                tempAngle = 180 - tempAngle;
-            }
-
-            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
-                    b2Vec2(-cos(tempAngle * b2_pi / 180), -sin(tempAngle * b2_pi / 180)));
-
-            contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
-
-            break;
-
-        }
-        case ID::ALPACA: {
-
-            b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
-
-            if (selfCollision == CollisionID::HIT) {
-
-                if (otherCollision == CollisionID::HIT) {
-
-                    /// Self sensor hits contact sensor
-                    float mass = contactEntity->getBody()->GetMass();
-                    float tempAngle = attackAngle;
-
-                    if (delta.x > 0) { /// Hit from the right side, force must be going left
-                        tempAngle = 180 - tempAngle;
-                    }
-
-                    b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
-                            b2Vec2(-cos(tempAngle * b2_pi / 180), -sin(tempAngle * b2_pi / 180)));
-
-                    contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-                    contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
-                }
-
-            }
-            if (selfCollision == CollisionID::DETECTION) {
-                /// All sensor his
-                if (otherCollision == CollisionID::HIT) {
-                    if (delta.x > 0) {
-                        currentDirection = Direction::RIGHT;
-                        sfShape->setScale(1.f, 1.f);
-
-                    } else {
-                        currentDirection = Direction::LEFT;
-                        sfShape->setScale(-1.f, 1.f);
-                    }
-
-                }
-            }
-
-
-
-// todo DELETE? - Trong 19.11.17
-//=======
-//            // Todo Fix wolf push
-//            b2Vec2 delta = contactEntity->getBody()->GetWorldCenter() - getBody()->GetWorldCenter();
-//            b2Vec2 beta = contactEntity->getBody()->GetWorldCenter() - configGame->planetBody->GetWorldCenter();
-//            beta.Normalize();
-//            delta += beta;
-//            delta.Normalize();
-
-//            float mass = contactEntity->getBody()->GetMass();
-//            float tempAngle = attackAngle;
-//
-//            // Hit from the right side, force must be going left
-//            if (delta.x > 0) {
-//                tempAngle = 180 - tempAngle;
-//            }
-//
-//            b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
-//                    b2Vec2(-cos(tempAngle * b2_pi / 180), -sin(tempAngle * b2_pi / 180)));
-//
-//            // todo fix damage
-//            contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
-//
-////            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass* attackForce * dir, true);
-//
-//            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * delta, true);
-//
-//            dynamic_cast<EntityWarm *>(contactEntity)->HP -= 1;
-
-            break;
-        }
-
-        case ID::WOLF:
-            break;
-        default:
-            break;
-    }
-}
-
-
-void Wolf::endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
-        case ID::PLANET: {
-            currentStatus = Status::AIRBORNE;
-            sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
-            break;
-        }
-        case ID::ALPACA: {
-            b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
-            if (otherCollision == CollisionID::DETECTION) break;
-
-            if (delta.x > 0) {
-                currentDirection = Direction::RIGHT;
-                sfShape->setScale(1.f, 1.f);
-
-            } else {
-                currentDirection = Direction::LEFT;
-                sfShape->setScale(-1.f, 1.f);
-            }
-
-        }
-        default:
-            break;
-    }
-}
-
 bool Wolf::deadCheck() {
     return HP <= 0;
 }
 
 Wolf::~Wolf() {
     printf("Wolf %i killed.\n", id);
+}
+
+void Wolf::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
+
+    switch (selfCollision) {
+        case CollisionID::BODY: {
+            startContact_body(otherCollision, contactEntity);
+            break;
+        }
+        case CollisionID::HIT: {
+            startContact_hit(otherCollision, contactEntity);
+            break;
+        }
+        case CollisionID::DETECTION: {
+            startContact_detection(otherCollision, contactEntity);
+            break;
+        }
+    }
+
+}
+
+void Wolf::startContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
+            currentStatus = Status::GROUNDED;
+            spriteSwitch = !spriteSwitch;
+            sf_HitSensor->setOutlineColor(sf::Color::White);
+            body->SetLinearVelocity(b2Vec2(0, 0));
+            body->SetAwake(false);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::FARMER: {
+            if (otherCollision == CollisionID::HIT) {
+                b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
+
+                /// Self sensor hits contact sensor
+                float mass = contactEntity->getBody()->GetMass();
+                float tempAngle = attackAngle;
+
+                if (delta.x > 0) { /// Hit from the right side, force must be going left
+                    tempAngle = 180 - tempAngle;
+                }
+
+                b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
+                        b2Vec2(-cos(tempAngle * b2_pi / 180), -sin(tempAngle * b2_pi / 180)));
+
+                contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
+                contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
+            }
+            break;
+
+        }
+        case ID::ALPACA: {
+
+            if (otherCollision == CollisionID::HIT) {
+                b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
+                /// Self sensor hits contact sensor
+                float mass = contactEntity->getBody()->GetMass();
+                float tempAngle = attackAngle;
+
+                if (delta.x > 0) { /// Hit from the right side, force must be going left
+                    tempAngle = 180 - tempAngle;
+                }
+
+                b2Vec2 dir = contactEntity->getBody()->GetWorldVector(
+                        b2Vec2(-cos(tempAngle * b2_pi / 180), -sin(tempAngle * b2_pi / 180)));
+
+                contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
+                contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void Wolf::startContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::FARMER:
+            break;
+        case ID::ALPACA: {
+            /// All sensor his
+            if (otherCollision == CollisionID::HIT) {
+                b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
+                if (delta.x > 0) {
+                    currentDirection = Direction::RIGHT;
+                    sfShape->setScale(1.f, 1.f);
+
+                } else {
+                    currentDirection = Direction::LEFT;
+                    sfShape->setScale(-1.f, 1.f);
+                }
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void Wolf::endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
+    switch (selfCollision) {
+        case CollisionID::BODY: {
+            endContact_body(otherCollision, contactEntity);
+            break;
+        }
+        case CollisionID::HIT: {
+            endContact_body(otherCollision, contactEntity);
+            break;
+        }
+        case CollisionID::DETECTION: {
+            endContact_detection(otherCollision, contactEntity);
+            break;
+        }
+    }
+}
+
+void Wolf::endContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
+            currentStatus = Status::AIRBORNE;
+            sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void Wolf::endContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
+
+}
+
+void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
+    switch(contactEntity->getID()){
+        case ID::FARMER:break;
+        case ID::ALPACA:{
+            if(otherCollision == CollisionID::HIT){
+                b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
+                if (delta.x > 0) {
+                    currentDirection = Direction::RIGHT;
+                    sfShape->setScale(1.f, 1.f);
+
+                } else {
+                    currentDirection = Direction::LEFT;
+                    sfShape->setScale(-1.f, 1.f);
+                }
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }

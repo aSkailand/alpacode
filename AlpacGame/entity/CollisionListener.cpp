@@ -3,7 +3,6 @@
 
 void CollisionListener::BeginContact(b2Contact *contact) {
 
-
     // Get both entities that just start touch
     Entity *entity_A = getEntity_A(contact);
     Entity *entity_B = getEntity_B(contact);
@@ -15,7 +14,6 @@ void CollisionListener::BeginContact(b2Contact *contact) {
     // Give each entity the info about the other
     entity_A->startContact(typeCollision_A, typeCollision_B, entity_B);
     entity_B->startContact(typeCollision_B, typeCollision_A, entity_A);
-
 
 }
 
@@ -43,11 +41,11 @@ Entity *CollisionListener::getEntity_B(b2Contact *contact) {
 }
 
 Entity::CollisionID CollisionListener::getCollisionType_A(b2Contact *contact) {
-    return static_cast<Entity::CollisionID> (Entity::convertToCollisionID(contact->GetFixtureA()->GetUserData()));
+    return Entity::convertToCollisionID(contact->GetFixtureA()->GetUserData());
 }
 
 Entity::CollisionID CollisionListener::getCollisionType_B(b2Contact *contact) {
-    return static_cast<Entity::CollisionID> (Entity::convertToCollisionID(contact->GetFixtureB()->GetUserData()));
+    return Entity::convertToCollisionID(contact->GetFixtureB()->GetUserData());
 }
 
 

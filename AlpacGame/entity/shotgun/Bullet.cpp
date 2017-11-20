@@ -35,7 +35,7 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
     fixtureDef.shape = &b2Shape;
 
     // Connect fixture to body
-    bodyFixture = body->CreateFixture(&fixtureDef);
+    fixture_body = body->CreateFixture(&fixtureDef);
 
     // Store info
     setID(Entity::ID::BULLET);
@@ -96,7 +96,7 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
     sfShape->setOutlineThickness(0);
 
     if(!hit){
-        bodyFixture->SetFilterData(filter);
+        fixture_body->SetFilterData(filter);
         hit = true;
     }
 }

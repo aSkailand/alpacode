@@ -36,8 +36,12 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     sensor.filter.maskBits = (uint16) ID::FARMER;
 
     // Connect fixture to body
-    bodyFixture = body->CreateFixture(&fixtureDef);
-    bodySensorFixture = body->CreateFixture(&sensor);
+    fixture_body = body->CreateFixture(&fixtureDef);
+    fixture_hit = body->CreateFixture(&sensor);
+
+    // Set Fixture Sense to given Enums
+    fixture_body->SetUserData(convertToVoidPtr((int) CollisionID::BODY));
+    fixture_hit->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
 
     // Store Information
     setID(Entity::ID::SHOTGUN);

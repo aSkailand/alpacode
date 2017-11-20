@@ -93,13 +93,16 @@ private:
 
 public:
 
-    void startContact( CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
-
     bool checkIfTouching(Entity *entity);
 
+    void startContact( CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
+
+    void startContact_body(CollisionID otherCollision, Entity *contactEntity);
+    void startContact_hit(CollisionID otherCollision, Entity *contactEntity);
 
     void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
-
+    void endContact_body(CollisionID otherCollision, Entity *contactEntity);
+    void endContact_hit(CollisionID otherCollision, Entity *contactEntity);
 };
 
 #endif //ALPACGAME_FARMER_H

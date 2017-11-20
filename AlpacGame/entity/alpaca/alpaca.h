@@ -71,7 +71,6 @@ private:
      */
     float awareActionTick = 1.0f;
     float afraidActionTick = 3.0f;
-    bool detectedWithinCircle;
 
 
     /**
@@ -114,8 +113,17 @@ private:
 public:
 
     /// Body Sensor Contact
+
+
     void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
+    void startContact_hit(CollisionID otherCollision, Entity *contactEntity);
+    void startContact_body(CollisionID otherCollision, Entity *contactEntity);
+    void startContact_detection(CollisionID otherCollision, Entity *contactEntity);
+
     void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override ;
+    void endContact_hit(CollisionID otherCollision, Entity *contactEntity);
+    void endContact_body(CollisionID otherCollision, Entity *contactEntity);
+    void endContact_detection(CollisionID otherCollision, Entity *contactEntity);
 
 
 

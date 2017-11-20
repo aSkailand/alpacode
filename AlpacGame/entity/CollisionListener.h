@@ -3,7 +3,6 @@
 #define ALPACGAME_COLLISIONLISTENER_H
 
 #include <iostream>
-
 #include "Entity.h"
 
 /**
@@ -38,13 +37,20 @@ private:
      * @param contact the Box2D object handling touch.
      * @return entity B
      */
-
     Entity *getEntity_B(b2Contact *contact);
 
     /**
-     * Get CollisionID of the Entity A
+     * Get CollisionID of the entity A.
+     * @param contact the Box2D object handling touch.
+     * @return CollisionID of the entity A
      */
     Entity::CollisionID getCollisionType_A(b2Contact *contact);
+
+    /**
+     * Get CollisionID of the entity B.
+     * @param contact the Box2D object handling touch.
+     * @return CollisionID of the entity B
+     */
     Entity::CollisionID getCollisionType_B(b2Contact *contact);
 
 };

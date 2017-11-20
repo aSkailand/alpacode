@@ -29,6 +29,13 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     window->setMouseCursorVisible(false);
 
+    // todo fix aim
+    sf::CircleShape mouseAim;
+    mouseAim.setRadius(5);
+    mouseAim.setFillColor(sf::Color::Red);
+    mouseAim.setOutlineColor(sf::Color::Black);
+    mouseAim.setOutlineThickness(5);
+
     /// Poll game
     while (pollGame()) {
 
@@ -44,12 +51,12 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
 
         /// Save current input
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            configGame->currentInput = sf::Keyboard::Right;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            configGame->currentInput = sf::Keyboard::Left;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            configGame->currentInput = sf::Keyboard::Up;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+            configGame->currentInput = sf::Keyboard::W;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            configGame->currentInput = sf::Keyboard::A;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            configGame->currentInput = sf::Keyboard::D;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
             configGame->currentInput = sf::Keyboard::E;
         } else {
@@ -61,8 +68,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-            auto *entityInfo = (Entity *) bodyIter->GetUserData();
-            if (!entityInfo->physicsSensitive)
+            if(!bodyIter->IsAwake())
                 continue;
 
             // Calculate Radial Gravitation on all bodies
@@ -70,7 +76,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             float bodyMass = bodyIter->GetMass();
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
             delta.Normalize();
-            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, true);
+            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, false);
 
             // Calibrate rotation of entity according to planet's center by force
             float desiredAngle = atan2f(-delta.x, delta.y);
@@ -80,7 +86,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             while (totalRotation > 180 / DEGtoRAD) totalRotation -= 360 / DEGtoRAD;
             float desiredAngularVelocity = totalRotation * 60;
             float impulse = bodyIter->GetInertia() * desiredAngularVelocity;// disregard time factor
-            bodyIter->ApplyAngularImpulse(impulse, true);
+            bodyIter->ApplyAngularImpulse(impulse, false);
         }
 
         /// Box2D World Step
@@ -106,6 +112,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        /// Activate all warm entities
         for (Entity *e : *entities) {
 
             // Check if current entity is an warm entity
@@ -120,13 +127,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
             e->render(window);
         }
 
-        // todo fix aim
-        sf::CircleShape mouseAim;
-        mouseAim.setRadius(5);
+
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
-        mouseAim.setFillColor(sf::Color::Red);
-        mouseAim.setOutlineColor(sf::Color::Black);
-        mouseAim.setOutlineThickness(5);
         window->draw(mouseAim);
 
         // Finding angle of farmer
@@ -151,7 +153,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 }
 
 bool StateGame::pollGame() {
-    sf::Event event{};
+    sf::Event event;
     while (window->pollEvent(event)) {
         switch (event.type) {
             case sf::Event::Closed: {
@@ -169,9 +171,11 @@ bool StateGame::pollGame() {
                 } else {
                     keyPressedHandler(event);
                 }
+                break;
             }
             case sf::Event::MouseButtonPressed: {
                 mousePressedHandler(event);
+                break;
             }
             default: {
                 return true;
@@ -236,7 +240,6 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-
             if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
                 dynamic_cast<Usable *>(farmer->holdingEntity)->use();
             }
