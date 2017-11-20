@@ -29,23 +29,23 @@ Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, fl
     setID(Entity::ID::PLANET);
     body->SetUserData((void *) this);
 
-    // Create SFML Shape
+    /*/ Create SFML Shape
     sfShape = new sf::CircleShape(radius);
     sfShape->setOrigin(radius, radius);
     sfShape->setFillColor(sf::Color::White);
-    sfShape->setTexture(&configGame->planetTexture);
+    //sfShape->setTexture(&configGame->planetTexture);
     sfShape->setOutlineThickness(3);
-    sfShape->setOutlineColor(sf::Color::Black);
+    sfShape->setOutlineColor(sf::Color::Black); */
 
 }
 
 void Planet::render(sf::RenderWindow *window) {
 
-    float shape_x = getBody()->GetPosition().x * SCALE;
-    float shape_y = getBody()->GetPosition().y * SCALE;
+    //float shape_x = getBody()->GetPosition().x * SCALE;
+    //float shape_y = getBody()->GetPosition().y * SCALE;
 
-    sfShape->setPosition(shape_x, shape_y);
-    window->draw(*sfShape);
+    // sfShape->setPosition(shape_x, shape_y);
+    //window->draw(*sfShape);
 }
 
 void Planet::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {

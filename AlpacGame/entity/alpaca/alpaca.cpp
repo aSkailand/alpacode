@@ -104,10 +104,13 @@ void Alpaca::switchAction() {
                         switch (currentDirection) {
                             case Direction::LEFT: {
                                 sfShape->setScale(-1.f, 1.f);
+
+
                                 break;
                             }
                             case Direction::RIGHT: {
                                 sfShape->setScale(1.f, 1.f);
+
                                 break;
                             }
                         }
@@ -132,9 +135,11 @@ void Alpaca::switchAction() {
                 if (currentDirection == Direction::LEFT) {
                     currentDirection = Direction::RIGHT;
                     sfShape->setScale(1.f, 1.f);
+
                 } else {
                     currentDirection = Direction::LEFT;
                     sfShape->setScale(-1.f, 1.f);
+
                 }
 
                 // Reset defaults to false

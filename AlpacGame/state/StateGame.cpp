@@ -35,6 +35,24 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setFillColor(sf::Color::Red);
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
+    
+    /// Background Initialization
+    /// Initialize Day Cycle
+    dayCycle = new DayCycle(configGame, configGame->planetRadius, configGame->planetBody);
+    /*
+    float world_x = configGame->planetBody->GetPosition().x * SCALE;
+    float world_y = configGame->planetBody->GetPosition().y * SCALE;
+
+    configGame->currentCycle = ConfigGame::Cycle::DAY;
+    // TODO: IMPORTANT Fix Background Size and Origin with different PlanetSize. :(
+
+    dayCycle = new DayCycle(configGame->planetRadius, reinterpret_cast<b2Body &>(configGame->planetBody));
+    configGame->background = new sf::CircleShape(1920+ configGame->planetRadius/2 );
+    configGame-> background->setOrigin(1920+ configGame->planetRadius/2, 1920+ configGame->planetRadius/2);
+    configGame-> background->setPosition(world_x, world_y);
+    configGame->background->setTexture(&configGame->morning_1);
+    configGame->bg = 1;*/
+
 
     /// Poll game
     while (pollGame()) {
@@ -63,6 +81,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
 
+
+        /// Update Day Cycle
+        dayCycle->updateDayCycle();
 
         /// Box2D Physics Calculations
         // Iterating through all existing bodies
@@ -93,7 +114,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
         world->Step(timeStep, velocityIterations, positionIterations);
 
         /// Render Phase
-        window->clear(sf::Color::Blue);
+        window->clear();
+
+        /// Draw Background
+        dayCycle->render(window);
+
 
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
@@ -128,6 +153,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
         }
 
 
+
+
+        /// Painting Aim
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
 

@@ -12,6 +12,7 @@
 #include "StateMachine.h"
 #include "../Resources/ConfigWindow.h"
 #include "../Resources/ConfigGame.h"
+#include "../Resources/DayCycle.h"
 #include "../entity/CollisionListener.h"
 
 #include "../entity/planet/planet.h"
@@ -32,12 +33,10 @@ public:
     Entity* planet;
     Farmer* farmer;
 
-
-
+    // Accessing DayCycle variables
+    DayCycle *dayCycle;
 
 private:
-
-    sf::CircleShape *background;
 
     /// Pointers
     StateMachine *machine;

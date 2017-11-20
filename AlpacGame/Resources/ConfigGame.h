@@ -20,7 +20,6 @@ public:
     enum class Cycle{DAY, NIGHT};
     Cycle currentCycle;
 
-
     /// Customizable Properties
     /**
      * The radius of the planet.

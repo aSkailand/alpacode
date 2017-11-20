@@ -13,7 +13,10 @@ void ConfigGame::run(sf::RenderWindow &window) {
 
     loadAllTextures();
     loadAllFonts();
+
 }
+
+
 
 float ConfigGame::calcX(float angle) {
     float x = planetCenter.x + planetRadius * (float) std::sin(angle * (M_PI / 180));
@@ -65,6 +68,7 @@ void ConfigGame::loadAllTextures() {
     // Planet
     planetTexture.loadFromFile("entity/planet/planet.png");
 
+    // Background
     morning_1.loadFromFile("entity/planet/1_Morning.png");
     morning_2.loadFromFile("entity/planet/2_Morning.png");
     morning_3.loadFromFile("entity/planet/3_Morning.png");
@@ -158,6 +162,7 @@ void ConfigGame::reset() {
     entities = new std::vector<Entity *>;
     entities->push_back(farmer);
     entities->push_back(planet);
+
 
     Wolf::nextId = 0;
     Alpaca::nextId = 0;
