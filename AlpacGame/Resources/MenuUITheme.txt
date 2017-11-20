@@ -1,11 +1,9 @@
 Button {
-    NormalImage : "MenuUI.png" Part(0, 0, 216, 230) Middle(217, 0, 0, 37);
-    HoverImage : "MenuUI.png" Part(0, 0, 216, 230) Middle(0, 0, 0, 37);
-    DownImage : "MenuUI.png" Part(0, 0, 216, 230) Middle(0, 0, 0, 37);
-    TextColor : (0, 74, 127);
+    NormalImage : "MenuUI1.png" Part(0, 0, 133, 37) Middle(65, 0, 0, 37);
+    HoverImage : "MenuUI1.png" Part(0, 38, 133, 37) Middle(65, 0, 0, 37);
+    DownImage : "MenuUI1.png" Part(0, 76, 133, 37) Middle(65, 0, 0, 37);
+    TextColor : (255, 255, 255);
 }
-
-
 
 ChatBox {
     BackgroundColor : (210, 210, 210);
@@ -15,9 +13,9 @@ ChatBox {
 }
 
 CheckBox {
-    CheckedImage : "BabyBlue.png" Part(48, 40, 34, 36);
-    UncheckedImage : "BabyBlue.png" Part(381, 2, 31, 31);
-    TextColor : (100, 100, 100);
+    CheckedImage : "MenuUI1.png" Part(32, 115, 34, 37);
+    UncheckedImage : "MenuUI1.png" Part(0, 120, 31, 32);
+    TextColor : (255, 255, 255);
 }
 
 ChildWindow {
@@ -37,12 +35,12 @@ Button.ChildWindowCloseButton {
 }
 
 ComboBox {
-    ArrowUpImage : "BabyBlue.png" Part(199, 2, 20, 26);
-    ArrowDownImage : "BabyBlue.png" Part(177, 2, 20, 26);
-    BackgroundColor : (210, 210, 210);
-    TextColor : (100, 100, 100);
-    BorderColor : (255, 255, 255);
-    Borders : (2, 2, 2, 2);
+    ArrowUpImage : "MenuUI1.png" Part(17, 155, 16, 16);
+    ArrowDownImage : "MenuUI1.png" Part(0, 155, 16, 16);
+    BackgroundColor : (0, 74, 127);
+    TextColor : (255, 255, 255);
+    BorderColor : (0, 0, 0);
+    Borders : (3, 3, 3, 3);
     ListBox : "ListBox";
 }
 
@@ -56,16 +54,16 @@ EditBox {
 }
 
 Label {
-    TextColor : (100, 100, 100);
+    TextColor : (255, 255, 255);
 }
 
 ListBox {
-    BackgroundColor : (210, 210, 210);
-    TextColor : (100, 100, 100);
+    BackgroundColor : (0, 74, 127);
+    TextColor : (255, 255, 255);
     SelectedBackgroundColor : (190, 225, 235);
-    SelectedTextColor : (150, 150, 150);
-    BorderColor : (255, 255, 255);
-    Borders : (2, 2, 2, 2);
+    SelectedTextColor : (255, 255, 255);
+    BorderColor : (0, 0, 0);
+    Borders : (3, 3, 3, 3);
     Scrollbar : "Scrollbar";
 }
 

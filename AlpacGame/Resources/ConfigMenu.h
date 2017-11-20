@@ -63,6 +63,9 @@ public:
     std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
 
+    /// Font
+
+
 private:
 
     /// Pointers
@@ -76,6 +79,8 @@ private:
     tgui::Theme::Ptr theme;
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
+
+
 
     /// CheckBox
     bool checkBoxMuteChecked = false;

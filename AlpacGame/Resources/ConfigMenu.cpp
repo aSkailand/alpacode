@@ -6,9 +6,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     this->machine = &stateMachine;
 
-    theme = tgui::Theme::create("Resources/MenuUI.txt");
-    pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
+    theme = tgui::Theme::create("Resources/MenuUITheme.txt");
+    pictureMenu = tgui::Picture::create("Resources/01-Early-Morning.png");
     masterButton = theme->load("Button");
+
 
     createButton(buttonID::RESUME,"Resume","pressed",
                  [&]{machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);});
@@ -95,24 +96,25 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Creates the different layouts
     // Main menu layout
     tempVerticalLayout = tgui::VerticalLayout::create();
+    tgui::HorizontalLayout::Ptr tempHorizontalLayout = tgui::HorizontalLayout::create();
     pictureMenu->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
     tempVerticalLayout->removeAllWidgets();
     windowWidth = tgui::bindWidth(*Width);
     windowHeight = tgui::bindHeight(*Width);
-    tempVerticalLayout->setSize(windowWidth * 2 / 3, windowHeight /2);
-    tempVerticalLayout->setPosition(windowWidth / 6, windowHeight /6);
+    tempVerticalLayout->setSize(windowWidth /2, windowHeight /2);
+    tempVerticalLayout->setPosition(windowWidth / 4, windowHeight /2);
 
 
     tempVerticalLayout->add(mapButtons[buttonID::RESUME]);
-    tempVerticalLayout->addSpace();
+    tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::PLAYGAME]);
-    tempVerticalLayout->addSpace();
+    tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::HIGHSCORE]);
-    tempVerticalLayout->addSpace();
+    tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::SETTINGS]);
-    tempVerticalLayout->addSpace();
+    tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::QUIT]);
-    tempVerticalLayout->addSpace();
+    tempVerticalLayout->addSpace(1);
 
     // Adds the main menu layout to the map
     mapLayouts.emplace(layouts::MAINMENU, tempVerticalLayout);
@@ -171,6 +173,7 @@ void ConfigMenu::videoSettingsLayout() {
     resLabel->setText("Resolution");
     resLabel->setTextSize(30);
     resLabel->setSize(100, 50);
+    resLabel->setTextColor(sf::Color::White);
 
 
     // Fullscreen checkbox
@@ -204,14 +207,17 @@ void ConfigMenu::soundSettingsLayout() {
     // Slider master label
     tgui::Label::Ptr masterLabel = tgui::Label::create();
     masterLabel->setText("Master volume");
+    masterLabel->setTextColor(sf::Color::White);
 
     // Scrollbar music label
     tgui::Label::Ptr musicLabel = tgui::Label::create();
     musicLabel->setText("Music volume");
+    musicLabel->setTextColor(sf::Color::White);
 
     // Slider SFX label
     tgui::Label::Ptr sfxLabel = tgui::Label::create();
     sfxLabel->setText("Sound effects");
+    sfxLabel->setTextColor(sf::Color::White);
 
     // Mute sound checkbox
     tgui::CheckBox::Ptr muteSound = theme->load("CheckBox");
