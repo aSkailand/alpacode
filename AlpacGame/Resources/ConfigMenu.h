@@ -21,6 +21,7 @@ public:
     /// Enums
     enum class layouts {
         MAINMENU,
+        HIGHSCORE,
         SETTINGS,
         VIDEO,
         SOUND,
@@ -34,6 +35,7 @@ public:
         VIDEO,
         SOUND,
         CONTROLS,
+        HIGHSCORE,
         BACK_TO_MAIN,
         APPLY_VIDEO_SETTINGS,
         APPLY_SOUND_SETTINGS,
@@ -60,6 +62,7 @@ public:
     std::map<buttonID, tgui::Button::Ptr> mapButtons;
     std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
+    std::map<std::string, int> mapHighscore;
 
 private:
 
@@ -73,6 +76,10 @@ private:
     tgui::Theme::Ptr theme;
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
+    tgui::ListBox::Ptr highScoreName;
+    tgui::ListBox::Ptr highScoreScore;
+    tgui::Font font;
+    tgui::TextBox::Ptr textBoxHighscore;
 
     /// CheckBox
     bool checkBoxMuteChecked = false;
@@ -95,6 +102,10 @@ private:
      * Creates the sound settings layout
      */
     void soundSettingsLayout();
+
+    void highscoreLayout();
+
+    void loadHighscore(std::string highScoreFile);
 
     /// Button Functions
     /**

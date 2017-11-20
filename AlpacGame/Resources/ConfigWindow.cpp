@@ -17,6 +17,7 @@ void ConfigWindow::run() {
     menuGUI = new tgui::Gui();
     menuGUI->removeAllWidgets();
     menuGUI->setWindow(window);
+    menuGUI->setFont("Resources/PressStart2P.ttf");
 
 }
 

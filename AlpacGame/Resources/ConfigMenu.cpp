@@ -1,11 +1,12 @@
 
+#include <fstream>
 #include "ConfigMenu.h"
 #include "../state/StateMachine.h"
 
 void ConfigMenu::run(StateMachine &stateMachine) {
 
     this->machine = &stateMachine;
-
+    font = tgui::Font("Resources/PressStart2P.ttf");
     theme = tgui::Theme::create("Resources/BabyBlue.txt");
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
@@ -22,6 +23,13 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createButton(buttonID::BACK_TO_MAIN, "Back", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::MENU); });
 
+    createButton(buttonID::HIGHSCORE, "Highscore", "pressed",
+                 [&] {
+                     machine->configWindow.getMenuGUI()->removeAllWidgets();
+                     machine->configWindow.getMenuGUI()->add(getPictureMenu());
+                     ConfigMenu::loadHighscore("highscore.txt");
+                     machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::HIGHSCORE]);
+                 });
     createButton(buttonID::VIDEO, "Video", "pressed",
                  [&] {
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
@@ -62,7 +70,6 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createSlider(buttonID::MASTER_SLIDER);
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
-
     mainMenuLayout(machine->configWindow.getMenuGUI());
 }
 
@@ -95,6 +102,8 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     tempVerticalLayout->add(mapButtons[buttonID::PLAYGAME]);
     tempVerticalLayout->addSpace();
+    tempVerticalLayout->add(mapButtons[buttonID::HIGHSCORE]);
+    tempVerticalLayout->addSpace();
     tempVerticalLayout->add(mapButtons[buttonID::SETTINGS]);
     tempVerticalLayout->addSpace();
     tempVerticalLayout->add(mapButtons[buttonID::QUIT]);
@@ -122,6 +131,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     videoSettingsLayout();
     soundSettingsLayout();
+    highscoreLayout();
 }
 
 void ConfigMenu::videoSettingsLayout() {
@@ -146,7 +156,7 @@ void ConfigMenu::videoSettingsLayout() {
     resolutionBox->connect("ItemSelected",
                            [&](std::string itemSelected) {
                                for (auto &iter : machine->configWindow.mapResolutionString) {
-                                   if(itemSelected == iter.second)
+                                   if (itemSelected == iter.second)
                                        setCurrentResolution(iter.first);
                                }
                            });
@@ -241,5 +251,122 @@ void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
     mapSliders.emplace(sliderType, tempSlider);
+}
+
+void ConfigMenu::highscoreLayout() {
+
+    tgui::HorizontalLayout::Ptr titleHighscoreLayout = tgui::HorizontalLayout::create();
+    tgui::VerticalLayout::Ptr verticalLayout = tgui::VerticalLayout::create();
+    tgui::HorizontalLayout::Ptr layout = tgui::HorizontalLayout::create();
+
+    textBoxHighscore = theme->load("TextBox");
+    textBoxHighscore->setReadOnly(true);
+    textBoxHighscore->setTextSize(16);
+
+    tgui::HorizontalLayout::Ptr labelsLayout = tgui::HorizontalLayout::create();
+    verticalLayout->setSize(windowWidth, windowHeight);
+    verticalLayout->setPosition(0, 0);
+
+    tgui::Label::Ptr highscoreTitle = tgui::Label::create();
+    highscoreTitle->setText("Highscore!!!");
+    highscoreTitle->setTextSize(42);
+
+    tgui::Label::Ptr noLabel = tgui::Label::create();
+    noLabel->setText("Rank:");
+    noLabel->setTextSize(20);
+
+    tgui::Label::Ptr namelabel = tgui::Label::create();
+    namelabel->setText("Name:");
+    namelabel->setTextSize(20);
+
+
+    tgui::Label::Ptr scoreLabel = tgui::Label::create();
+    scoreLabel->setText("Score:");
+    scoreLabel->setTextSize(20);
+
+
+    highScoreName = theme->load("ListBox");
+    highScoreScore = theme->load("ListBox");
+    highScoreName->setFont(font);
+
+    highScoreName->setTextSize(24);
+    highScoreScore->setTextSize(24);
+    highScoreName->setPosition(100, 100);
+
+    layout->addSpace(0.125f);
+    layout->add(textBoxHighscore);
+    layout->addSpace(0.125f);
+
+    labelsLayout->addSpace(0.50f);
+    labelsLayout->add(noLabel);
+
+    labelsLayout->add(namelabel);
+    labelsLayout->addSpace(1);
+    labelsLayout->add(scoreLabel);
+    labelsLayout->addSpace(1);
+
+
+    titleHighscoreLayout->addSpace(0.3333f);
+    titleHighscoreLayout->add(highscoreTitle);
+
+//TODO ::: THIS BUTTON MAKES THE PROGRAM CRASH
+    tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
+    backButton->connect("pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+
+        verticalLayout->removeAllWidgets();
+        machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::MAINMENU]);
+    });
+
+    verticalLayout->addSpace(0.5f);
+    verticalLayout->add(titleHighscoreLayout);
+    verticalLayout->add(labelsLayout);
+    verticalLayout->add(layout);
+    verticalLayout->addSpace();
+    verticalLayout->setRatio(3, 5);
+    verticalLayout->add(backButton);
+    verticalLayout->addSpace(0.1f);
+
+    mapLayouts.emplace(layouts::HIGHSCORE, verticalLayout);
+}
+
+void ConfigMenu::loadHighscore(std::string highScoreFile) {
+    bool alternateHighscoreWindow = true;
+    int spaces;
+    int scoreSpaces;
+    int rank = 1;
+
+    std::string line;
+    std::string tempString;
+    std::string rankString;
+
+    std::ifstream file;
+    file.open("Resources/highscore.txt");
+
+    //Loads the names and scores from a file and prints them in a TextBox
+    if (file.is_open()) {
+        while (std::getline(file, line)) {
+            if (alternateHighscoreWindow) {
+                rankString = std::to_string(rank) + ".       ";
+                spaces = 9 - (int) line.size();
+                line.insert(0, rankString);
+                line.append(spaces, ' ');
+                tempString = line;
+                alternateHighscoreWindow = !alternateHighscoreWindow;
+                rank++;
+            } else {
+                scoreSpaces = 20 - (int) line.size();
+                tempString.append(" ");
+                tempString.append(scoreSpaces, ' ');
+                tempString.append(line + "\n");
+                textBoxHighscore->addText(tempString);
+                alternateHighscoreWindow = !alternateHighscoreWindow;
+            }
+
+        }
+        file.close();
+    } else {
+        std::cout << "COULD NOT READ FILE!" << std::endl;
+    }
 }
 
