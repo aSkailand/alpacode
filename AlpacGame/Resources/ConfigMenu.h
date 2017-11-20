@@ -36,6 +36,7 @@ public:
         SOUND,
         CONTROLS,
         BACK_TO_MAIN,
+        APPLY_SETTINGS,
         APPLY_VIDEO_SETTINGS,
         APPLY_SOUND_SETTINGS,
         MASTER_SLIDER,
@@ -81,6 +82,19 @@ private:
 
     bool checkBoxFullScreenChecked = false;
 
+    /// Changes made
+    bool changesMadeVideo = false;
+
+    bool changesMadeSound = false;
+
+    bool changesMadeControls = false;
+
+    /// Current fullscreen
+    bool isFullScreen = false;
+
+    /// Current Resolution
+    std::string currentResolution = "800x600";
+
     /// Layout Functions
     /**
      * Creates the main menu layout and settings menu layout
@@ -98,6 +112,9 @@ private:
      */
     void soundSettingsLayout();
 
+    /**
+     * Creates the defeat screen layout
+     */
     void defeatScreenLayout();
 
     /// Button Functions
@@ -133,6 +150,10 @@ private:
      * @param currentResolution
      */
     void setCurrentResolution(ConfigWindow::Resolution currentResolution);
+
+    void applyChanges();
+
+    void checkChanges();
 
 };
 
