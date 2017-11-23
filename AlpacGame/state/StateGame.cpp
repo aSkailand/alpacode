@@ -36,8 +36,17 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
 
+    // todo fix pause filter
+    sf::RectangleShape pauseFilter;
+    pauseFilter.setFillColor(sf::Color(100, 100, 100, 150));
+    pauseFilter.setSize(sf::Vector2f(4000, 4000));
+    pauseFilter.setOrigin(sf::Vector2f(2000, 2000));
+    pauseFilter.setPosition(window->mapPixelToCoords(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2)));
+
     /// Poll game
     while (pollGame()) {
+
+
 
         /// Save current mouse coordinates relatively to view
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
@@ -49,87 +58,95 @@ void StateGame::goNext(StateMachine &stateMachine) {
         double center = configGame->window->getSize().x / 2;
         configGame->mouseInLeftSide = mouse < center;
 
+        /// Check if paused
+        if (!configGame->isPaused) {
 
-        /// Save current input
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            configGame->currentInput = sf::Keyboard::W;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            configGame->currentInput = sf::Keyboard::A;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            configGame->currentInput = sf::Keyboard::D;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            configGame->currentInput = sf::Keyboard::E;
-        } else {
-            configGame->currentInput = sf::Keyboard::Unknown;
+            /// Save current input
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+                configGame->currentInput = sf::Keyboard::W;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+                configGame->currentInput = sf::Keyboard::A;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+                configGame->currentInput = sf::Keyboard::D;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+                configGame->currentInput = sf::Keyboard::E;
+            } else {
+                configGame->currentInput = sf::Keyboard::Unknown;
+            }
+
+
+
+            /// Box2D Physics Calculations
+            // Iterating through all existing bodies
+            for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
+
+                if (!bodyIter->IsAwake())
+                    continue;
+
+                // Calculate Radial Gravitation on all bodies
+                float gravitationForce = 10.0f;
+                float bodyMass = bodyIter->GetMass();
+                b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
+                delta.Normalize();
+                bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, false);
+
+                // Calibrate rotation of entity according to planet's center by force
+                float desiredAngle = atan2f(-delta.x, delta.y);
+                auto nextAngle = static_cast<float>(bodyIter->GetAngle() + bodyIter->GetAngularVelocity() / 60.0);
+                float totalRotation = desiredAngle - nextAngle;
+                while (totalRotation < -180 / DEGtoRAD) totalRotation += 360 / DEGtoRAD;
+                while (totalRotation > 180 / DEGtoRAD) totalRotation -= 360 / DEGtoRAD;
+                float desiredAngularVelocity = totalRotation * 60;
+                float impulse = bodyIter->GetInertia() * desiredAngularVelocity;// disregard time factor
+                bodyIter->ApplyAngularImpulse(impulse, false);
+            }
+
+            /// Box2D World Step
+            world->Step(timeStep, velocityIterations, positionIterations);
+
+            /// Activate all warm entities
+            for (Entity *e : *entities) {
+                // Check if current entity is an warm entity
+                auto warm_e = dynamic_cast<EntityWarm *> (e);
+                if (warm_e != nullptr) {
+                    warm_e->switchAction();
+                    warm_e->performAction();
+
+                }
+            }
+
+            /// Delete Dead Entities
+            for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
+                if ((*entityIter)->deadCheck()) {
+
+                    world->DestroyBody((*entityIter)->getBody());
+
+                    delete (*entityIter);
+
+                    entityIter = entities->erase(entityIter);
+
+                    if (entityIter == entities->end()) {
+                        break;
+                    }
+
+                }
+            }
+
         }
-
-
-        /// Box2D Physics Calculations
-        // Iterating through all existing bodies
-        for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
-
-            if(!bodyIter->IsAwake())
-                continue;
-
-            // Calculate Radial Gravitation on all bodies
-            float gravitationForce = 10.0f;
-            float bodyMass = bodyIter->GetMass();
-            b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
-            delta.Normalize();
-            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, false);
-
-            // Calibrate rotation of entity according to planet's center by force
-            float desiredAngle = atan2f(-delta.x, delta.y);
-            auto nextAngle = static_cast<float>(bodyIter->GetAngle() + bodyIter->GetAngularVelocity() / 60.0);
-            float totalRotation = desiredAngle - nextAngle;
-            while (totalRotation < -180 / DEGtoRAD) totalRotation += 360 / DEGtoRAD;
-            while (totalRotation > 180 / DEGtoRAD) totalRotation -= 360 / DEGtoRAD;
-            float desiredAngularVelocity = totalRotation * 60;
-            float impulse = bodyIter->GetInertia() * desiredAngularVelocity;// disregard time factor
-            bodyIter->ApplyAngularImpulse(impulse, false);
-        }
-
-        /// Box2D World Step
-        world->Step(timeStep, velocityIterations, positionIterations);
 
         /// Render Phase
         window->clear(sf::Color::Blue);
 
-        /// Delete Dead Entities
-        for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
-            if ((*entityIter)->deadCheck()) {
-
-                world->DestroyBody((*entityIter)->getBody());
-
-                delete (*entityIter);
-
-                entityIter = entities->erase(entityIter);
-
-                if (entityIter == entities->end()) {
-                    break;
-                }
-
-            }
-        }
-
-        /// Activate all warm entities
+        // Adjust SFML shape to Box2D body's position and rotation, then draw it.
         for (Entity *e : *entities) {
-
-            // Check if current entity is an warm entity
-            auto warm_e = dynamic_cast<EntityWarm *> (e);
-            if (warm_e != nullptr) {
-                warm_e->switchAction();
-                warm_e->performAction();
-
-            }
-
-            // Adjust SFML shape to Box2D body's position and rotation, then draw it.
             e->render(window);
         }
 
-
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
+
+        if (configGame->isPaused)
+            window->draw(pauseFilter);
 
         // Finding angle of farmer
         b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
@@ -195,13 +212,26 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::R: {
-            configGame->newGame = true;
-
+            if (!configGame->isPaused) {
+                configGame->newGame = true;
+            }
             break;
         }
         case sf::Keyboard::P: {
-            printf("X pos: %f\n", configGame->mouseXpos);
-            printf("Y pos: %f\n\n", configGame->mouseYpos);
+
+            if (configGame->isPaused) {
+                printf("UNPAUSING\n");
+                configGame->isPaused = false;
+                for (auto &e : *entities) {
+                    e->resume();
+                }
+            } else {
+                printf("PAUSING\n");
+                configGame->isPaused = true;
+                for (auto &e : *entities) {
+                    e->pause();
+                }
+            }
             break;
         }
         case sf::Keyboard::Num1: {
@@ -240,7 +270,7 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
+            if (!configGame->isPaused && dynamic_cast<Usable *>(farmer->holdingEntity)) {
                 dynamic_cast<Usable *>(farmer->holdingEntity)->use();
             }
             break;

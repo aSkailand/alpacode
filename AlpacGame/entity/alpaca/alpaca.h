@@ -17,6 +17,10 @@ public:
 
 //    bool isHeld = true;
 
+    void pause() override;
+
+    void resume() override;
+
     ~Alpaca() override;
 
     /**

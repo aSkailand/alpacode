@@ -89,6 +89,8 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     sf_DetectSensor->setFillColor(sf::Color::Transparent);
     sf_DetectSensor->setOrigin(radius + 300, radius + 300);
 
+    randomActionClock.reset(true);
+    movementTriggerClock.reset(true);
 
 }
 
@@ -418,4 +420,16 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
         default:
             break;
     }
+}
+
+void Wolf::pause() {
+    movementTriggerClock.pause();
+    randomActionClock.pause();
+    behaviorClock.pause();
+}
+
+void Wolf::resume() {
+    movementTriggerClock.resume();
+    randomActionClock.resume();
+    behaviorClock.resume();
 }

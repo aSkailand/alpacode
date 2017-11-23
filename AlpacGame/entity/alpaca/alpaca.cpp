@@ -87,6 +87,9 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     sf_DetectSensor->setFillColor(sf::Color::Transparent);
     sf_DetectSensor->setOrigin(radius + 300, radius + 300);
 
+    /// Initialize clocks
+    randomActionClock.reset(true);
+    movementTriggerClock.reset(true);
 
 }
 
@@ -411,5 +414,17 @@ void Alpaca::endContact_detection(Entity::CollisionID otherCollision, Entity *co
         default:
             break;
     }
+}
+
+void Alpaca::pause() {
+    movementTriggerClock.pause();
+    randomActionClock.pause();
+    behaviorClock.pause();
+}
+
+void Alpaca::resume() {
+    movementTriggerClock.resume();
+    randomActionClock.resume();
+    behaviorClock.resume();
 }
 

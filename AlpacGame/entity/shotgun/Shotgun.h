@@ -14,9 +14,9 @@
 class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
 
-//    bool farmerTouch = false;
-
-//    bool isHeld = false;
+    // todo add Shotgun reload cooldown
+    void pause() override;
+    void resume() override;
 
     float length;
 

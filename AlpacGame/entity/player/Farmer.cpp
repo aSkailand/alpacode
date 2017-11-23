@@ -63,6 +63,10 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
 
     createLabel(label_ID, &this->configGame->fontID, "P1");
 
+    graspClock.reset(true);
+    movementTriggerClock.reset(true);
+
+
 }
 
 
@@ -212,7 +216,7 @@ void Farmer::performAction() {
                     warm->currentStatus = Status::AIRBORNE;
                 }
 
-                graspClock.restart();
+                graspClock.reset(true);
             }
                 // If farmer is in holding-mode, and holds something => keep holding
             else {
@@ -408,4 +412,14 @@ void Farmer::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
         default:
             break;
     }
+}
+
+void Farmer::pause() {
+    graspClock.pause();
+    movementTriggerClock.pause();
+}
+
+void Farmer::resume() {
+    graspClock.resume();
+    movementTriggerClock.resume();
 }

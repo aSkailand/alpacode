@@ -12,11 +12,13 @@
 class Bullet : public EntityCold{
 public:
 
+    void pause() override;
+
+    void resume() override;
+
     ~Bullet() override;
 
     ConfigGame *configGame;
-
-    b2Filter filter;
 
     bool hit = false;
 
@@ -31,7 +33,7 @@ public:
     bool deadCheck() override;
 
 private:
-    sf::Clock decayClock;
+    sftools::Chronometer decayClock;
     float decayTick = 1.0f;
 };
 

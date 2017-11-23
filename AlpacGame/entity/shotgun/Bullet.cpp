@@ -9,9 +9,6 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
 
     this->configGame = configGame;
 
-    filter.categoryBits = (uint16) ID::BULLET;
-    filter.maskBits = (uint16) ID::PLANET;
-
     // Create Body
     b2BodyDef bodyDef;
     bodyDef.position = position;
@@ -48,7 +45,8 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
     sfShape->setOutlineThickness(2);
     sfShape->setOutlineColor(sf::Color::Black);
 
-    decayClock.restart();
+    // Clock
+    decayClock.reset(true);
 
 }
 
@@ -64,7 +62,7 @@ void Bullet::render(sf::RenderWindow *window) {
 }
 
 bool Bullet::deadCheck() {
-    return decayClock.getElapsedTime().asSeconds() > decayTick;
+    return decayClock.getElapsedTime().asSeconds() >= decayTick;
 }
 
 Bullet::~Bullet() {
@@ -73,34 +71,47 @@ Bullet::~Bullet() {
 
 void
 Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
+
+    if (hit) return;
+
     switch (contactEntity->getID()) {
-        case ID::PLANET:
+        case ID::PLANET: {
             break;
-        case ID::FARMER:
-            break;
+        }
         case ID::ALPACA: {
-            dynamic_cast<EntityWarm*> (contactEntity)->HP -= 1;
+            dynamic_cast<EntityWarm *> (contactEntity)->HP -= 1;
             break;
         }
         case ID::WOLF: {
-            dynamic_cast<EntityWarm*> (contactEntity)->HP -= 1;
+            dynamic_cast<EntityWarm *> (contactEntity)->HP -= 1;
             break;
         }
-        case ID::SHOTGUN:
-            break;
-        case ID::BULLET:
+        default:
             break;
     }
 
+    // Recolor bullets
     sfShape->setFillColor(sf::Color::Red);
     sfShape->setOutlineThickness(0);
 
-    if(!hit){
-        fixture_body->SetFilterData(filter);
-        hit = true;
-    }
+    // Disable bullets
+    b2Filter filter;
+    filter.categoryBits = (uint16) ID::BULLET;
+    filter.maskBits = (uint16) ID::PLANET;
+    fixture_body->SetFilterData(filter);
+
+    hit = true;
 }
+
 
 void Bullet::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
+}
+
+void Bullet::pause() {
+    decayClock.pause();
+}
+
+void Bullet::resume() {
+    decayClock.resume();
 }

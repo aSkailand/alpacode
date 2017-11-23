@@ -64,6 +64,7 @@ public:
 
 protected:
 
+    // todo move to Mob
     sftools::Chronometer behaviorClock;
 
 
@@ -85,22 +86,20 @@ protected:
      * @param triggerTick the time tick to check if the clock has surpassed or not.
      * @return true if the clock has surpassed triggerTick (Triggered), false if not (Not Triggered).
      */
-    bool isCooldownTriggered(sf::Clock *clock, const float &triggerTick) {
+    bool isCooldownTriggered(sftools::Chronometer *clock, const float &triggerTick) {
         bool triggered = clock->getElapsedTime().asSeconds() >= triggerTick;
         if (triggered) {
-            clock->restart();
+            clock->reset(true);
         }
         return triggered;
     }
 
     sf::CircleShape *sf_DetectSensor = nullptr;
 
-private:
-
     /**
      * Clock used to determine if entity is allowed to move or not.
      */
-    sf::Clock movementTriggerClock{};
+    sftools::Chronometer movementTriggerClock{};
 
 
 };

@@ -12,6 +12,10 @@ class Farmer : public EntityWarm {
 
 public:
 
+    void pause() override;
+
+    void resume() override;
+
     /**
      * CONSTRUCTOR: Creates a farmer and places in to the world.
      * @param world the world to add the farmer to.
@@ -56,7 +60,7 @@ private:
     enum class Grasp {
         EMPTY, HOLDING, THROWING = 3
     };
-    sf::Clock graspClock;
+    sftools::Chronometer graspClock{};
     float graspCooldown = 0.2f;
     Grasp currentGrasp = Grasp::EMPTY;
     std::list<Entity *> currentlyTouchingEntities;
@@ -80,7 +84,7 @@ private:
     void switchAction() override;
 
     /// Pointers
-    ConfigGame *configGame;
+    ConfigGame *configGame = nullptr;
 
     /// Animation
     bool spriteSwitch = false;

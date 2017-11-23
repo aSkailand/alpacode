@@ -14,6 +14,10 @@
 class Wolf : public Mob{
 public:
 
+    void pause() override;
+
+    void resume() override;
+
     virtual ~Wolf();
 
     /**

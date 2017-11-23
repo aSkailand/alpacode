@@ -150,3 +150,9 @@ void Shotgun::startContact(Entity::CollisionID selfCollision, Entity::CollisionI
 void Shotgun::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
 }
+
+void Shotgun::pause() {
+}
+
+void Shotgun::resume() {
+}

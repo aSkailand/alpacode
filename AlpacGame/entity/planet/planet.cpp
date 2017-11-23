@@ -60,3 +60,11 @@ bool Planet::deadCheck() {
     return false;
 }
 
+void Planet::pause() {
+
+}
+
+void Planet::resume() {
+
+}
+
