@@ -39,7 +39,7 @@ ComboBox {
     ArrowDownImage : "MenuUI1.png" Part(0, 155, 16, 16);
     BackgroundColor : (0, 74, 127);
     TextColor : (255, 255, 255);
-    BorderColor : (0, 0, 0);
+    BorderColor : (0, 148, 255);
     Borders : (2, 2, 2, 2);
     ListBox : "ListBox";
 }
@@ -60,7 +60,7 @@ Label {
 ListBox {
     BackgroundColor : (0, 74, 127);
     TextColor : (255, 255, 255);
-    SelectedBackgroundColor : (190, 225, 235);
+    SelectedBackgroundColor : (0, 148, 255);
     SelectedTextColor : (255, 255, 255);
     BorderColor : (0, 0, 0);
     Borders : (2, 2, 2, 2);
