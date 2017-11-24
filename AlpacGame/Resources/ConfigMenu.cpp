@@ -50,22 +50,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
                  });
 
-
-    createButton(buttonID::APPLY_VIDEO_SETTINGS, "Apply changes", "pressed",
-                 [&] {
-                     if (checkBoxFullScreenChecked) {
-                         machine->configWindow.setWindowResolution(getCurrentResolution(), sf::Style::Fullscreen);
-                     } else {
-                         machine->configWindow.setWindowResolution(getCurrentResolution(), sf::Style::Default);
-                     }
-                 });
-
-    createButton(buttonID::APPLY_SOUND_SETTINGS, "Apply changes", "pressed",
-                 [&] {
-                     machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
-                     machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
-                     machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
-                 });
+    createButton(buttonID::APPLY_SETTINGS, "Apply changes", "pressed", [&] {
+        ConfigMenu::applyChanges();
+    });
 
     createButton(buttonID::BACK_HIGHSCORE, "Back", "pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
@@ -76,6 +63,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createSlider(buttonID::MASTER_SLIDER);
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
+
+    defeatScreenLayout();
+
+
     mainMenuLayout(machine->configWindow.getMenuGUI());
     highscoreLayout();
 }
@@ -122,15 +113,19 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Settings layout
     tgui::VerticalLayout::Ptr optionsVerticalLayout = tgui::VerticalLayout::create();
     optionsVerticalLayout->setSize(windowWidth / 4, windowHeight);
-    optionsVerticalLayout->setPosition(windowWidth - (windowWidth - 10), 0);
+    optionsVerticalLayout->setPosition(windowWidth - (windowWidth), 0);
     optionsVerticalLayout->removeAllWidgets();
     optionsVerticalLayout->addSpace(0.5f);
     optionsVerticalLayout->add(mapButtons[buttonID::VIDEO]);
-    optionsVerticalLayout->addSpace(2);
+    optionsVerticalLayout->addSpace(1);
     optionsVerticalLayout->add(mapButtons[buttonID::CONTROLS]);
-    optionsVerticalLayout->addSpace(2);
+    optionsVerticalLayout->addSpace(1);
     optionsVerticalLayout->add(mapButtons[buttonID::SOUND]);
-    optionsVerticalLayout->addSpace(6);
+    optionsVerticalLayout->addSpace(5);
+    mapButtons[buttonID::APPLY_SETTINGS]->disable();
+    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+    optionsVerticalLayout->add(mapButtons[buttonID::APPLY_SETTINGS]);
+    optionsVerticalLayout->addSpace(1);
     optionsVerticalLayout->add(mapButtons[buttonID::BACK_TO_MAIN]);
     optionsVerticalLayout->addSpace(0.5f);
 
@@ -168,6 +163,19 @@ void ConfigMenu::videoSettingsLayout() {
                                    if (itemSelected == iter.second)
                                        setCurrentResolution(iter.first);
                                }
+                               if (currentResolution !=
+                                   machine->configWindow.mapResolutionString[machine->configWindow.currentResolution]) {
+                                   mapButtons[buttonID::APPLY_SETTINGS]->enable();
+                                   mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+                                   changesMadeVideo = true;
+                               } else if ((currentResolution ==
+                                           machine->configWindow.mapResolutionString[machine->configWindow.currentResolution]) &&
+                                          !checkBoxFullScreenChecked) {
+                                   mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                                   mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                                   changesMadeVideo = false;
+                               }
+
                            });
 
     // Resolution label
@@ -182,7 +190,66 @@ void ConfigMenu::videoSettingsLayout() {
     fullScreenCheck->setPosition(windowWidth / 6, windowHeight / 2.5);
     fullScreenCheck->setText("Fullscreen");
     fullScreenCheck->setTextSize(24);
-    fullScreenCheck->connect("clicked", [&] { checkBoxFullScreenChecked = !checkBoxFullScreenChecked; });
+    fullScreenCheck->connect("clicked", [&] {
+        checkBoxFullScreenChecked = !checkBoxFullScreenChecked;
+        if (!isFullScreen) {
+            if (checkBoxFullScreenChecked && changesMadeVideo) {
+                mapButtons[buttonID::APPLY_SETTINGS]->enable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+                changesMadeVideo = true;
+                std::cout << 1 << std::endl;
+            }
+            if (checkBoxFullScreenChecked && !changesMadeVideo) {
+                mapButtons[buttonID::APPLY_SETTINGS]->enable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+                changesMadeVideo = true;
+                std::cout << 2 << std::endl;
+            }
+            if ((!checkBoxFullScreenChecked && (currentResolution ==
+                                                machine->configWindow.mapResolutionString[machine->configWindow.currentResolution])) &&
+                !isFullScreen) {
+                mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                changesMadeVideo = false;
+                std::cout << 3 << std::endl;
+            }
+            if (!checkBoxFullScreenChecked && !changesMadeVideo) {
+                mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                changesMadeVideo = false;
+                std::cout << 4 << std::endl;
+            }
+        }
+        // Is fullscreen
+        if (isFullScreen) {
+
+            if (!checkBoxFullScreenChecked && changesMadeVideo) {
+                mapButtons[buttonID::APPLY_SETTINGS]->enable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+                changesMadeVideo = true;
+                std::cout << 1 << std::endl;
+            }
+            if (!checkBoxFullScreenChecked && !changesMadeVideo) {
+                mapButtons[buttonID::APPLY_SETTINGS]->enable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+                changesMadeVideo = true;
+                std::cout << 2 << std::endl;
+            }
+            if ((checkBoxFullScreenChecked && (currentResolution ==
+                                                machine->configWindow.mapResolutionString[machine->configWindow.currentResolution]))) {
+                mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                changesMadeVideo = false;
+                std::cout << 3 << std::endl;
+            }
+            if (checkBoxFullScreenChecked && !changesMadeVideo) {
+                mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                changesMadeVideo = false;
+                std::cout << 4 << std::endl;
+            }
+        }
+    });
 
     // Adds the widgets and layout to the GUI
     videoSettingsLayout->add(resLabel);
@@ -193,7 +260,6 @@ void ConfigMenu::videoSettingsLayout() {
     hori->addSpace(5);
     videoSettingsLayout->add(hori);
     videoSettingsLayout->addSpace(5);
-    videoSettingsLayout->add(mapButtons[buttonID::APPLY_VIDEO_SETTINGS]);
 
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
@@ -221,7 +287,9 @@ void ConfigMenu::soundSettingsLayout() {
     // Mute sound checkbox
     tgui::CheckBox::Ptr muteSound = theme->load("CheckBox");
     muteSound->setText("Mute Sound");
-    muteSound->connect("clicked", [&] { checkBoxMuteChecked = !checkBoxMuteChecked; });
+    muteSound->connect("clicked", [&] {
+        checkBoxMuteChecked = !checkBoxMuteChecked;
+    });
 
     // Back button
     tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
@@ -243,8 +311,6 @@ void ConfigMenu::soundSettingsLayout() {
     layout->addSpace();
     layout->add(sfxLabel);
     layout->add(mapSliders[buttonID::EFFECT_SLIDER]);
-    layout->addSpace();
-    layout->add(mapButtons[buttonID::APPLY_SOUND_SETTINGS]);
 
     // Emplaces the soundlayout to the layout map
     mapLayouts.emplace(layouts::SOUND, layout);
@@ -254,8 +320,10 @@ void ConfigMenu::soundSettingsLayout() {
 void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
+    tempSlider->setValue(10);
     mapSliders.emplace(sliderType, tempSlider);
 }
+
 
 void ConfigMenu::highscoreLayout() {
 
@@ -399,3 +467,82 @@ ConfigWindow::Resolution ConfigMenu::getCurrentResolution() const {
 void ConfigMenu::setCurrentResolution(ConfigWindow::Resolution currentResolution) {
     machine->configWindow.currentResolution = currentResolution;
 }
+
+void ConfigMenu::defeatScreenLayout() {
+    // Label
+    tgui::Label::Ptr tempLabel = theme->load("Label");
+    // Vertical Layout
+    tgui::VerticalLayout::Ptr defeatLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr tempLayout = tgui::VerticalLayout::create();
+    tempLayout->setPosition(machine->configWindow.getWindow().getSize().x / 4,
+                            machine->configWindow.getWindow().getSize().y / 4);
+    tempLayout->setSize(400, 300);
+
+    // Defeat label
+    tgui::Label::Ptr defeatLabel = tgui::Label::copy(tempLabel);
+    defeatLabel->setText("Defeat!");
+    defeatLabel->setPosition(tempLayout->getSize().x / 2, tempLayout->getSize().y / 2);
+    defeatLabel->setTextSize(32);
+
+    // Enter name label
+    tgui::Label::Ptr nameLabel = tgui::Label::copy(tempLabel);
+    nameLabel->setText("Enter name:");
+    nameLabel->setTextSize(24);
+
+    // Edit box
+    tgui::EditBox::Ptr nameEditBox = theme->load("EditBox");
+    nameEditBox->setDefaultText("Enter name...");
+    nameEditBox->setMaximumCharacters(20);
+
+    // Return to menu button
+    tgui::Button::Ptr returnToMenu = theme->load("Button");
+    returnToMenu->setText("Return to menu...");
+    returnToMenu->connect("pressed", [&] {
+        std::cout << "Hello" << std::endl;
+        machine->setCurrentState(StateMachine::stateID::EXIT);
+        std::cout << ", World!" << std::endl;
+    });
+
+
+    // Adds every widget to layout map
+    tempLayout->add(defeatLabel);
+    tempLayout->addSpace(2);
+    tempLayout->add(nameLabel);
+    tempLayout->add(nameEditBox, "Enter name...");
+    tempLayout->addSpace();
+    tempLayout->add(returnToMenu);
+    mapLayouts.emplace(layouts::DEFEAT, tempLayout);
+}
+
+void ConfigMenu::applyChanges() {
+    if (changesMadeVideo) {
+
+        currentResolution = machine->configWindow.mapResolutionString[machine->configWindow.currentResolution];
+        if (checkBoxFullScreenChecked) {
+            machine->configWindow.setWindowResolution(getCurrentResolution(), sf::Style::Fullscreen);
+            isFullScreen = true;
+        } else {
+            machine->configWindow.setWindowResolution(getCurrentResolution(), sf::Style::Default);
+            isFullScreen = false;
+
+        }
+
+    }
+    if (changesMadeControls) {
+
+    }
+    if (changesMadeSound) {
+
+        machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
+        machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
+        machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
+    }
+    mapButtons[buttonID::APPLY_SETTINGS]->disable();
+    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+    changesMadeVideo = false;
+}
+
+void ConfigMenu::checkChanges() {
+
+}
+

@@ -26,7 +26,8 @@ public:
         SETTINGS,
         VIDEO,
         SOUND,
-        CONTROLS
+        CONTROLS,
+        DEFEAT
     };
 
     enum class buttonID {
@@ -39,12 +40,14 @@ public:
         HIGHSCORE,
         BACK_HIGHSCORE,
         BACK_TO_MAIN,
+        APPLY_SETTINGS,
         APPLY_VIDEO_SETTINGS,
         APPLY_SOUND_SETTINGS,
         MASTER_SLIDER,
         MUSIC_SLIDER,
         EFFECT_SLIDER
     };
+
 
     /// Public Functions
     /**
@@ -95,6 +98,19 @@ private:
 
     bool checkBoxFullScreenChecked = false;
 
+    /// Changes made
+    bool changesMadeVideo = false;
+
+    bool changesMadeSound = false;
+
+    bool changesMadeControls = false;
+
+    /// Current fullscreen
+    bool isFullScreen = false;
+
+    /// Current Resolution
+    std::string currentResolution = "800x600";
+
     /// Layout Functions
     /**
      * Creates the main menu layout and settings menu layout
@@ -113,6 +129,7 @@ private:
     void soundSettingsLayout();
 
     /**
+<<<<<<< HEAD
      * Creates the highscore layout
      */
     void highscoreLayout();
@@ -122,6 +139,12 @@ private:
      * @param highScoreFile
      */
     void loadHighscore(std::string highScoreFile);
+
+     /**
+      * Creates the defeat screen layout
+      */
+    void defeatScreenLayout();
+
 
     /// Button Functions
     /**
@@ -156,6 +179,10 @@ private:
      * @param currentResolution
      */
     void setCurrentResolution(ConfigWindow::Resolution currentResolution);
+
+    void applyChanges();
+
+    void checkChanges();
 
 };
 

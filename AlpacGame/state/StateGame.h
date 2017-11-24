@@ -24,7 +24,7 @@
 
 class StateGame : public State{
 public:
-
+    bool testDefeat = false;
     void goNext(StateMachine &stateMachine) override;
 
     std::vector<Entity*> *entities;
@@ -43,6 +43,7 @@ private:
     StateMachine *machine;
     ConfigGame *configGame;
     sf::RenderWindow *window;
+    tgui::Gui *menuGUI;
 
     /// Box2D Variables
     b2World* world;

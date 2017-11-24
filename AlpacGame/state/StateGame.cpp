@@ -3,7 +3,6 @@
 
 
 void StateGame::goNext(StateMachine &stateMachine) {
-
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
@@ -26,8 +25,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// View
     view = sf::View(window->getDefaultView());
     view.zoom(viewNonZoomed);
-
-    window->setMouseCursorVisible(false);
 
     // todo fix aim
     sf::CircleShape mouseAim;
@@ -94,6 +91,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         /// Render Phase
         window->clear(sf::Color::Blue);
+
 
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
@@ -166,7 +164,8 @@ bool StateGame::pollGame() {
                     return false;
                 } else if (event.key.code == sf::Keyboard::Space) {
                     // todo: Add actual pause.
-//                    machine->setCurrentState(StateMachine::stateID::PAUSE);
+                    //machine->setCurrentState(StateMachine::stateID::PAUSE);
+                    //testDefeat = !testDefeat;
                     return false;
                 } else {
                     keyPressedHandler(event);

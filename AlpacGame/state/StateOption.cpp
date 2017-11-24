@@ -11,6 +11,7 @@ void StateOption::goNext(StateMachine &stateMachine) {
     menuGUI->removeAllWidgets();
     menuGUI->add(machine->configMenu->getPictureMenu());
     menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::SETTINGS]);
+    menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::VIDEO]);
 
     while (PollOption()) {
         drawOption();
