@@ -7,8 +7,12 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     this->machine = &stateMachine;
 
     theme = tgui::Theme::create("Resources/MenuUITheme.txt");
-    pictureMenu = tgui::Picture::create("Resources/01-Early-Morning.png");
+    pictureMenu = tgui::Picture::create("Resources/test.png");
     masterButton = theme->load("Button");
+
+    if(!titleFont.loadFromFile("Resources/fontPixel.ttf")){
+        // Error..
+    }
 
 
     createButton(buttonID::RESUME,"Resume","pressed",
@@ -83,7 +87,7 @@ void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &typeActivation,
                               const std::function<void()> &func) {
     tgui::Button::Ptr tempButton = tgui::Button::copy(masterButton);
-    tempButton->setSize(300,40);
+    tempButton->setSize(200,40);
     tempButton->setText(buttonName);
     tempButton->connect(typeActivation, func);
     mapButtons.emplace(buttonID, tempButton);
@@ -92,8 +96,8 @@ void ConfigMenu::createButton(buttonID buttonID,
 
 
 void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
-
     // Creates the different layouts
+
     // Main menu layout
     tempVerticalLayout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr tempHorizontalLayout = tgui::HorizontalLayout::create();
@@ -101,8 +105,19 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->removeAllWidgets();
     windowWidth = tgui::bindWidth(*Width);
     windowHeight = tgui::bindHeight(*Width);
-    tempVerticalLayout->setSize(windowWidth /2, windowHeight /2);
-    tempVerticalLayout->setPosition(windowWidth / 4, windowHeight /2);
+    tempVerticalLayout->setSize(windowWidth / 2, windowHeight * 5 / 6);
+    tempVerticalLayout->setPosition(windowWidth / 4, windowHeight / 6);
+
+    tgui::Label::Ptr titleLabel = tgui::Label::create();
+    titleLabel->setText("UntitledUntitled");
+    titleLabel->setTextSize(57);
+    titleLabel->setSize(200, 100);
+    titleLabel->setTextColor(sf::Color::White);
+    titleLabel->setFont(titleFont); // not working atm. Don't know why
+    // TODO: add a new font for titleLabel.
+
+    tempVerticalLayout->add(titleLabel);
+    tempVerticalLayout->addSpace(2.f);
 
 
     tempVerticalLayout->add(mapButtons[buttonID::RESUME]);
@@ -114,7 +129,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->add(mapButtons[buttonID::SETTINGS]);
     tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::QUIT]);
-    tempVerticalLayout->addSpace(1);
+    tempVerticalLayout->addSpace(1.f);
 
     // Adds the main menu layout to the map
     mapLayouts.emplace(layouts::MAINMENU, tempVerticalLayout);
