@@ -113,8 +113,8 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     titleLabel->setTextSize(57);
     titleLabel->setSize(200, 100);
     titleLabel->setTextColor(sf::Color::White);
-    titleLabel->setFont(titleFont);
-    // TODO: add font for title Label.
+    titleLabel->setFont(titleFont); // not working atm. Don't know why
+    // TODO: add a new font for titleLabel.
 
     tempVerticalLayout->add(titleLabel);
     tempVerticalLayout->addSpace(2.f);
