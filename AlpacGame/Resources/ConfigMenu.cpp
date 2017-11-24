@@ -8,6 +8,8 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     theme = tgui::Theme::create("Resources/MenuUITheme.txt");
     pictureMenu = tgui::Picture::create("Resources/test.png");
+    //pictureTittle = tgui::Picture::create("Resources/Tittle.png");
+    pictureTittle2 = tgui::Picture::create("Resources/Aslak.png");
     masterButton = theme->load("Button");
 
     if(!titleFont.loadFromFile("Resources/fontPixel.ttf")){
@@ -81,6 +83,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 tgui::Picture::Ptr &ConfigMenu::getPictureMenu() {
     return pictureMenu;
 }
+tgui::Picture::Ptr &ConfigMenu::getPictureTittle() {
+    return pictureTittle2;
+}
 
 void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &buttonName,
@@ -102,21 +107,17 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr tempHorizontalLayout = tgui::HorizontalLayout::create();
     pictureMenu->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
+    //pictureTittle->setSize(tgui::bindMax(windowWidth, windowWidth), tgui::bindMax(windowHeight, windowHeight));
+    pictureTittle2->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
     tempVerticalLayout->removeAllWidgets();
     windowWidth = tgui::bindWidth(*Width);
     windowHeight = tgui::bindHeight(*Width);
     tempVerticalLayout->setSize(windowWidth / 2, windowHeight * 5 / 6);
     tempVerticalLayout->setPosition(windowWidth / 4, windowHeight / 6);
 
-    tgui::Label::Ptr titleLabel = tgui::Label::create();
-    titleLabel->setText("UntitledUntitled");
-    titleLabel->setTextSize(57);
-    titleLabel->setSize(200, 100);
-    titleLabel->setTextColor(sf::Color::White);
-    titleLabel->setFont(titleFont); // not working atm. Don't know why
     // TODO: add a new font for titleLabel.
 
-    tempVerticalLayout->add(titleLabel);
+    //tempVerticalLayout->add(pictureTittle2);
     tempVerticalLayout->addSpace(2.f);
 
 
@@ -130,6 +131,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::QUIT]);
     tempVerticalLayout->addSpace(1.f);
+    tempVerticalLayout->setRatio(0,7.5);
 
     // Adds the main menu layout to the map
     mapLayouts.emplace(layouts::MAINMENU, tempVerticalLayout);

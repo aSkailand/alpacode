@@ -57,6 +57,7 @@ public:
      * @return returns a tgui::Picture
      */
     tgui::Picture::Ptr &getPictureMenu();
+    tgui::Picture::Ptr &getPictureTittle();
 
     /// Mappings of the different layouts and widgets
     std::map<buttonID, tgui::Button::Ptr> mapButtons;
@@ -75,6 +76,8 @@ private:
     tgui::VerticalLayout::Ptr titleVerticalLayout;
     tgui::VerticalLayout::Ptr tempVerticalLayout;
     tgui::Picture::Ptr pictureMenu;
+    tgui::Picture::Ptr pictureTittle;
+    tgui::Picture::Ptr pictureTittle2;
     tgui::Button::Ptr masterButton;
     tgui::Theme::Ptr theme;
     tgui::Layout windowWidth;
