@@ -2,6 +2,7 @@
 #define ALPACGAME_CONFIGMENU_H
 
 #include <map>
+#include <fstream>
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
 #include "ConfigWindow.h"
@@ -36,6 +37,7 @@ public:
         SOUND,
         CONTROLS,
         HIGHSCORE,
+        BACK_HIGHSCORE,
         BACK_TO_MAIN,
         APPLY_VIDEO_SETTINGS,
         APPLY_SOUND_SETTINGS,
@@ -66,6 +68,16 @@ public:
 
 private:
 
+    /// Variables for the loadHighscore function
+    bool alternateHighscoreWindow = true;
+    int spaces;
+    int scoreSpaces;
+    int rank = 1;
+    std::string line;
+    std::string tempString;
+    std::string rankString;
+    std::ifstream file;
+
     /// Pointers
     StateMachine *machine = nullptr;
 
@@ -76,9 +88,6 @@ private:
     tgui::Theme::Ptr theme;
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
-    tgui::ListBox::Ptr highScoreName;
-    tgui::ListBox::Ptr highScoreScore;
-    tgui::Font font;
     tgui::TextBox::Ptr textBoxHighscore;
 
     /// CheckBox
@@ -103,8 +112,15 @@ private:
      */
     void soundSettingsLayout();
 
+    /**
+     * Creates the highscore layout
+     */
     void highscoreLayout();
 
+    /**
+     * Takes a text file and writes the content into a text box
+     * @param highScoreFile
+     */
     void loadHighscore(std::string highScoreFile);
 
     /// Button Functions

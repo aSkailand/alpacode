@@ -1,12 +1,9 @@
-
-#include <fstream>
 #include "ConfigMenu.h"
 #include "../state/StateMachine.h"
 
 void ConfigMenu::run(StateMachine &stateMachine) {
 
     this->machine = &stateMachine;
-    font = tgui::Font("Resources/PressStart2P.ttf");
     theme = tgui::Theme::create("Resources/BabyBlue.txt");
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
@@ -21,13 +18,16 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
 
     createButton(buttonID::BACK_TO_MAIN, "Back", "pressed",
-                 [&] { machine->setCurrentState(StateMachine::stateID::MENU); });
+                 [&] {
+                     machine->configWindow.getMenuGUI()->removeAllWidgets();
+                     machine->setCurrentState(StateMachine::stateID::MENU);
+                 });
 
     createButton(buttonID::HIGHSCORE, "Highscore", "pressed",
                  [&] {
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
-                     ConfigMenu::loadHighscore("highscore.txt");
+                     ConfigMenu::loadHighscore("Resources/highscore.txt");
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::HIGHSCORE]);
                  });
     createButton(buttonID::VIDEO, "Video", "pressed",
@@ -67,10 +67,17 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
                  });
 
+    createButton(buttonID::BACK_HIGHSCORE, "Back", "pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::MAINMENU]);
+    });
+
+
     createSlider(buttonID::MASTER_SLIDER);
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
     mainMenuLayout(machine->configWindow.getMenuGUI());
+    highscoreLayout();
 }
 
 tgui::Picture::Ptr &ConfigMenu::getPictureMenu() {
@@ -92,6 +99,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     // Creates the different layouts
     // Main menu layout
+    machine->configWindow.getMenuGUI()->add(pictureMenu);
     tempVerticalLayout = tgui::VerticalLayout::create();
     pictureMenu->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
     tempVerticalLayout->removeAllWidgets();
@@ -131,7 +139,8 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     videoSettingsLayout();
     soundSettingsLayout();
-    highscoreLayout();
+
+
 }
 
 void ConfigMenu::videoSettingsLayout() {
@@ -191,6 +200,7 @@ void ConfigMenu::videoSettingsLayout() {
 
 void ConfigMenu::soundSettingsLayout() {
 
+    // Layout setup
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr horiLayout = tgui::HorizontalLayout::create();
     layout->setSize(windowWidth / 4, windowHeight / 2);
@@ -236,16 +246,10 @@ void ConfigMenu::soundSettingsLayout() {
     layout->addSpace();
     layout->add(mapButtons[buttonID::APPLY_SOUND_SETTINGS]);
 
+    // Emplaces the soundlayout to the layout map
     mapLayouts.emplace(layouts::SOUND, layout);
 }
 
-ConfigWindow::Resolution ConfigMenu::getCurrentResolution() const {
-    return machine->configWindow.currentResolution;
-}
-
-void ConfigMenu::setCurrentResolution(ConfigWindow::Resolution currentResolution) {
-    machine->configWindow.currentResolution = currentResolution;
-}
 
 void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
@@ -255,114 +259,132 @@ void ConfigMenu::createSlider(buttonID sliderType) {
 
 void ConfigMenu::highscoreLayout() {
 
-    tgui::HorizontalLayout::Ptr titleHighscoreLayout = tgui::HorizontalLayout::create();
-    tgui::VerticalLayout::Ptr verticalLayout = tgui::VerticalLayout::create();
-    tgui::HorizontalLayout::Ptr layout = tgui::HorizontalLayout::create();
+    // Temporary layout
+    tgui::HorizontalLayout::Ptr tempHighscoreLayout = tgui::HorizontalLayout::create();
+    tgui::HorizontalLayout::Ptr tempHorizontalLayout = tgui::HorizontalLayout::create();
+    tgui::HorizontalLayout::Ptr tempBackButtonLayout = tgui::HorizontalLayout::create();
+    tgui::VerticalLayout::Ptr tempVerticalLayout = tgui::VerticalLayout::create();
 
+    // The text box which contains all the highscores
     textBoxHighscore = theme->load("TextBox");
     textBoxHighscore->setReadOnly(true);
-    textBoxHighscore->setTextSize(16);
+    textBoxHighscore->setTextSize(24);
 
+    // The setup for the layout containing the different labels
     tgui::HorizontalLayout::Ptr labelsLayout = tgui::HorizontalLayout::create();
-    verticalLayout->setSize(windowWidth, windowHeight);
-    verticalLayout->setPosition(0, 0);
+    tempVerticalLayout->setSize(windowWidth, windowHeight);
+    tempVerticalLayout->setPosition(0, 0);
 
+    // The setup for the highscore title
     tgui::Label::Ptr highscoreTitle = tgui::Label::create();
-    highscoreTitle->setText("Highscore!!!");
+    highscoreTitle->setText("Highscore!");
     highscoreTitle->setTextSize(42);
 
+    // Rank label
     tgui::Label::Ptr noLabel = tgui::Label::create();
     noLabel->setText("Rank:");
     noLabel->setTextSize(20);
 
+    // Name label
     tgui::Label::Ptr namelabel = tgui::Label::create();
     namelabel->setText("Name:");
     namelabel->setTextSize(20);
 
-
+    // Score label
     tgui::Label::Ptr scoreLabel = tgui::Label::create();
     scoreLabel->setText("Score:");
     scoreLabel->setTextSize(20);
 
+    // Back button setup
+    tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
+    backButton->setText("Back");
+    backButton->connect("pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->configWindow.getWindow().clear();
+        machine->configWindow.getMenuGUI()->add(pictureMenu);
+        machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::MAINMENU]);
+    });
 
-    highScoreName = theme->load("ListBox");
-    highScoreScore = theme->load("ListBox");
-    highScoreName->setFont(font);
+    // Horizontal layout which contains the back button
+    tempBackButtonLayout->addSpace(2);
+    tempBackButtonLayout->add(backButton);
+    tempBackButtonLayout->addSpace(2);
 
-    highScoreName->setTextSize(24);
-    highScoreScore->setTextSize(24);
-    highScoreName->setPosition(100, 100);
+    // Horizontal layout which contains the text box
+    tempHorizontalLayout->addSpace(0.125f);
+    tempHorizontalLayout->add(textBoxHighscore);
+    tempHorizontalLayout->addSpace(0.125f);
 
-    layout->addSpace(0.125f);
-    layout->add(textBoxHighscore);
-    layout->addSpace(0.125f);
-
-    labelsLayout->addSpace(0.50f);
+    // Horizontal layout which contains the different labels
+    labelsLayout->addSpace(0.60f);
     labelsLayout->add(noLabel);
-
     labelsLayout->add(namelabel);
     labelsLayout->addSpace(1);
     labelsLayout->add(scoreLabel);
     labelsLayout->addSpace(1);
 
+    // Horizontal layout which contains the highscore title
+    tempHighscoreLayout->addSpace(0.3333f);
+    tempHighscoreLayout->add(highscoreTitle);
 
-    titleHighscoreLayout->addSpace(0.3333f);
-    titleHighscoreLayout->add(highscoreTitle);
+    // Vertical layout which contains all of the widgets and layouts
+    // and adds the layout to a map.
+    tempVerticalLayout->addSpace(0.5f);
+    tempVerticalLayout->add(tempHighscoreLayout);
+    tempVerticalLayout->add(labelsLayout);
+    tempVerticalLayout->add(tempHorizontalLayout);
+    tempVerticalLayout->addSpace();
+    tempVerticalLayout->setRatio(3, 5);
+    tempVerticalLayout->add(tempBackButtonLayout);
+    tempVerticalLayout->addSpace(0.5f);
 
-//TODO ::: THIS BUTTON MAKES THE PROGRAM CRASH
-    tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
-    backButton->connect("pressed", [&] {
-        machine->configWindow.getMenuGUI()->removeAllWidgets();
-
-        verticalLayout->removeAllWidgets();
-        machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::MAINMENU]);
-    });
-
-    verticalLayout->addSpace(0.5f);
-    verticalLayout->add(titleHighscoreLayout);
-    verticalLayout->add(labelsLayout);
-    verticalLayout->add(layout);
-    verticalLayout->addSpace();
-    verticalLayout->setRatio(3, 5);
-    verticalLayout->add(backButton);
-    verticalLayout->addSpace(0.1f);
-
-    mapLayouts.emplace(layouts::HIGHSCORE, verticalLayout);
+    mapLayouts.emplace(layouts::HIGHSCORE, tempVerticalLayout);
 }
 
 void ConfigMenu::loadHighscore(std::string highScoreFile) {
-    bool alternateHighscoreWindow = true;
-    int spaces;
-    int scoreSpaces;
-    int rank = 1;
-
-    std::string line;
-    std::string tempString;
-    std::string rankString;
-
-    std::ifstream file;
-    file.open("Resources/highscore.txt");
-
-    //Loads the names and scores from a file and prints them in a TextBox
+    rank = 1;
+    textBoxHighscore->setText("");
+    file.open(highScoreFile);
+    //Loads the names and scores from a file and prints them in a text box
     if (file.is_open()) {
         while (std::getline(file, line)) {
+            // First reads name, appens a #rank to that name
             if (alternateHighscoreWindow) {
-                rankString = std::to_string(rank) + ".       ";
+                // rankString is what the rank to the player highscore is #1-10
+                rankString = std::to_string(rank) + ".";
+                // Appends spaces to the string so that the alignment of the highscore text looks nice.
+                if (rank == 10) {
+                    rankString.append(6, ' ');
+                } else {
+                    rankString.append(7, ' ');
+                }
                 spaces = 9 - (int) line.size();
+                // Inserts the #rank of the player in the string
                 line.insert(0, rankString);
                 line.append(spaces, ' ');
                 tempString = line;
+
+                // This boolean is required because of how the format of the highscore.txt file is formatted,
+                // first line is name, second line is highscore to that name,
+                // third line is name, fourth line is score, and so on...
                 alternateHighscoreWindow = !alternateHighscoreWindow;
+                // rank increment
                 rank++;
+                // Appends the score to the name
             } else {
                 scoreSpaces = 20 - (int) line.size();
+                // Appends spaces to the string so that the alignment of the highscore text looks nice.
                 tempString.append(" ");
                 tempString.append(scoreSpaces, ' ');
-                tempString.append(line + "\n");
+                if (rank == 11) {
+                    tempString.append(line);
+                } else {
+                    tempString.append(line + "\n");
+                }
+                // Adds the formatted string to the text box
                 textBoxHighscore->addText(tempString);
                 alternateHighscoreWindow = !alternateHighscoreWindow;
             }
-
         }
         file.close();
     } else {
@@ -370,3 +392,10 @@ void ConfigMenu::loadHighscore(std::string highScoreFile) {
     }
 }
 
+ConfigWindow::Resolution ConfigMenu::getCurrentResolution() const {
+    return machine->configWindow.currentResolution;
+}
+
+void ConfigMenu::setCurrentResolution(ConfigWindow::Resolution currentResolution) {
+    machine->configWindow.currentResolution = currentResolution;
+}
