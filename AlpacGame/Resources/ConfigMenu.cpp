@@ -7,7 +7,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     this->machine = &stateMachine;
 
     theme = tgui::Theme::create("Resources/MenuUITheme.txt");
-    pictureMenu = tgui::Picture::create("Resources/01-Early-Morning.png");
+    pictureMenu = tgui::Picture::create("Resources/test.png");
     masterButton = theme->load("Button");
 
 
@@ -83,7 +83,7 @@ void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &typeActivation,
                               const std::function<void()> &func) {
     tgui::Button::Ptr tempButton = tgui::Button::copy(masterButton);
-    tempButton->setSize(300,40);
+    tempButton->setSize(200,40);
     tempButton->setText(buttonName);
     tempButton->connect(typeActivation, func);
     mapButtons.emplace(buttonID, tempButton);

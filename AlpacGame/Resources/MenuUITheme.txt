@@ -40,7 +40,7 @@ ComboBox {
     BackgroundColor : (0, 74, 127);
     TextColor : (255, 255, 255);
     BorderColor : (0, 0, 0);
-    Borders : (3, 3, 3, 3);
+    Borders : (2, 2, 2, 2);
     ListBox : "ListBox";
 }
 
@@ -63,7 +63,7 @@ ListBox {
     SelectedBackgroundColor : (190, 225, 235);
     SelectedTextColor : (255, 255, 255);
     BorderColor : (0, 0, 0);
-    Borders : (3, 3, 3, 3);
+    Borders : (2, 2, 2, 2);
     Scrollbar : "Scrollbar";
 }
 
@@ -104,8 +104,8 @@ Scrollbar {
 }
 
 Slider {
-    TrackImage : "BabyBlue.png" Part(38, 2, 30, 20) Middle(10, 0, 10, 20);
-    ThumbImage : "BabyBlue.png" Part(84, 40, 17, 38);
+    TrackImage : "MenuUI1.png" Part(17, 172, 30, 20) Middle(10, 0, 10, 20);
+    ThumbImage : "MenuUI1.png" Part(0, 172, 15, 38);
 }
 
 SpinButton {
