@@ -1,5 +1,6 @@
 #include "Farmer.h"
 #include "../alpaca/alpaca.h"
+#include "../trap/Trap.h"
 
 Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y) {
 
@@ -39,7 +40,7 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     fixtureDef_hit.shape = &b2Shape2;
     fixtureDef_hit.isSensor = true;
     fixtureDef_hit.filter.categoryBits = (uint16) ID::FARMER;
-    fixtureDef_hit.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF | (uint16) ID::SHOTGUN;
+    fixtureDef_hit.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::WOLF | (uint16) ID::SHOTGUN | (uint16) ID::TRAP;
 
     // Store information
     setID(Entity::ID::FARMER);
@@ -242,6 +243,12 @@ void Farmer::performAction() {
 
                         break;
                     }
+                    case ID::TRAP: {
+                        b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
+                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, -1.5f));
+                        holdingEntity->getBody()->SetTransform(center + offset, getBody()->GetAngle());
+                        break;
+                    }
                     case ID::BULLET:
                         break;
                     case ID::VOID:
@@ -261,6 +268,10 @@ void Farmer::performAction() {
                 }
                 case ID::SHOTGUN: {
                     dynamic_cast<Shotgun *>(holdingEntity)->isHeld = false;
+                    break;
+                }
+                case ID::TRAP:{
+                    dynamic_cast<Trap *>(holdingEntity)->isHeld = false;
                     break;
                 }
                 default:
@@ -372,6 +383,13 @@ void Farmer::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
             }
             break;
         }
+        case ID::TRAP:{
+            if (otherCollision == CollisionID::HIT && !checkIfTouching(contactEntity)) {
+                currentlyTouchingEntities.push_back(contactEntity);
+                dynamic_cast<Trap *> (contactEntity)->farmerTouch = true;
+            }
+            break;
+        }
         default:
             break;
     }
@@ -402,6 +420,13 @@ void Farmer::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
             if (checkIfTouching(contactEntity)) {
                 currentlyTouchingEntities.remove(contactEntity);
                 dynamic_cast<Shotgun *> (contactEntity)->farmerTouch = false;
+            }
+            break;
+        }
+        case ID::TRAP: {
+            if (checkIfTouching(contactEntity)) {
+                currentlyTouchingEntities.remove(contactEntity);
+                dynamic_cast<Trap *> (contactEntity)->farmerTouch = false;
             }
             break;
         }

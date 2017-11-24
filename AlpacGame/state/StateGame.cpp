@@ -1,5 +1,6 @@
 
 #include "StateGame.h"
+#include "../entity/trap/Trap.h"
 
 
 void StateGame::goNext(StateMachine &stateMachine) {
@@ -215,6 +216,11 @@ void StateGame::keyPressedHandler(sf::Event event) {
         case sf::Keyboard::Num3: {
             entities->emplace_back(
                     new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Num4:{
+            entities->emplace_back(
+                    new Trap(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Z: {

@@ -24,7 +24,7 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     fixtureDef.restitution = 0.5f;
     fixtureDef.shape = &b2shape;
     fixtureDef.filter.categoryBits = (uint16) ID::SHOTGUN;
-    fixtureDef.filter.maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF | (uint16) ID::ALPACA;
+    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
 
     // Create Sensor
     b2CircleShape b2Shape2;

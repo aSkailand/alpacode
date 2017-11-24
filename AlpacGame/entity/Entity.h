@@ -27,7 +27,8 @@ public:
         ALPACA  = 0x0004,
         WOLF    = 0x0008,
         SHOTGUN = 0x0010,
-        BULLET  = 0x0100
+        BULLET  = 0x0020,
+        TRAP    = 0x0040
     };
 
     enum class Direction{
