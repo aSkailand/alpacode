@@ -67,12 +67,14 @@ void Shotgun::render(sf::RenderWindow *window) {
     sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-    if (isHeld) {
-        sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
-        sfShape->setTexture(&configGame->shotgunHeldTexture);
-    } else {
-        sfShape->setScale(1.f, 1.f);
-        sfShape->setTexture(&configGame->shotgunDropTexture);
+    if(!configGame->isPaused){
+        if (isHeld) {
+            sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
+            sfShape->setTexture(&configGame->shotgunHeldTexture);
+        } else {
+            sfShape->setScale(1.f, 1.f);
+            sfShape->setTexture(&configGame->shotgunDropTexture);
+        }
     }
 
     window->draw(*sfShape);

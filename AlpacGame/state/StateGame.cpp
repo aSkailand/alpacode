@@ -21,13 +21,15 @@ void StateGame::goNext(StateMachine &stateMachine) {
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
 
         configGame->newGame = false;
+
+        /// View
+        view = sf::View(window->getDefaultView());
+        view.zoom(viewNonZoomed);
+
+        window->setMouseCursorVisible(false);
     }
 
-    /// View
-    view = sf::View(window->getDefaultView());
-    view.zoom(viewNonZoomed);
 
-    window->setMouseCursorVisible(false);
 
     // todo fix aim
     sf::CircleShape mouseAim;
@@ -36,12 +38,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
 
-    // todo fix pause filter
-    sf::RectangleShape pauseFilter;
-    pauseFilter.setFillColor(sf::Color(100, 100, 100, 150));
-    pauseFilter.setSize(sf::Vector2f(4000, 4000));
-    pauseFilter.setOrigin(sf::Vector2f(2000, 2000));
-    pauseFilter.setPosition(window->mapPixelToCoords(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2)));
 
     /// Poll game
     while (pollGame()) {
@@ -142,11 +138,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
             e->render(window);
         }
 
-        mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
-        window->draw(mouseAim);
+        configGame->mouseArrow.setPosition(configGame->mouseXpos, configGame->mouseYpos);
+        window->draw(configGame->mouseArrow);
 
-        if (configGame->isPaused)
-            window->draw(pauseFilter);
+//        if (configGame->isPaused)
+//            window->draw(pauseFilter);
 
         // Finding angle of farmer
         b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
@@ -165,6 +161,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         /// Update View
         window->display();
+
 
     }
 }
@@ -185,7 +182,14 @@ bool StateGame::pollGame() {
                     // todo: Add actual pause.
 //                    machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
-                } else {
+                }
+                else if(event.key.code == sf::Keyboard::P) {
+
+                    machine->setCurrentState(StateMachine::stateID::PAUSE);
+
+                    return false;
+                }
+                else {
                     keyPressedHandler(event);
                 }
                 break;
@@ -217,23 +221,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
             }
             break;
         }
-        case sf::Keyboard::P: {
 
-            if (configGame->isPaused) {
-                printf("UNPAUSING\n");
-                configGame->isPaused = false;
-                for (auto &e : *entities) {
-                    e->resume();
-                }
-            } else {
-                printf("PAUSING\n");
-                configGame->isPaused = true;
-                for (auto &e : *entities) {
-                    e->pause();
-                }
-            }
-            break;
-        }
         case sf::Keyboard::Num1: {
             entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;

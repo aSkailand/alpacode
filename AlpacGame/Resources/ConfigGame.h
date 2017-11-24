@@ -41,6 +41,8 @@ public:
 
     std::vector<Entity*> *entities = nullptr;
 
+    sf::CircleShape mouseArrow;
+
 
     /**
      * Show in-game labels or not.
