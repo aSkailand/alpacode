@@ -36,7 +36,7 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     fixtureDef_hit.shape = &b2Shape2;
     fixtureDef_hit.isSensor = true;
     fixtureDef_hit.filter.categoryBits = (uint16) ID::WOLF;
-    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA;
+    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::TRAP;
 
     /// Detect Sensor
     b2CircleShape b2Shape3;
@@ -95,6 +95,10 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
 int Wolf::nextId = 0;
 
 void Wolf::switchAction() {
+
+    if(isStunned){
+        return;
+    }
 
     // Check if it is time for randomizing the wolf's current state
     if (randomActionTriggered(randomActionTick) && currentBehavior == Behavior::NORMAL) {
@@ -160,6 +164,10 @@ void Wolf::switchAction() {
 
 
 void Wolf::performAction() {
+
+    if(isStunned){
+        return;
+    }
 
     // Check if the randomActionClock has triggered
     if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
@@ -285,7 +293,6 @@ void Wolf::startContact_body(Entity::CollisionID otherCollision, Entity *contact
             spriteSwitch = !spriteSwitch;
             sf_HitSensor->setOutlineColor(sf::Color::White);
             body->SetLinearVelocity(b2Vec2(0, 0));
-            body->SetAwake(false);
             break;
         }
         default:
@@ -419,3 +426,10 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
             break;
     }
 }
+
+//void Wolf::performStun() {
+//    currentAction = Action::IDLE;
+//    isStunned = true;
+//    stunClock.reset(true);
+//    printf("Wolf %i is stunned!\n", id);
+//}

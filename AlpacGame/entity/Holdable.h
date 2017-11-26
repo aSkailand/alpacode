@@ -9,6 +9,9 @@ struct Holdable{
     bool isHeld = false;
     bool farmerTouch = false;
 
+//    virtual void performHold() = 0;
+//    virtual void performThrow() = 0;
+
 };
 
 #endif //ALPACGAME_HOLDABLE_H

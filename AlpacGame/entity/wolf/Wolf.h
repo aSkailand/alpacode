@@ -30,6 +30,10 @@ public:
 
     bool deadCheck() override;
 
+    /// Stun properties
+
+    bool isStunned = false;
+
 private:
     /// Entity Properties
     const int id;

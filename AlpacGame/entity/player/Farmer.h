@@ -54,7 +54,7 @@ private:
 
     /// Grasp Properties
     enum class Grasp {
-        EMPTY, HOLDING, THROWING = 3
+        EMPTY, REACHING, HOLDING, THROWING = 3
     };
     sf::Clock graspClock;
     float graspCooldown = 0.2f;

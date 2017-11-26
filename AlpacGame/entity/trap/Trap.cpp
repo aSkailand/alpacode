@@ -5,6 +5,7 @@
 #include "Trap.h"
 #include "../../Resources/ConfigGame.h"
 
+
 Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y) {
     this->configGame = configGame;
 
@@ -61,7 +62,19 @@ Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y)
 
 void Trap::render(sf::RenderWindow *window) {
 
-    // Render sfShape
+    /// Inbuilt switchAction
+    if(trapClock.isRunning()){
+        if(trapClock.getElapsedTime().asSeconds() >= stunTick){
+            trapClock.reset(false);
+            stunnedTarget->isStunned = false;
+            stunnedTarget = nullptr;
+        } else{
+            b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, -1.f));
+            stunnedTarget->getBody()->SetTransform(getBody()->GetWorldCenter() + offset, getBody()->GetAngle());
+        }
+    }
+
+    /// Render sfShape
     float shape_x = SCALE * body->GetPosition().x;
     float shape_y = SCALE * body->GetPosition().y;
 
@@ -75,13 +88,6 @@ void Trap::render(sf::RenderWindow *window) {
         sfShape->setOutlineColor(sf::Color::Black);
     }
 
-//    if (isHeld) {
-//        sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
-//        sfShape->setTexture(&configGame->shotgunHeldTexture);
-//    } else {
-//        sfShape->setScale(1.f, 1.f);
-//        sfShape->setTexture(&configGame->shotgunDropTexture);
-//    }
 
     window->draw(*sfShape);
 
@@ -99,13 +105,32 @@ void Trap::render(sf::RenderWindow *window) {
         } else {
             sfShape->setOutlineColor(sf::Color::Black);
         }
-    } else {
     }
 
 }
 
 void Trap::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
+    if(currentMode == Mode::READY){
+
+    }
+    if(stunnedTarget != nullptr){
+        return;
+    }
+
+    if(activated && selfCollision == Entity::CollisionID::HIT){
+        if(contactEntity->getID() == Entity::ID::WOLF && otherCollision == Entity::CollisionID::HIT){
+
+            stunnedTarget = dynamic_cast<Wolf*>(contactEntity);
+            stunnedTarget->currentAction = Wolf::Action::IDLE;
+            stunnedTarget->isStunned = true;
+
+            trapClock.reset(true);
+
+            activated = false;
+
+        }
+    }
 }
 
 void Trap::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
@@ -117,5 +142,12 @@ bool Trap::deadCheck() {
 }
 
 void Trap::use() {
-    activated = !activated;
+    if(currentMode == Mode::LATCHED){
+//        currentMode = Mode::OPEN;
+        currentMode = Mode::READY;
+    }
+}
+
+void Trap::performStun() {
+
 }

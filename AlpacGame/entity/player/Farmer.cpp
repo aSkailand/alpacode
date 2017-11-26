@@ -153,7 +153,7 @@ void Farmer::switchAction() {
             if (isCooldownTriggered(&graspClock, graspCooldown)) {
                 if (currentGrasp == Grasp::EMPTY) {
                     if (!currentlyTouchingEntities.empty()) {
-                        currentGrasp = Grasp::HOLDING;
+                        currentGrasp = Grasp::REACHING;
                     }
                 } else if (currentGrasp == Grasp::HOLDING) {
                     currentGrasp = Grasp::THROWING;
@@ -200,10 +200,10 @@ void Farmer::performAction() {
 
 // Check the current status of grasp
     switch (currentGrasp) {
-        case Grasp::HOLDING: {
+        case Grasp::REACHING: {
 
-            // If farmer is in holding-mode, but holds nothing = Give him an entity to hold
             if (holdingEntity == nullptr) {
+
                 holdingEntity = currentlyTouchingEntities.front();
 
                 dynamic_cast<Holdable *>(holdingEntity)->isHeld = true;
@@ -213,70 +213,52 @@ void Farmer::performAction() {
                     warm->currentStatus = Status::AIRBORNE;
                 }
 
+                currentGrasp = Grasp::HOLDING;
+
                 graspClock.restart();
-            }
-                // If farmer is in holding-mode, and holds something => keep holding
-            else {
-
-                switch (holdingEntity->getID()) {
-                    case ID::PLANET:
-                        break;
-                    case ID::FARMER:
-                        break;
-                    case ID::ALPACA: {
-                        b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
-                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, -2.5f));
-                        holdingEntity->getBody()->SetTransform(center + offset, getBody()->GetAngle());
-                        break;
-                    }
-                    case ID::WOLF:
-                        break;
-                    case ID::SHOTGUN: {
-
-                        b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() -
-                                          b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
-                        float angle = atan2(-toTarget.x, toTarget.y) - 90 / DEGtoRAD;
-
-                        b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
-                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, 0.7f));
-                        holdingEntity->getBody()->SetTransform(center + offset, angle);
-
-                        break;
-                    }
-                    case ID::TRAP: {
-                        b2Vec2 center = b2Vec2(sfShape->getPosition().x / SCALE, sfShape->getPosition().y / SCALE);
-                        b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, -1.5f));
-                        holdingEntity->getBody()->SetTransform(center + offset, getBody()->GetAngle());
-                        break;
-                    }
-                    case ID::BULLET:
-                        break;
-                    case ID::VOID:
-                        break;
-                }
 
             }
             break;
+
         }
 
-        case Grasp::THROWING: {
+        case Grasp::HOLDING: {
 
             switch (holdingEntity->getID()) {
                 case ID::ALPACA: {
-                    dynamic_cast<Alpaca *>(holdingEntity)->isHeld = false;
+                    b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -3.f));
+                    holdingEntity->getBody()->SetTransform(offset, getBody()->GetAngle());
                     break;
                 }
                 case ID::SHOTGUN: {
-                    dynamic_cast<Shotgun *>(holdingEntity)->isHeld = false;
+
+                    b2Vec2 mousePosition = b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+                    b2Vec2 toTarget = getBody()->GetWorldCenter() - mousePosition;
+                    float angle = atan2(-toTarget.x, toTarget.y) - 90.f / DEGtoRAD;
+
+                    b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, 0.f));
+                    holdingEntity->getBody()->SetTransform(offset, angle);
+
                     break;
                 }
-                case ID::TRAP:{
-                    dynamic_cast<Trap *>(holdingEntity)->isHeld = false;
+                case ID::TRAP: {
+                    b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -1.5f));
+                    holdingEntity->getBody()->SetTransform(offset, getBody()->GetAngle());
                     break;
                 }
-                default:
+                default: {
                     break;
+                }
             }
+
+            break;
+
+        }
+
+
+        case Grasp::THROWING: {
+
+            dynamic_cast<Holdable*>(holdingEntity)->isHeld = false;
 
             // Reset Rotation (So that throwing angle works as intended)
             holdingEntity->getBody()->SetTransform(holdingEntity->getBody()->GetWorldCenter(), getBody()->GetAngle());
@@ -285,17 +267,14 @@ void Farmer::performAction() {
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
 
             // Get mouse angle
-            b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() -
-                              b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+            b2Vec2 mousePosition = b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+            b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() - mousePosition;
             toTarget.Normalize();
 
             float mass = holdingEntity->getBody()->GetMass();
 
             // Push body
             holdingEntity->getBody()->ApplyLinearImpulseToCenter(throwForce * mass * -toTarget, true);
-
-//             Reset touching in case it is dropped and is still in range
-//            currentlyTouchingEntities.push_back(holdingEntity);
 
             // Reset variables
             holdingEntity = nullptr;
@@ -369,7 +348,7 @@ void Farmer::startContact_body(Entity::CollisionID otherCollision, Entity *conta
 void Farmer::startContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::ALPACA: {
-            if(otherCollision == CollisionID::HIT && !checkIfTouching(contactEntity)) {
+            if (otherCollision == CollisionID::HIT && !checkIfTouching(contactEntity)) {
                 currentlyTouchingEntities.push_back(contactEntity);
                 dynamic_cast<Alpaca *> (contactEntity)->farmerTouch = true;
                 sfShape->setOutlineColor(sf::Color::Green);
@@ -383,7 +362,7 @@ void Farmer::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
             }
             break;
         }
-        case ID::TRAP:{
+        case ID::TRAP: {
             if (otherCollision == CollisionID::HIT && !checkIfTouching(contactEntity)) {
                 currentlyTouchingEntities.push_back(contactEntity);
                 dynamic_cast<Trap *> (contactEntity)->farmerTouch = true;
