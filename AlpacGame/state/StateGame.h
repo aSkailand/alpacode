@@ -53,7 +53,7 @@ private:
     /// View
     sf::View view;
     float viewNonZoomed = 1.5f;  // How much to zoom in
-    float viewZoomed = 4.0f;
+    float viewZoomed = 3.0f;
     bool zoomed = false;
 
     // Game State Functions

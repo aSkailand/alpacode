@@ -119,6 +119,11 @@ public:
     sf::Texture night_11;
     sf::Texture night_12;
 
+    sf::Texture sun_1;
+    sf::Texture sun_2;
+    sf::Texture moon_1;
+
+
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 

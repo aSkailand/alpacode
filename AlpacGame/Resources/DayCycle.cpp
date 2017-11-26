@@ -9,23 +9,36 @@ DayCycle::DayCycle(ConfigGame *configGame, float planetRadius, b2Body *body) {
 
     configGame->currentCycle = ConfigGame::Cycle::DAY;
     
-    float world_x = body->GetPosition().x * SCALE;
-    float world_y = body->GetPosition().y * SCALE;
+    float world_x = body->GetWorldCenter().x * SCALE;
+    float world_y = body->GetWorldCenter().y * SCALE;
 
-    background = new sf::CircleShape(2920+ planetRadius/2 );
 
-    background->setOrigin(2920+ planetRadius/2, 2920+ planetRadius/2);
+    /// Intialize Background
+    background = new sf::CircleShape(1920+ planetRadius/2 );
+    background->setOrigin(1920+ planetRadius/2, 1920+ planetRadius/2);
     background->setPosition(world_x, world_y);
     background->setTexture(&configGame->morning_1);
-    background->setOutlineThickness(0);
 
+    /// Initialize Sun
+    sun = new sf::CircleShape(sunRadius);
+    sun->setOrigin(sunRadius, sunRadius);
+    sun->setTexture(&configGame->sun_1);
 
     /// Iterate amove the pictures
     currentBG = backgroundCycle::MORNING_1;
 
     //Reset timer right away
-    chrono.reset(true);
+    cycleChrono.reset(true);
     std::cout << "DayCycle Initialized" << std::endl;
+
+    /** Calculation for the suns movement
+     *  1.f / 23.f is for the sun to circulate the world in 1 second
+     *  multipy by the amount of seconds in the cycle.
+     *  divide be 2 for the equal amount of sun and night
+     */
+    float dayTime = cycleTime * 12;
+    sunTick = 1.f / ((23.f * dayTime) / 2);
+
     
     
 }
@@ -36,20 +49,23 @@ void DayCycle::loopDayCycle() {
         /// Day Starts
         case backgroundCycle ::MORNING_1:{
             background->setTexture(&configGame->morning_1);
+            sun->setTexture(&configGame->sun_1);
             configGame->currentCycle = ConfigGame::Cycle::DAY;
             break;}
         case backgroundCycle ::MORNING_2:{      background->setTexture(&configGame->morning_2); break;}
         case backgroundCycle ::MORNING_3:{      background->setTexture(&configGame->morning_3); break;}
-        case backgroundCycle ::AFTERNOON_4:{    background->setTexture(&configGame->afternoon_4); break;}
+        case backgroundCycle ::AFTERNOON_4:{    background->setTexture(&configGame->afternoon_4);   sun->setTexture(&configGame->sun_2);   break;}
         case backgroundCycle ::AFTERNOON_5:{    background->setTexture(&configGame->afternoon_5); break;}
         case backgroundCycle ::AFTERNOON_6:{    background->setTexture(&configGame->afternoon_6); break;}
-        case backgroundCycle ::EVENING_7:{      background->setTexture(&configGame->evening_7); break;}
-        case backgroundCycle ::EVENING_8:{      background->setTexture(&configGame->evening_8); break;}
-        /// Night Starts
-        case backgroundCycle ::EVENING_9:{
-            background->setTexture(&configGame->evening_9);
+
+            /// Night Starts TODO:
+        case backgroundCycle ::EVENING_7:{
+            background->setTexture(&configGame->evening_7);
+            sun->setTexture(&configGame->moon_1);
             configGame->currentCycle = ConfigGame::Cycle::NIGHT;
             break;}
+        case backgroundCycle ::EVENING_8:{      background->setTexture(&configGame->evening_8); break;}
+        case backgroundCycle ::EVENING_9:{     background->setTexture(&configGame->evening_9); break;}
         case backgroundCycle ::NIGHT_10:{      background->setTexture(&configGame->night_10); break;}
         case backgroundCycle ::NIGHT_11:{      background->setTexture(&configGame->night_11); break;}
         case backgroundCycle ::NIGHT_12:{      background->setTexture(&configGame->night_12); break;}
@@ -58,12 +74,11 @@ void DayCycle::loopDayCycle() {
 }
 
 void DayCycle::updateDayCycle(){
+    updateSunMovement();
 
 
+    if(cycleChrono.getElapsedTime().asSeconds() >= cycleTime){
 
-    if(chrono.getElapsedTime().asSeconds() >= dayTime){
-
-        /// Day Time: dayTime = 5.s
         if(currentBG == backgroundCycle::MORNING_1)         currentBG = backgroundCycle ::MORNING_2;
         else if(currentBG == backgroundCycle::MORNING_2)    currentBG = backgroundCycle ::MORNING_3;
         else if(currentBG == backgroundCycle::MORNING_3)    currentBG = backgroundCycle ::AFTERNOON_4;
@@ -77,8 +92,8 @@ void DayCycle::updateDayCycle(){
         else if(currentBG == backgroundCycle::NIGHT_11)     currentBG = backgroundCycle ::NIGHT_12;
         else if (currentBG == backgroundCycle::NIGHT_12)    currentBG = backgroundCycle ::MORNING_1;
 
-        std::cout << chrono.getElapsedTime().asSeconds() << std::endl;
-        chrono.reset(true);
+      //  std::cout << cycleChrono.getElapsedTime().asSeconds() << std::endl;
+        cycleChrono.reset(true);
     }
 
 
@@ -88,10 +103,18 @@ void DayCycle::updateDayCycle(){
 
 }
 
+void DayCycle::updateSunMovement() {
+
+    float x = configGame->planetBody->GetWorldCenter().x *SCALE + cos(sunAngle) * configGame->planetRadius * 2;
+    float y = configGame->planetBody->GetWorldCenter().y *SCALE + sin(sunAngle) * configGame->planetRadius * 2;
+
+    sun->setPosition(x,y);
+    sunAngle += sunTick;
+}
+
 void DayCycle::render(sf::RenderWindow *window) {
 
     window->draw(*background);
-
-
+    window->draw(*sun);
 
 }
