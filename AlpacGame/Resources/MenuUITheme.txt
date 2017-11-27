@@ -1,7 +1,7 @@
 Button {
-    NormalImage : "MenuUI1.png" Part(0, 0, 133, 37) Middle(65, 0, 0, 37);
-    HoverImage : "MenuUI1.png" Part(0, 38, 133, 37) Middle(65, 0, 0, 37);
-    DownImage : "MenuUI1.png" Part(0, 76, 133, 37) Middle(65, 0, 0, 37);
+    NormalImage : "MenuUI.png" Part(0, 0, 133, 37) Middle(65, 0, 0, 37);
+    HoverImage : "MenuUI.png" Part(0, 38, 133, 37) Middle(65, 0, 0, 37);
+    DownImage : "MenuUI.png" Part(0, 76, 133, 37) Middle(65, 0, 0, 37);
     TextColor : (255, 255, 255);
 }
 
@@ -13,8 +13,8 @@ ChatBox {
 }
 
 CheckBox {
-    CheckedImage : "MenuUI1.png" Part(32, 115, 34, 37);
-    UncheckedImage : "MenuUI1.png" Part(0, 120, 31, 32);
+    CheckedImage : "MenuUI.png" Part(32, 115, 34, 37);
+    UncheckedImage : "MenuUI.png" Part(0, 120, 31, 32);
     TextColor : (255, 255, 255);
 }
 
@@ -35,8 +35,8 @@ Button.ChildWindowCloseButton {
 }
 
 ComboBox {
-    ArrowUpImage : "MenuUI1.png" Part(17, 155, 16, 16);
-    ArrowDownImage : "MenuUI1.png" Part(0, 155, 16, 16);
+    ArrowUpImage : "MenuUI.png" Part(17, 155, 16, 16);
+    ArrowDownImage : "MenuUI.png" Part(0, 155, 16, 16);
     BackgroundColor : (0, 74, 127);
     TextColor : (255, 255, 255);
     BorderColor : (0, 148, 255);
@@ -104,8 +104,8 @@ Scrollbar {
 }
 
 Slider {
-    TrackImage : "MenuUI1.png" Part(17, 172, 30, 20) Middle(10, 0, 10, 20);
-    ThumbImage : "MenuUI1.png" Part(0, 172, 15, 38);
+    TrackImage : "MenuUI.png" Part(17, 172, 30, 20) Middle(10, 0, 10, 20);
+    ThumbImage : "MenuUI.png" Part(0, 172, 15, 38);
 }
 
 SpinButton {

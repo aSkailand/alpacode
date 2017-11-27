@@ -7,14 +7,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     this->machine = &stateMachine;
 
     theme = tgui::Theme::create("Resources/MenuUITheme.txt");
-    pictureMenu = tgui::Picture::create("Resources/test.png");
-    //pictureTittle = tgui::Picture::create("Resources/Tittle.png");
-    pictureTittle2 = tgui::Picture::create("Resources/Aslak.png");
+    pictureTittleMenu = tgui::Picture::create("Resources/TittleMenuBG.png");
+    pictureMenu = tgui::Picture::create("Resources/MenuBG.png");
     masterButton = theme->load("Button");
-
-    if(!titleFont.loadFromFile("Resources/fontPixel.ttf")){
-        // Error..
-    }
 
 
     createButton(buttonID::RESUME,"Resume","pressed",
@@ -84,7 +79,7 @@ tgui::Picture::Ptr &ConfigMenu::getPictureMenu() {
     return pictureMenu;
 }
 tgui::Picture::Ptr &ConfigMenu::getPictureTittle() {
-    return pictureTittle2;
+    return pictureTittleMenu;
 }
 
 void ConfigMenu::createButton(buttonID buttonID,
@@ -106,9 +101,8 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Main menu layout
     tempVerticalLayout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr tempHorizontalLayout = tgui::HorizontalLayout::create();
+    pictureTittleMenu->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
     pictureMenu->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
-    //pictureTittle->setSize(tgui::bindMax(windowWidth, windowWidth), tgui::bindMax(windowHeight, windowHeight));
-    pictureTittle2->setSize(tgui::bindMax(800, windowWidth), tgui::bindMax(600, windowHeight));
     tempVerticalLayout->removeAllWidgets();
     windowWidth = tgui::bindWidth(*Width);
     windowHeight = tgui::bindHeight(*Width);
@@ -249,17 +243,19 @@ void ConfigMenu::soundSettingsLayout() {
 
     // Adds all the layouts and widgets to the GUI
     horiLayout->add(muteSound);
-    horiLayout->addSpace(5);
+    horiLayout->addSpace(5.f);
     layout->add(horiLayout);
-    layout->addSpace();
-    layout->addSpace();
+    layout->addSpace(2.f);
     layout->add(masterLabel);
+    layout->addSpace(0.5f);
     layout->add(mapSliders[buttonID::MASTER_SLIDER]);
     layout->addSpace();
     layout->add(musicLabel);
+    layout->addSpace(0.5f);
     layout->add(mapSliders[buttonID::MUSIC_SLIDER]);
     layout->addSpace();
     layout->add(sfxLabel);
+    layout->addSpace(0.5f);
     layout->add(mapSliders[buttonID::EFFECT_SLIDER]);
     layout->addSpace();
     layout->add(mapButtons[buttonID::APPLY_SOUND_SETTINGS]);

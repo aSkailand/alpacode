@@ -64,8 +64,6 @@ public:
     std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
 
-    /// Font
-    sf::Font titleFont;
 
 private:
 
@@ -73,11 +71,9 @@ private:
     StateMachine *machine = nullptr;
 
     /// TGUI objects
-    tgui::VerticalLayout::Ptr titleVerticalLayout;
     tgui::VerticalLayout::Ptr tempVerticalLayout;
     tgui::Picture::Ptr pictureMenu;
-    tgui::Picture::Ptr pictureTittle;
-    tgui::Picture::Ptr pictureTittle2;
+    tgui::Picture::Ptr pictureTittleMenu;
     tgui::Button::Ptr masterButton;
     tgui::Theme::Ptr theme;
     tgui::Layout windowWidth;
