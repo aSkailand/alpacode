@@ -41,8 +41,6 @@ public:
         BACK_HIGHSCORE,
         BACK_TO_MAIN,
         APPLY_SETTINGS,
-        APPLY_VIDEO_SETTINGS,
-        APPLY_SOUND_SETTINGS,
         MASTER_SLIDER,
         MUSIC_SLIDER,
         EFFECT_SLIDER
@@ -181,9 +179,6 @@ private:
     void setCurrentResolution(ConfigWindow::Resolution currentResolution);
 
     void applyChanges();
-
-    void checkChanges();
-
 };
 
 

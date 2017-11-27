@@ -6,6 +6,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
+    menuGUI = machine->configWindow.getMenuGUI();
+    menuGUI->removeAllWidgets();
 
     /// Reset Game
     if (configGame->newGame) {
@@ -65,7 +67,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-            if(!bodyIter->IsAwake())
+            if (!bodyIter->IsAwake())
                 continue;
 
             // Calculate Radial Gravitation on all bodies
@@ -140,6 +142,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         view.setCenter(viewX, viewY);
 
+        if (testDefeat) {
+            menuGUI->draw();
+        }
+
+
         view.setRotation(angle * DEGtoRAD);
 
         window->setView(view);
@@ -165,7 +172,6 @@ bool StateGame::pollGame() {
                 } else if (event.key.code == sf::Keyboard::Space) {
                     // todo: Add actual pause.
                     //machine->setCurrentState(StateMachine::stateID::PAUSE);
-                    //testDefeat = !testDefeat;
                     return false;
                 } else {
                     keyPressedHandler(event);
@@ -201,6 +207,9 @@ void StateGame::keyPressedHandler(sf::Event event) {
         case sf::Keyboard::P: {
             printf("X pos: %f\n", configGame->mouseXpos);
             printf("Y pos: %f\n\n", configGame->mouseYpos);
+            menuGUI->removeAllWidgets();
+            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+            testDefeat = !testDefeat;
             break;
         }
         case sf::Keyboard::Num1: {

@@ -64,11 +64,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
 
-    defeatScreenLayout();
-
-
     mainMenuLayout(machine->configWindow.getMenuGUI());
-    highscoreLayout();
 }
 
 tgui::Picture::Ptr &ConfigMenu::getPictureMenu() {
@@ -134,8 +130,8 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     videoSettingsLayout();
     soundSettingsLayout();
-
-
+    defeatScreenLayout();
+    highscoreLayout();
 }
 
 void ConfigMenu::videoSettingsLayout() {
@@ -433,7 +429,7 @@ void ConfigMenu::loadHighscore(std::string highScoreFile) {
                 tempString = line;
 
                 // This boolean is required because of how the format of the highscore.txt file is formatted,
-                // first line is name, second line is highscore to that name,
+                // first line is name, second line is the highscore to that name,
                 // third line is name, fourth line is score, and so on...
                 alternateHighscoreWindow = !alternateHighscoreWindow;
                 // rank increment
@@ -474,20 +470,23 @@ void ConfigMenu::defeatScreenLayout() {
     // Vertical Layout
     tgui::VerticalLayout::Ptr defeatLayout = tgui::VerticalLayout::create();
     tgui::VerticalLayout::Ptr tempLayout = tgui::VerticalLayout::create();
+    tgui::HorizontalLayout::Ptr defeatTitleLayout = tgui::HorizontalLayout::create();
     tempLayout->setPosition(machine->configWindow.getWindow().getSize().x / 4,
                             machine->configWindow.getWindow().getSize().y / 4);
     tempLayout->setSize(400, 300);
 
     // Defeat label
     tgui::Label::Ptr defeatLabel = tgui::Label::copy(tempLabel);
-    defeatLabel->setText("Defeat!");
+    defeatLabel->setText("DEFEAT!");
     defeatLabel->setPosition(tempLayout->getSize().x / 2, tempLayout->getSize().y / 2);
-    defeatLabel->setTextSize(32);
+    defeatLabel->setTextSize(34);
+    defeatLabel->setTextColor(tgui::Color(255,10,10));
 
     // Enter name label
     tgui::Label::Ptr nameLabel = tgui::Label::copy(tempLabel);
     nameLabel->setText("Enter name:");
     nameLabel->setTextSize(24);
+
 
     // Edit box
     tgui::EditBox::Ptr nameEditBox = theme->load("EditBox");
@@ -498,19 +497,25 @@ void ConfigMenu::defeatScreenLayout() {
     tgui::Button::Ptr returnToMenu = theme->load("Button");
     returnToMenu->setText("Return to menu...");
     returnToMenu->connect("pressed", [&] {
-        std::cout << "Hello" << std::endl;
         machine->setCurrentState(StateMachine::stateID::EXIT);
-        std::cout << ", World!" << std::endl;
+
     });
 
 
+    defeatTitleLayout->addSpace();
+    defeatTitleLayout->add(defeatLabel);
+    defeatTitleLayout->addSpace();
+
+
     // Adds every widget to layout map
-    tempLayout->add(defeatLabel);
-    tempLayout->addSpace(2);
+    tempLayout->add(defeatTitleLayout);
+    tempLayout->addSpace();
     tempLayout->add(nameLabel);
     tempLayout->add(nameEditBox, "Enter name...");
-    tempLayout->addSpace();
+    tempLayout->addSpace(0.5);
     tempLayout->add(returnToMenu);
+    tempLayout->setRatio(0,3);
+    
     mapLayouts.emplace(layouts::DEFEAT, tempLayout);
 }
 
@@ -541,8 +546,3 @@ void ConfigMenu::applyChanges() {
     mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
     changesMadeVideo = false;
 }
-
-void ConfigMenu::checkChanges() {
-
-}
-
