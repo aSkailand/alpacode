@@ -32,12 +32,13 @@ public:
 
     enum class buttonID {
         PLAYGAME,
+        RESUME,
+        HIGHSCORE,
         SETTINGS,
         QUIT,
         VIDEO,
         SOUND,
         CONTROLS,
-        HIGHSCORE,
         BACK_HIGHSCORE,
         BACK_TO_MAIN,
         APPLY_SETTINGS,
@@ -60,12 +61,14 @@ public:
      * @return returns a tgui::Picture
      */
     tgui::Picture::Ptr &getPictureMenu();
+    tgui::Picture::Ptr &getPictureTittle();
 
     /// Mappings of the different layouts and widgets
     std::map<buttonID, tgui::Button::Ptr> mapButtons;
     std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
     std::map<std::string, int> mapHighscore;
+
 
 private:
 
@@ -85,11 +88,14 @@ private:
     /// TGUI objects
     tgui::VerticalLayout::Ptr tempVerticalLayout;
     tgui::Picture::Ptr pictureMenu;
+    tgui::Picture::Ptr pictureTittleMenu;
     tgui::Button::Ptr masterButton;
     tgui::Theme::Ptr theme;
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
     tgui::TextBox::Ptr textBoxHighscore;
+
+
 
     /// CheckBox
     bool checkBoxMuteChecked = false;

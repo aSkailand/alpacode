@@ -10,7 +10,7 @@ void StateMenu::goNext(StateMachine &stateMachine) {
 
     /// TGUI setup
     menuGUI->removeAllWidgets();
-    menuGUI->add(machine->configMenu->getPictureMenu());
+    menuGUI->add(machine->configMenu->getPictureTittle());
     menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::MAINMENU]);
 
     window->setMouseCursorVisible(true);
