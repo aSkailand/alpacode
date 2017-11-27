@@ -69,6 +69,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     createButton(buttonID::BACK_HIGHSCORE, "Back", "pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->configWindow.getMenuGUI()->add(pictureTittleMenu);
         machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::MAINMENU]);
     });
 
@@ -117,9 +118,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->setSize(windowWidth / 2, windowHeight * 5 / 6);
     tempVerticalLayout->setPosition(windowWidth / 4, windowHeight / 6);
 
-    // TODO: add a new font for titleLabel.
 
-    //tempVerticalLayout->add(pictureTittle2);
     tempVerticalLayout->addSpace(2.f);
     tempVerticalLayout->add(mapButtons[buttonID::RESUME]);
     tempVerticalLayout->addSpace(0.1f);
@@ -139,7 +138,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Settings layout
     tgui::VerticalLayout::Ptr optionsVerticalLayout = tgui::VerticalLayout::create();
     optionsVerticalLayout->setSize(windowWidth / 3, windowHeight);
-    optionsVerticalLayout->setPosition(windowWidth - (windowWidth), 0);
+    optionsVerticalLayout->setPosition(windowWidth - (windowWidth ), 0);
     optionsVerticalLayout->removeAllWidgets();
     optionsVerticalLayout->addSpace(0.5f);
     optionsVerticalLayout->add(mapButtons[buttonID::VIDEO]);
@@ -169,7 +168,7 @@ void ConfigMenu::videoSettingsLayout() {
     tgui::VerticalLayout::Ptr videoSettingsLayout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr hori = tgui::HorizontalLayout::create();
     videoSettingsLayout->setSize(windowWidth / 4, windowHeight / 2);
-    videoSettingsLayout->setPosition(windowWidth / 3, windowHeight / 6);
+    videoSettingsLayout->setPosition(windowWidth / 2, windowHeight / 6);
 
     // ComboBox
     tgui::ComboBox::Ptr resolutionBox = theme->load("ComboBox");
@@ -297,7 +296,7 @@ void ConfigMenu::soundSettingsLayout() {
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr horiLayout = tgui::HorizontalLayout::create();
     layout->setSize(windowWidth / 4, windowHeight / 2);
-    layout->setPosition(windowWidth / 3, windowHeight / 6);
+    layout->setPosition(windowWidth / 2, windowHeight / 6);
 
     // Slider master label
     tgui::Label::Ptr masterLabel = tgui::Label::create();
@@ -401,7 +400,7 @@ void ConfigMenu::highscoreLayout() {
     backButton->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
         machine->configWindow.getWindow().clear();
-        machine->configWindow.getMenuGUI()->add(pictureMenu);
+        machine->configWindow.getMenuGUI()->add(pictureTittleMenu);
         machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::MAINMENU]);
     });
 
