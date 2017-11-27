@@ -19,7 +19,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
         entities = configGame->entities;
         planet = configGame->planet;
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
-
+        dayCycle = dynamic_cast<DayCycle *>(configGame->dayCycle);
+        
         configGame->newGame = false;
     }
 
@@ -35,23 +36,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setFillColor(sf::Color::Red);
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
-    
-    /// Background Initialization
-    /// Initialize Day Cycle
-    dayCycle = new DayCycle(configGame, configGame->planetRadius, configGame->planetBody);
-    /*
-    float world_x = configGame->planetBody->GetPosition().x * SCALE;
-    float world_y = configGame->planetBody->GetPosition().y * SCALE;
 
-    configGame->currentCycle = ConfigGame::Cycle::DAY;
-    // TODO: IMPORTANT Fix Background Size and Origin with different PlanetSize. :(
-
-    dayCycle = new DayCycle(configGame->planetRadius, reinterpret_cast<b2Body &>(configGame->planetBody));
-    configGame->background = new sf::CircleShape(1920+ configGame->planetRadius/2 );
-    configGame-> background->setOrigin(1920+ configGame->planetRadius/2, 1920+ configGame->planetRadius/2);
-    configGame-> background->setPosition(world_x, world_y);
-    configGame->background->setTexture(&configGame->morning_1);
-    configGame->bg = 1;*/
 
 
     /// Poll game
@@ -80,10 +65,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
         } else {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
-
-
-        /// Update Day Cycle
-        dayCycle->updateDayCycle();
 
         /// Box2D Physics Calculations
         // Iterating through all existing bodies
@@ -116,8 +97,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Render Phase
         window->clear();
 
-        /// Draw Background
-        dayCycle->render(window);
+        /// Draw Background;
+        for( Scenery *s : *configGame->sceneries){
+            s->render(window);
+            s->update();
+        }
 
 
         /// Delete Dead Entities

@@ -7,9 +7,11 @@
 #include <Box2D/Box2D.h>
 #include <chrono>
 
-#include "ConfigGame.h"
+#include "../../Resources/ConfigGame.h"
+#include "../Scenery.h"
 
-class DayCycle {
+class DayCycle : public Scenery{
+
 private:
     /// Time for each background transition
     float cycleTime = 10.0f;
@@ -22,15 +24,18 @@ private:
 
 public:
 
-    DayCycle(ConfigGame *configGame, float planetRadius, b2Body *body);
+    DayCycle(ConfigGame *configGame);
 
     sf::Shape *background = nullptr;
     sf::Shape *sun = nullptr;
 
-    void updateDayCycle();
-    void render(sf::RenderWindow *window);
+
+
 
 private:
+
+    void render(sf::RenderWindow *window) override;
+    void update() override;
 
     void loopDayCycle();
 

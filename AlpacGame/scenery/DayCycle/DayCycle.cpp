@@ -1,21 +1,21 @@
 
 #include "DayCycle.h"
 
+// TODO: IMPORTANT Fix Background Size and Origin with different PlanetSize. :(
 
 
-DayCycle::DayCycle(ConfigGame *configGame, float planetRadius, b2Body *body) {
+DayCycle::DayCycle(ConfigGame *configGame) {
 
     this->configGame = configGame;
 
-    configGame->currentCycle = ConfigGame::Cycle::DAY;
+    configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
     
-    float world_x = body->GetWorldCenter().x * SCALE;
-    float world_y = body->GetWorldCenter().y * SCALE;
-
+    float world_x = configGame->planetBody->GetWorldCenter().x * SCALE;
+    float world_y = configGame->planetBody->GetWorldCenter().y * SCALE;
 
     /// Intialize Background
-    background = new sf::CircleShape(1920+ planetRadius/2 );
-    background->setOrigin(1920+ planetRadius/2, 1920+ planetRadius/2);
+    background = new sf::CircleShape(1920+ configGame->planetRadius/2 );
+    background->setOrigin(1920+ configGame->planetRadius/2, 1920+ configGame->planetRadius/2);
     background->setPosition(world_x, world_y);
     background->setTexture(&configGame->morning_1);
 
@@ -50,7 +50,7 @@ void DayCycle::loopDayCycle() {
         case backgroundCycle ::MORNING_1:{
             background->setTexture(&configGame->morning_1);
             sun->setTexture(&configGame->sun_1);
-            configGame->currentCycle = ConfigGame::Cycle::DAY;
+            configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
             break;}
         case backgroundCycle ::MORNING_2:{      background->setTexture(&configGame->morning_2); break;}
         case backgroundCycle ::MORNING_3:{      background->setTexture(&configGame->morning_3); break;}
@@ -62,7 +62,7 @@ void DayCycle::loopDayCycle() {
         case backgroundCycle ::EVENING_7:{
             background->setTexture(&configGame->evening_7);
             sun->setTexture(&configGame->moon_1);
-            configGame->currentCycle = ConfigGame::Cycle::NIGHT;
+            configGame->setCurrentCycle(ConfigGame::Cycle::NIGHT);
             break;}
         case backgroundCycle ::EVENING_8:{      background->setTexture(&configGame->evening_8); break;}
         case backgroundCycle ::EVENING_9:{     background->setTexture(&configGame->evening_9); break;}
@@ -73,7 +73,7 @@ void DayCycle::loopDayCycle() {
 
 }
 
-void DayCycle::updateDayCycle(){
+void DayCycle::update(){
     updateSunMovement();
 
 
@@ -118,3 +118,5 @@ void DayCycle::render(sf::RenderWindow *window) {
     window->draw(*sun);
 
 }
+
+

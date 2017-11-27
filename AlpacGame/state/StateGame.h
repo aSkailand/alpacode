@@ -12,7 +12,8 @@
 #include "StateMachine.h"
 #include "../Resources/ConfigWindow.h"
 #include "../Resources/ConfigGame.h"
-#include "../Resources/DayCycle.h"
+#include "../scenery/DayCycle/DayCycle.h"
+#include "../scenery/Scenery.h"
 #include "../entity/CollisionListener.h"
 
 #include "../entity/planet/planet.h"
@@ -29,6 +30,7 @@ public:
     void goNext(StateMachine &stateMachine) override;
 
     std::vector<Entity*> *entities;
+    //Scenery* DayCycle;
 
     Entity* planet;
     Farmer* farmer;

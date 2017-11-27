@@ -9,6 +9,8 @@
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
 #include "../Resources/SpriteInfo.h"
+#include "../scenery/Scenery.h"
+
 
 /**
  * Common resources accessible by all game entities.
@@ -18,7 +20,10 @@ public:
 
     /// Day / Night Cycle
     enum class Cycle{DAY, NIGHT};
-    Cycle currentCycle;
+    Cycle getCurrentCycle() const;
+
+    void setCurrentCycle(Cycle currentCycle);
+
 
     /// Customizable Properties
     /**
@@ -38,6 +43,10 @@ public:
     sf::RenderWindow *window = nullptr;
 
     std::vector<Entity*> *entities = nullptr;
+
+    std::vector<Scenery*> *sceneries = nullptr;
+
+    Scenery *dayCycle = nullptr;
 
 
     /**
@@ -135,7 +144,11 @@ public:
 
 
 private:
+    Cycle currentCycle = Cycle::DAY;
 
+
+
+private:
     /**
     * Load all necessary font used during the game.
     */

@@ -69,22 +69,22 @@ void ConfigGame::loadAllTextures() {
     planetTexture.loadFromFile("entity/planet/planet.png");
 
     // Background
-    morning_1.loadFromFile("environment/1_Morning.png");
-    morning_2.loadFromFile("environment/2_Morning.png");
-    morning_3.loadFromFile("environment/3_Morning.png");
-    afternoon_4.loadFromFile("environment/4_Afternoon.png");
-    afternoon_5.loadFromFile("environment/5_Afternoon.png");
-    afternoon_6.loadFromFile("environment/6_Afternoon.png");
-    evening_7.loadFromFile("environment/7_Evening.png");
-    evening_8.loadFromFile("environment/8_Evening.png");
-    evening_9.loadFromFile("environment/9_Evening.png");
-    night_10.loadFromFile("environment/10_Night.png");
-    night_11.loadFromFile("environment/11_Night.png");
-    night_12.loadFromFile("environment/12_Night.png");
+    morning_1.loadFromFile("scenery/DayCycle/1_Morning.png");
+    morning_2.loadFromFile("scenery/DayCycle/2_Morning.png");
+    morning_3.loadFromFile("scenery/DayCycle/3_Morning.png");
+    afternoon_4.loadFromFile("scenery/DayCycle/4_Afternoon.png");
+    afternoon_5.loadFromFile("scenery/DayCycle/5_Afternoon.png");
+    afternoon_6.loadFromFile("scenery/DayCycle/6_Afternoon.png");
+    evening_7.loadFromFile("scenery/DayCycle/7_Evening.png");
+    evening_8.loadFromFile("scenery/DayCycle/8_Evening.png");
+    evening_9.loadFromFile("scenery/DayCycle/9_Evening.png");
+    night_10.loadFromFile("scenery/DayCycle/10_Night.png");
+    night_11.loadFromFile("scenery/DayCycle/11_Night.png");
+    night_12.loadFromFile("scenery/DayCycle/12_Night.png");
 
-    sun_1.loadFromFile("environment/Sun_1.png");
-    sun_2.loadFromFile("environment/Sun_2.png");
-    moon_1.loadFromFile("environment/Moon_1.png");
+    sun_1.loadFromFile("scenery/DayCycle/Sun_1.png");
+    sun_2.loadFromFile("scenery/DayCycle/Sun_2.png");
+    moon_1.loadFromFile("scenery/DayCycle/Moon_1.png");
     // Shotgun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
@@ -148,10 +148,13 @@ void ConfigGame::loadAllTextures() {
 
 void ConfigGame::reset() {
 
+
     /// Initiating World (With no innate gravitation)
     delete world;
     world = new b2World(b2Vec2(0, 0));
     world->SetContactListener(new CollisionListener());
+
+
 
     /// Instantiating initial entities
     delete planet;
@@ -166,8 +169,24 @@ void ConfigGame::reset() {
     entities->push_back(farmer);
     entities->push_back(planet);
 
+    /// Background Initialization
+    /// Initialize Day Cycle
+    delete sceneries;
+    sceneries = new std::vector<Scenery *>;
+    delete dayCycle;
+    dayCycle = new DayCycle(this);
+    sceneries->push_back(dayCycle);
+
 
     Wolf::nextId = 0;
     Alpaca::nextId = 0;
 
+}
+
+ConfigGame::Cycle ConfigGame::getCurrentCycle() const {
+    return currentCycle;
+}
+
+void ConfigGame::setCurrentCycle(ConfigGame::Cycle currentCycle) {
+    ConfigGame::currentCycle = currentCycle;
 }
