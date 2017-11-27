@@ -33,6 +33,7 @@ public:
     /// Stun properties
 
     bool isStunned = false;
+    void performStun();
 
 private:
     /// Entity Properties

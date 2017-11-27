@@ -31,6 +31,10 @@ public:
         TRAP    = 0x0040
     };
 
+    enum class Status {
+        GROUNDED, AIRBORNE
+    };
+
     enum class Direction{
         RIGHT = 0,
         LEFT = 1

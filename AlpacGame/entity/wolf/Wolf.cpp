@@ -303,7 +303,7 @@ void Wolf::startContact_body(Entity::CollisionID otherCollision, Entity *contact
 void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::FARMER: {
-            if (otherCollision == CollisionID::HIT) {
+            if (!isStunned && otherCollision == CollisionID::HIT) {
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
 
                 /// Self sensor hits contact sensor
@@ -325,7 +325,7 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
         }
         case ID::ALPACA: {
 
-            if (otherCollision == CollisionID::HIT) {
+            if (!isStunned && otherCollision == CollisionID::HIT) {
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
                 /// Self sensor hits contact sensor
                 float mass = contactEntity->getBody()->GetMass();
@@ -354,7 +354,7 @@ void Wolf::startContact_detection(Entity::CollisionID otherCollision, Entity *co
             break;
         case ID::ALPACA: {
             /// All sensor his
-            if (otherCollision == CollisionID::HIT) {
+            if (!isStunned && otherCollision == CollisionID::HIT) {
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
                 if (delta.x > 0) {
                     currentDirection = Direction::RIGHT;
@@ -427,9 +427,10 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
     }
 }
 
-//void Wolf::performStun() {
-//    currentAction = Action::IDLE;
-//    isStunned = true;
-//    stunClock.reset(true);
-//    printf("Wolf %i is stunned!\n", id);
-//}
+void Wolf::performStun() {
+    currentAction = Action::IDLE;
+    isStunned = true;
+    // TODO FIX
+    printf("Wolf %i is stunned!\n", id);
+}
+

@@ -9,7 +9,8 @@
 #include "../wolf/Wolf.h"
 #include "../../Resources/ConfigGame.h"
 
-class Trap : public EntityCold, public Usable, public Holdable {
+class Trap : public EntityCold, public Holdable {
+
 public:
 
     enum class Mode {
@@ -21,8 +22,15 @@ public:
 
     Mode currentMode = Mode::CLOSED;
 
+    Status currentStatus = Status::AIRBORNE;
+
+    void update() override;
+
+public:
+
     sftools::Chronometer trapClock;
-    float stunTick = 5.0f;
+    float stunTick = 10.0f;
+    float readyTick = 0.0f;
     float openTick = 5.0f;
 
     void performStun();
@@ -40,9 +48,15 @@ public:
 
     bool deadCheck() override;
 
-    void use() override;
+    void performHold() override;
+
+    void performThrow() override;
 
 private:
+
+    std::list<Wolf *> currentlyTouchingEntities;
+
+    bool checkIfTouching(Entity *entity);
 
     ConfigGame *configGame = nullptr;
 

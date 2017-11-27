@@ -28,7 +28,7 @@ Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y)
 
     // Create Sensor
     b2CircleShape b2Shape2;
-    b2Shape2.m_radius = length / 2 / SCALE;
+    b2Shape2.m_radius = ((length + 50) / 2) / SCALE;
     b2FixtureDef sensor;
     sensor.shape = &b2Shape2;
     sensor.isSensor = true;
@@ -50,27 +50,36 @@ Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y)
     // Create SFML shape
     sfShape = new sf::RectangleShape(sf::Vector2f(length, height));
     sfShape->setOrigin(length / 2, height / 2);
-    sfShape->setFillColor(sf::Color::Transparent);
-    sfShape->setOutlineThickness(3);
-    sfShape->setOutlineColor(sf::Color::Black);
 
-    sf_HitSensor = new sf::CircleShape(length / 2);
+    sf_HitSensor = new sf::CircleShape(fixture_hit->GetShape()->m_radius * SCALE);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
-    sf_HitSensor->setOrigin(length / 2, length / 2);
+    sf_HitSensor->setOrigin(fixture_hit->GetShape()->m_radius * SCALE, fixture_hit->GetShape()->m_radius * SCALE);
 
 }
 
 void Trap::render(sf::RenderWindow *window) {
 
-    /// Inbuilt switchAction
-    if(trapClock.isRunning()){
-        if(trapClock.getElapsedTime().asSeconds() >= stunTick){
-            trapClock.reset(false);
-            stunnedTarget->isStunned = false;
-            stunnedTarget = nullptr;
-        } else{
-            b2Vec2 offset = getBody()->GetWorldVector(b2Vec2(0.f, -1.f));
-            stunnedTarget->getBody()->SetTransform(getBody()->GetWorldCenter() + offset, getBody()->GetAngle());
+    switch (currentMode) {
+        case Mode::CLOSED:{
+            sf_HitSensor->setOutlineColor(sf::Color::Black);
+            sfShape->setTexture(&configGame->trapClosedTexture);
+            break;
+        }
+        case Mode::OPEN:{
+            sf_HitSensor->setOutlineColor(sf::Color::White);
+            sfShape->setTexture(&configGame->trapOpenTexture);
+            break;
+        }
+        case Mode::READY:{
+            sf_HitSensor->setOutlineColor(sf::Color::Green);
+            sfShape->setTexture(&configGame->trapOpenTexture);
+            break;
+        }
+        case Mode::LATCHED:{
+            sf_HitSensor->setOutlineColor(sf::Color::Red);
+            sfShape->setTexture(&configGame->trapClosedTexture);
+            break;
+
         }
     }
 
@@ -81,59 +90,68 @@ void Trap::render(sf::RenderWindow *window) {
     sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
-    if(activated){
-        sfShape->setOutlineColor(sf::Color::Red);
-    }
-    else{
-        sfShape->setOutlineColor(sf::Color::Black);
-    }
-
-
-    window->draw(*sfShape);
 
     if (configGame->showLabels) {
 
-
         // Draw hitSensor debug
         sf_HitSensor->setOutlineThickness(2);
-        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_HitSensor->setPosition(shape_x, shape_y);
         sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
         window->draw(*sf_HitSensor);
 
-        if (farmerTouch) {
-            sfShape->setOutlineColor(sf::Color::Yellow);
-        } else {
-            sfShape->setOutlineColor(sf::Color::Black);
-        }
+        sfShape->setOutlineThickness(3);
+        sfShape->setOutlineColor(farmerTouch ? sf::Color::Yellow : sf::Color::Black);
+
+    } else{
+        sfShape->setOutlineThickness(0);
     }
 
+    window->draw(*sfShape);
 }
 
 void Trap::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
-    if(currentMode == Mode::READY){
-
-    }
-    if(stunnedTarget != nullptr){
-        return;
-    }
-
-    if(activated && selfCollision == Entity::CollisionID::HIT){
-        if(contactEntity->getID() == Entity::ID::WOLF && otherCollision == Entity::CollisionID::HIT){
-
-            stunnedTarget = dynamic_cast<Wolf*>(contactEntity);
-            stunnedTarget->currentAction = Wolf::Action::IDLE;
-            stunnedTarget->isStunned = true;
-
-            trapClock.reset(true);
-
-            activated = false;
-
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
+            if (selfCollision == Entity::CollisionID::BODY) {
+                currentStatus = Status::GROUNDED;
+            }
+            break;
         }
+        case ID::WOLF: {
+
+            if (!checkIfTouching(contactEntity) && otherCollision == Entity::CollisionID::HIT) {
+                currentlyTouchingEntities.push_back(dynamic_cast<Wolf *>(contactEntity));
+            }
+            break;
+        }
+        default: {
+            break;
+        }
+
     }
+
 }
 
 void Trap::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
+    switch (contactEntity->getID()) {
+        case ID::PLANET: {
+            if (selfCollision == Entity::CollisionID::BODY) {
+                currentStatus = Status::AIRBORNE;
+            }
+            break;
+        }
+        case ID::WOLF: {
+            if (checkIfTouching(contactEntity) && otherCollision == Entity::CollisionID::HIT) {
+                currentlyTouchingEntities.remove(dynamic_cast<Wolf *>(contactEntity));
+            }
+
+            break;
+        }
+
+        default:
+            break;
+    }
 
 }
 
@@ -141,13 +159,92 @@ bool Trap::deadCheck() {
     return false;
 }
 
-void Trap::use() {
-    if(currentMode == Mode::LATCHED){
-//        currentMode = Mode::OPEN;
+void Trap::performStun() {
+
+}
+
+void Trap::performHold() {
+
+    currentStatus = Status::AIRBORNE;
+
+    if (currentMode == Mode::CLOSED) {
+        trapClock.reset(true);
+        printf("Opening...\n");
+    }
+    else if (currentMode == Mode::READY) {
+        currentMode = Mode::OPEN;
+    }
+}
+
+void Trap::performThrow() {
+    if (currentMode == Mode::CLOSED) {
+        trapClock.reset(false);
+        printf("Closed...\n");
+    }
+    else if(currentMode == Mode::OPEN){
         currentMode = Mode::READY;
     }
 }
 
-void Trap::performStun() {
+void Trap::update() {
 
+    switch (currentMode) {
+        case Mode::CLOSED: {
+
+            if (trapClock.getElapsedTime().asSeconds() >= openTick) {
+                currentMode = Mode::OPEN;
+                trapClock.reset(false);
+
+                printf("Open!\n");
+            }
+            break;
+        }
+        case Mode::OPEN: {
+
+//            currentStatus == Status::GROUNDED ? trapClock.resume() : trapClock.reset(false);
+
+//            if (trapClock.getElapsedTime().asSeconds() >= readyTick) {
+//                currentMode = Mode::READY;
+//                trapClock.reset(false);
+//
+//                printf("Ready!\n");
+//            }
+            break;
+        }
+        case Mode::READY: {
+            if (!currentlyTouchingEntities.empty()) {
+                stunnedTarget = currentlyTouchingEntities.front();
+                stunnedTarget->currentAction = Wolf::Action::IDLE;
+                stunnedTarget->isStunned = true;
+                currentMode = Mode::LATCHED;
+                trapClock.reset(true);
+            }
+            break;
+        }
+        case Mode::LATCHED: {
+
+            if (stunnedTarget == nullptr || trapClock.getElapsedTime().asSeconds() >= stunTick) {
+
+                printf("Unlatched!\n");
+
+                stunnedTarget->isStunned = false;
+                stunnedTarget = nullptr;
+                currentMode = Mode::CLOSED;
+                trapClock.reset(false);
+
+            } else {
+                b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -2.f));
+                stunnedTarget->getBody()->SetTransform(offset, stunnedTarget->getBody()->GetAngle());
+            }
+
+            break;
+        }
+    }
 }
+
+bool Trap::checkIfTouching(Entity *entity) {
+    return std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
+                     entity) != currentlyTouchingEntities.end();
+}
+
+

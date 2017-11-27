@@ -23,6 +23,8 @@ public:
 
     bool deadCheck() override;
 
+    void update() override;
+
 private:
 
     /**

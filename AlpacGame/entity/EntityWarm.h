@@ -52,9 +52,7 @@ public:
         IDLE = 0, WALKING = 1, JUMP = 2
     };
 
-    enum class Status {
-        GROUNDED, AIRBORNE
-    };
+
 
     Direction currentDirection = Direction::RIGHT;
     Action currentAction = Action::IDLE;

@@ -20,7 +20,6 @@ public:
     enum class Cycle{DAY, NIGHT};
     Cycle currentCycle;
 
-
     /// Customizable Properties
     /**
      * The radius of the planet.
@@ -119,6 +118,9 @@ public:
     sf::Texture night_10;
     sf::Texture night_11;
     sf::Texture night_12;
+
+    sf::Texture trapOpenTexture;
+    sf::Texture trapClosedTexture;
 
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;

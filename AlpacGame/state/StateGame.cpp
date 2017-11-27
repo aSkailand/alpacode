@@ -113,6 +113,15 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        /// Update all cold entities
+        for(Entity *e : *entities){
+            auto cold_e = dynamic_cast<EntityCold *> (e);
+            if (cold_e != nullptr) {
+                cold_e->update();
+
+            }
+        }
+
         /// Activate all warm entities
         for (Entity *e : *entities) {
 
@@ -124,7 +133,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
             }
 
-            // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        }
+
+        // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        for(Entity *e : *entities){
             e->render(window);
         }
 
@@ -220,7 +232,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
         }
         case sf::Keyboard::Num4:{
             entities->emplace_back(
-                    new Trap(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+                    new Trap(configGame, 150, 75, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Z: {

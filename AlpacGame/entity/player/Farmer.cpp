@@ -207,6 +207,7 @@ void Farmer::performAction() {
                 holdingEntity = currentlyTouchingEntities.front();
 
                 dynamic_cast<Holdable *>(holdingEntity)->isHeld = true;
+                dynamic_cast<Holdable *>(holdingEntity)->performHold();
 
                 auto *warm = dynamic_cast<EntityWarm *> (holdingEntity);
                 if (warm) {
@@ -242,7 +243,7 @@ void Farmer::performAction() {
                     break;
                 }
                 case ID::TRAP: {
-                    b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -1.5f));
+                    b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -3.f));
                     holdingEntity->getBody()->SetTransform(offset, getBody()->GetAngle());
                     break;
                 }
@@ -259,6 +260,7 @@ void Farmer::performAction() {
         case Grasp::THROWING: {
 
             dynamic_cast<Holdable*>(holdingEntity)->isHeld = false;
+            dynamic_cast<Holdable*>(holdingEntity)->performThrow();
 
             // Reset Rotation (So that throwing angle works as intended)
             holdingEntity->getBody()->SetTransform(holdingEntity->getBody()->GetWorldCenter(), getBody()->GetAngle());

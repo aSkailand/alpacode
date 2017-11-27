@@ -104,3 +104,7 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
 void Bullet::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
 }
+
+void Bullet::update() {
+
+}

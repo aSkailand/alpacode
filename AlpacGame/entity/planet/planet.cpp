@@ -60,3 +60,7 @@ bool Planet::deadCheck() {
     return false;
 }
 
+void Planet::update() {
+
+}
+

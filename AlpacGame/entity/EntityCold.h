@@ -11,7 +11,8 @@
  *  2. Can't move by own will.
  */
 class EntityCold : public Entity{
-
+public:
+    virtual void update() = 0;
 };
 
 #endif //ALPACGAME_ENTITYCOLD_H

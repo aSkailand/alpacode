@@ -82,6 +82,13 @@ void ConfigGame::loadAllTextures() {
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
 
+    // Trap
+    int trapWidth = 50;
+    int trapHeight = 25;
+    trapOpenTexture.loadFromFile("entity/trap/trap.png", sf::IntRect(0, 0, trapWidth, trapHeight));
+    trapClosedTexture.loadFromFile("entity/trap/trap.png", sf::IntRect(trapWidth, 0, trapWidth, trapHeight));
+
+
     // Farmer
     int farmerWidth = 50;
     int farmerHeight = 70;
@@ -154,6 +161,7 @@ void ConfigGame::reset() {
     delete farmer;
     farmer = new Farmer(this, 30, 100, 100, 100, -200);
 
+    /// Create Vectors
     delete entities;
     entities = new std::vector<Entity *>;
     entities->push_back(farmer);

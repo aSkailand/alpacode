@@ -31,6 +31,9 @@ public:
 
     static int nextId;
 
+    void performHold() override;
+
+    void performThrow() override;
 
 private:
 

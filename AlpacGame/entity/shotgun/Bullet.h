@@ -12,6 +12,8 @@
 class Bullet : public EntityCold{
 public:
 
+    void update() override;
+
     ~Bullet() override;
 
     ConfigGame *configGame;

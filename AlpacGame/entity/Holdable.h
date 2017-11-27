@@ -9,8 +9,8 @@ struct Holdable{
     bool isHeld = false;
     bool farmerTouch = false;
 
-//    virtual void performHold() = 0;
-//    virtual void performThrow() = 0;
+    virtual void performHold() = 0;
+    virtual void performThrow() = 0;
 
 };
 
