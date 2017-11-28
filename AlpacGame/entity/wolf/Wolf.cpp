@@ -1,4 +1,5 @@
 #include "Wolf.h"
+#include "../trap/Trap.h"
 
 Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y)
         : id(nextId++), Mob(id) {
@@ -265,6 +266,7 @@ bool Wolf::deadCheck() {
 
 Wolf::~Wolf() {
     printf("Wolf %i killed.\n", id);
+    isStunned = false;
 }
 
 void Wolf::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
@@ -427,10 +429,9 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
     }
 }
 
-void Wolf::performStun() {
+void Wolf::performStun(Trap *trap) {
     currentAction = Action::IDLE;
     isStunned = true;
-    // TODO FIX
     printf("Wolf %i is stunned!\n", id);
 }
 

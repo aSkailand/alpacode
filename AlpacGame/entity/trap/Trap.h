@@ -38,6 +38,11 @@ public:
     bool activated = false;
     Wolf *stunnedTarget = nullptr;
 
+    void deleteStunnedTarget(){
+        delete stunnedTarget;
+        stunnedTarget = nullptr;
+    }
+
     Trap(ConfigGame *configGame, float length, float height, float x, float y);
 
     void render(sf::RenderWindow *window) override;

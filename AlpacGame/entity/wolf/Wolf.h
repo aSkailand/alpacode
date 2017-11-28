@@ -11,6 +11,8 @@
 #include "../EntityWarm.h"
 #include "../Mob.h"
 
+class Trap;
+
 class Wolf : public Mob{
 public:
 
@@ -33,7 +35,7 @@ public:
     /// Stun properties
 
     bool isStunned = false;
-    void performStun();
+    void performStun(Trap *trap);
 
 private:
     /// Entity Properties

@@ -200,22 +200,12 @@ void Trap::update() {
             break;
         }
         case Mode::OPEN: {
-
-//            currentStatus == Status::GROUNDED ? trapClock.resume() : trapClock.reset(false);
-
-//            if (trapClock.getElapsedTime().asSeconds() >= readyTick) {
-//                currentMode = Mode::READY;
-//                trapClock.reset(false);
-//
-//                printf("Ready!\n");
-//            }
             break;
         }
         case Mode::READY: {
             if (!currentlyTouchingEntities.empty()) {
                 stunnedTarget = currentlyTouchingEntities.front();
-                stunnedTarget->currentAction = Wolf::Action::IDLE;
-                stunnedTarget->isStunned = true;
+                stunnedTarget->performStun(this);
                 currentMode = Mode::LATCHED;
                 trapClock.reset(true);
             }
@@ -223,7 +213,7 @@ void Trap::update() {
         }
         case Mode::LATCHED: {
 
-            if (stunnedTarget == nullptr || trapClock.getElapsedTime().asSeconds() >= stunTick) {
+            if (!stunnedTarget->isStunned || trapClock.getElapsedTime().asSeconds() >= stunTick) {
 
                 printf("Unlatched!\n");
 
