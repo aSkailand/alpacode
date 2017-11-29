@@ -30,14 +30,24 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     fixtureDef_body.filter.maskBits = maskBits;
     fixtureDef_body.shape = &b2Shape;
 
+    bodyFilterNormal.categoryBits = categoryBits;
+    bodyFilterNormal.maskBits = maskBits;
+
+    hitFilterNormal.categoryBits = (uint16) ID::WOLF;
+    hitFilterNormal.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::TRAP;
+
+    hitFilterStunned.categoryBits = (uint16) ID::WOLF;
+    hitFilterStunned.maskBits = (uint16) ID::PLANET | (uint16) ID::BULLET;
+
     /// Body Sensor
     b2CircleShape b2Shape2;
     b2Shape2.m_radius = radius / SCALE;
     b2FixtureDef fixtureDef_hit;
     fixtureDef_hit.shape = &b2Shape2;
     fixtureDef_hit.isSensor = true;
-    fixtureDef_hit.filter.categoryBits = (uint16) ID::WOLF;
-    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::TRAP;
+    fixtureDef_hit.filter = hitFilterNormal;
+//    fixtureDef_hit.filter.categoryBits = (uint16) ID::WOLF;
+//    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::TRAP;
 
     /// Detect Sensor
     b2CircleShape b2Shape3;
@@ -429,9 +439,23 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
     }
 }
 
-void Wolf::performStun(Trap *trap) {
+void Wolf::performStun() {
+    printf("Wolf %i is stunned!\n", id);
     currentAction = Action::IDLE;
     isStunned = true;
-    printf("Wolf %i is stunned!\n", id);
+    fixture_hit->SetFilterData(hitFilterStunned);
+    fixture_body->SetFilterData(hitFilterStunned);
+
+    getBody()->SetAwake(false);
+}
+
+void Wolf::performUnstun() {
+    printf("Wolf %i is no longer stunned!\n", id);
+    isStunned = false;
+    fixture_hit->SetFilterData(hitFilterNormal);
+    fixture_body->SetFilterData(bodyFilterNormal);
+
+    getBody()->SetLinearVelocity(b2Vec2(0,0));
+    getBody()->SetAwake(true);
 }
 

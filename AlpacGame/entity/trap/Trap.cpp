@@ -3,8 +3,6 @@
 //
 
 #include "Trap.h"
-#include "../../Resources/ConfigGame.h"
-
 
 Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y) {
     this->configGame = configGame;
@@ -60,22 +58,22 @@ Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y)
 void Trap::render(sf::RenderWindow *window) {
 
     switch (currentMode) {
-        case Mode::CLOSED:{
+        case Mode::CLOSED: {
             sf_HitSensor->setOutlineColor(sf::Color::Black);
             sfShape->setTexture(&configGame->trapClosedTexture);
             break;
         }
-        case Mode::OPEN:{
+        case Mode::OPEN: {
             sf_HitSensor->setOutlineColor(sf::Color::White);
             sfShape->setTexture(&configGame->trapOpenTexture);
             break;
         }
-        case Mode::READY:{
+        case Mode::READY: {
             sf_HitSensor->setOutlineColor(sf::Color::Green);
             sfShape->setTexture(&configGame->trapOpenTexture);
             break;
         }
-        case Mode::LATCHED:{
+        case Mode::LATCHED: {
             sf_HitSensor->setOutlineColor(sf::Color::Red);
             sfShape->setTexture(&configGame->trapClosedTexture);
             break;
@@ -102,7 +100,7 @@ void Trap::render(sf::RenderWindow *window) {
         sfShape->setOutlineThickness(3);
         sfShape->setOutlineColor(farmerTouch ? sf::Color::Yellow : sf::Color::Black);
 
-    } else{
+    } else {
         sfShape->setOutlineThickness(0);
     }
 
@@ -121,7 +119,10 @@ void Trap::startContact(Entity::CollisionID selfCollision, Entity::CollisionID o
         case ID::WOLF: {
 
             if (!checkIfTouching(contactEntity) && otherCollision == Entity::CollisionID::HIT) {
-                currentlyTouchingEntities.push_back(dynamic_cast<Wolf *>(contactEntity));
+                auto *wolf = dynamic_cast<Wolf *>(contactEntity);
+                if (!wolf->isStunned) {
+                    currentlyTouchingEntities.push_back(wolf);
+                }
             }
             break;
         }
@@ -159,29 +160,15 @@ bool Trap::deadCheck() {
     return false;
 }
 
-void Trap::performStun() {
-
-}
-
 void Trap::performHold() {
-
-    currentStatus = Status::AIRBORNE;
-
-    if (currentMode == Mode::CLOSED) {
-        trapClock.reset(true);
-        printf("Opening...\n");
-    }
-    else if (currentMode == Mode::READY) {
-        currentMode = Mode::OPEN;
-    }
+    getBody()->SetAwake(false);
 }
 
 void Trap::performThrow() {
     if (currentMode == Mode::CLOSED) {
         trapClock.reset(false);
         printf("Closed...\n");
-    }
-    else if(currentMode == Mode::OPEN){
+    } else if (currentMode == Mode::OPEN) {
         currentMode = Mode::READY;
     }
 }
@@ -190,6 +177,10 @@ void Trap::update() {
 
     switch (currentMode) {
         case Mode::CLOSED: {
+
+            if (!trapClock.isRunning()) {
+                if (isHeld) trapClock.reset(true);
+            }
 
             if (trapClock.getElapsedTime().asSeconds() >= openTick) {
                 currentMode = Mode::OPEN;
@@ -204,8 +195,12 @@ void Trap::update() {
         }
         case Mode::READY: {
             if (!currentlyTouchingEntities.empty()) {
+
+                // Select target and stun it
                 stunnedTarget = currentlyTouchingEntities.front();
-                stunnedTarget->performStun(this);
+                stunnedTarget->performStun();
+
+                // Start latch time
                 currentMode = Mode::LATCHED;
                 trapClock.reset(true);
             }
@@ -213,18 +208,34 @@ void Trap::update() {
         }
         case Mode::LATCHED: {
 
-            if (!stunnedTarget->isStunned || trapClock.getElapsedTime().asSeconds() >= stunTick) {
+            /*
+             * Three possible outcomes at any given time when a target is latched:
+             *      1. Target is killed before the latching period is over  -> Trap is closed.
+             *      2. Target has survived the latching period              -> Trap is closed.
+             *      3. Target is still being latched                        -> Trap is latched.
+             */
 
-                printf("Unlatched!\n");
+            if (checkIfTargetIsDead()) {
 
-                stunnedTarget->isStunned = false;
+                // Clean trap
+                stunnedTarget = nullptr;
+                currentMode = Mode::CLOSED;
+                trapClock.reset(false);
+
+            } else if (trapClock.getElapsedTime().asSeconds() >= stunTick) {
+
+                // Remove stun on target
+                stunnedTarget->performUnstun();
+
+                // Clean trap
                 stunnedTarget = nullptr;
                 currentMode = Mode::CLOSED;
                 trapClock.reset(false);
 
             } else {
-                b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -2.f));
-                stunnedTarget->getBody()->SetTransform(offset, stunnedTarget->getBody()->GetAngle());
+                // Move target accordingly to the trap
+                b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -0.5f));
+                stunnedTarget->getBody()->SetTransform(offset, getBody()->GetAngle());
             }
 
             break;
@@ -235,6 +246,11 @@ void Trap::update() {
 bool Trap::checkIfTouching(Entity *entity) {
     return std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
                      entity) != currentlyTouchingEntities.end();
+}
+
+bool Trap::checkIfTargetIsDead() {
+    return std::find(configGame->entities->begin(), configGame->entities->end(), stunnedTarget) ==
+           configGame->entities->end();
 }
 
 

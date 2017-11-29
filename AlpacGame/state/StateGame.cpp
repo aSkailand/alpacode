@@ -222,7 +222,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace(entities->begin(),new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos) );
             break;
         }
         case sf::Keyboard::Num3: {

@@ -35,7 +35,8 @@ public:
     /// Stun properties
 
     bool isStunned = false;
-    void performStun(Trap *trap);
+    void performStun();
+    void performUnstun();
 
 private:
     /// Entity Properties
@@ -50,6 +51,10 @@ private:
                       | (uint16) ID::FARMER
                       | (uint16) ID::ALPACA
                       | (uint16) ID::BULLET;
+
+    b2Filter bodyFilterNormal;
+    b2Filter hitFilterStunned;
+    b2Filter hitFilterNormal;
 
     float walkForce = 5.f;
     float walkAngle = 30.f;   // Right, Degrees

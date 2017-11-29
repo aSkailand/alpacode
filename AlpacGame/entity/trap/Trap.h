@@ -30,18 +30,9 @@ public:
 
     sftools::Chronometer trapClock;
     float stunTick = 10.0f;
-    float readyTick = 0.0f;
-    float openTick = 5.0f;
+    float openTick = 1.0f;
 
-    void performStun();
-
-    bool activated = false;
     Wolf *stunnedTarget = nullptr;
-
-    void deleteStunnedTarget(){
-        delete stunnedTarget;
-        stunnedTarget = nullptr;
-    }
 
     Trap(ConfigGame *configGame, float length, float height, float x, float y);
 
@@ -62,6 +53,7 @@ private:
     std::list<Wolf *> currentlyTouchingEntities;
 
     bool checkIfTouching(Entity *entity);
+    bool checkIfTargetIsDead();
 
     ConfigGame *configGame = nullptr;
 
