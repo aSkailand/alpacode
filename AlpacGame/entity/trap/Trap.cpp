@@ -225,7 +225,7 @@ void Trap::update() {
             } else if (trapClock.getElapsedTime().asSeconds() >= stunTick) {
 
                 // Remove stun on target
-                stunnedTarget->performUnstun();
+                stunnedTarget->removeStun();
 
                 // Clean trap
                 stunnedTarget = nullptr;

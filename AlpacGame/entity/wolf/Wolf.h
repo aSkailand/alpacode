@@ -36,7 +36,7 @@ public:
 
     bool isStunned = false;
     void performStun();
-    void performUnstun();
+    void removeStun();
 
 private:
     /// Entity Properties

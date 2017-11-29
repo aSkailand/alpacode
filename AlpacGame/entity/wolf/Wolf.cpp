@@ -449,7 +449,7 @@ void Wolf::performStun() {
     getBody()->SetAwake(false);
 }
 
-void Wolf::performUnstun() {
+void Wolf::removeStun() {
     printf("Wolf %i is no longer stunned!\n", id);
     isStunned = false;
     fixture_hit->SetFilterData(hitFilterNormal);
