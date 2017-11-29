@@ -83,29 +83,19 @@ void ConfigGame::loadAllTextures() {
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
 
     // Farmer
+    std::string farmerSpriteSheet = "entity/player/farmer-sprite.png";
+
     int farmerWidth = 50;
     int farmerHeight = 70;
 
-    std::string farmerSpriteNoHandsSheet = "entity/player/FarmerNoHands.png";
-    farmerSpritesWithoutHands[EntityWarm::Action::IDLE].startFrame = 0;
-    farmerSpritesWithoutHands[EntityWarm::Action::IDLE].endFrame = 1;
-    loadTexture(farmerSpriteNoHandsSheet, farmerSpritesWithoutHands, farmerWidth, farmerHeight, 0,
+    farmerSprites[EntityWarm::Action::IDLE].startFrame = 0;
+    farmerSprites[EntityWarm::Action::IDLE].endFrame = 2;
+    loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0,
                 EntityWarm::Action::IDLE);
 
-    farmerSpritesWithoutHands[EntityWarm::Action::WALKING].startFrame = 2;
-    farmerSpritesWithoutHands[EntityWarm::Action::WALKING].endFrame = 5;
-    loadTexture(farmerSpriteNoHandsSheet, farmerSpritesWithoutHands, farmerWidth, farmerHeight, 0,
-                EntityWarm::Action::WALKING);
-
-    std::string farmerSpriteWithHandsSheet = "entity/player/FarmerWithHands.png";
-    farmerSpritesWithHands[EntityWarm::Action::IDLE].startFrame = 0;
-    farmerSpritesWithHands[EntityWarm::Action::IDLE].endFrame = 1;
-    loadTexture(farmerSpriteWithHandsSheet, farmerSpritesWithHands, farmerWidth, farmerHeight, 0,
-                EntityWarm::Action::IDLE);
-
-    farmerSpritesWithHands[EntityWarm::Action::WALKING].startFrame = 2;
-    farmerSpritesWithHands[EntityWarm::Action::WALKING].endFrame = 5;
-    loadTexture(farmerSpriteWithHandsSheet, farmerSpritesWithHands, farmerWidth, farmerHeight, 0,
+    farmerSprites[EntityWarm::Action::WALKING].startFrame = 3;
+    farmerSprites[EntityWarm::Action::WALKING].endFrame = 8;
+    loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0 ,
                 EntityWarm::Action::WALKING);
 
     // Alpaca
@@ -116,26 +106,30 @@ void ConfigGame::loadAllTextures() {
 
     alpacaSprites[EntityWarm::Action::IDLE].startFrame = 0;
     alpacaSprites[EntityWarm::Action::IDLE].endFrame = 3;
-    loadTexture(alpacaSpriteSheet, alpacaSprites, alpacaWidth, alpacaHeight, 0, EntityWarm::Action::IDLE);
+    loadTexture(alpacaSpriteSheet, alpacaSprites, alpacaWidth, alpacaHeight, 0,
+                EntityWarm::Action::IDLE);
 
     alpacaSprites[EntityWarm::Action::WALKING].startFrame = 0;
     alpacaSprites[EntityWarm::Action::WALKING].endFrame = 1;
-    loadTexture(alpacaSpriteSheet, alpacaSprites, alpacaWidth, alpacaHeight, 0, EntityWarm::Action::WALKING);
+    loadTexture(alpacaSpriteSheet, alpacaSprites, alpacaWidth, alpacaHeight, 0,
+                EntityWarm::Action::WALKING);
 
 
     // Wolf
-    std::string wolfSpriteSheet = "entity/wolf/wolf-sprite2.png";
+    std::string wolfSpriteSheet1 = "entity/wolf/wolf-sprite.png";
 
     int wolfWidth = 145;
     int wolfHeight = 80;
 
     wolfSprites[EntityWarm::Action::IDLE].startFrame = 0;
     wolfSprites[EntityWarm::Action::IDLE].endFrame = 0;
-    loadTexture(wolfSpriteSheet, wolfSprites, wolfWidth, wolfHeight, 95, EntityWarm::Action::IDLE);
+    loadTexture(wolfSpriteSheet1,wolfSprites,wolfWidth,wolfHeight, 0,
+                EntityWarm::Action::IDLE);
 
-    wolfSprites[EntityWarm::Action::WALKING].startFrame = 0;
-    wolfSprites[EntityWarm::Action::WALKING].endFrame = 6;
-    loadTexture(wolfSpriteSheet, wolfSprites, wolfWidth, wolfHeight, 95, EntityWarm::Action::WALKING);
+    wolfSprites[EntityWarm::Action::WALKING].startFrame = 1;
+    wolfSprites[EntityWarm::Action::WALKING].endFrame = 2;
+    loadTexture(wolfSpriteSheet1, wolfSprites, wolfWidth, wolfHeight, 0,
+                EntityWarm::Action::WALKING);
 
 }
 

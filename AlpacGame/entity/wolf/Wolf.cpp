@@ -199,12 +199,12 @@ void Wolf::render(sf::RenderWindow *window) {
             if (currentAction == Action::IDLE) {
                 sfShape->setTexture(wolfMapPtr[Action::IDLE][0]);
             } else {
-                sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 4 : 6)]);
+                sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
             }
             break;
         }
         case Status::AIRBORNE: {
-            sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 4 : 6)]);
+            sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
             break;
         }
     }

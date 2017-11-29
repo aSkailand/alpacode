@@ -4,8 +4,7 @@
 Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y) {
 
     this->configGame = configGame;
-    farmerWithHandsMapPtr = configGame->farmerSpritesWithHands;
-    farmerWithoutHandsMapPtr = configGame->farmerSpritesWithoutHands;
+    farmerSpriteMapPtr = configGame->farmerSprites;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);
     convertAngleToVectors((int) Action::JUMP, jumpAngle);
@@ -86,22 +85,22 @@ void Farmer::render(sf::RenderWindow *window) {
     if (isHolding) {
         if (holdingEntity->getID() == ID::SHOTGUN) {
             if (currentStatus == Status::AIRBORNE) {
-                sfShape->setTexture(farmerWithoutHandsMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
+                sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 4 : 5]);
             } else if (currentStatus == Status::GROUNDED) {
-                sfShape->setTexture(farmerWithoutHandsMapPtr[Action::IDLE][0]);
+                sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][2]);
             }
         } else {
             if (currentStatus == Status::AIRBORNE) {
-                sfShape->setTexture(farmerWithHandsMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
+                sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
             } else if (currentStatus == Status::GROUNDED) {
-                sfShape->setTexture(farmerWithHandsMapPtr[Action::IDLE][1]);
+                sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][1]);
             }
         }
     } else {
         if (currentStatus == Status::AIRBORNE) {
-            sfShape->setTexture(farmerWithHandsMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
+            sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
         } else if (currentStatus == Status::GROUNDED) {
-            sfShape->setTexture(farmerWithHandsMapPtr[Action::IDLE][0]);
+            sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][0]);
         }
     }
 

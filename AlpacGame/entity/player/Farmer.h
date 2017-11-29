@@ -85,8 +85,7 @@ private:
     /// Animation
     bool spriteSwitch = false;
 
-    std::map<EntityWarm::Action, SpriteInfo> farmerWithHandsMapPtr;
-    std::map<EntityWarm::Action, SpriteInfo> farmerWithoutHandsMapPtr;
+    std::map<EntityWarm::Action, SpriteInfo> farmerSpriteMapPtr;
 
     bool deadCheck() override;
 

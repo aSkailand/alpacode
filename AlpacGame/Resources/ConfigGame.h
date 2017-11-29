@@ -126,8 +126,7 @@ public:
     /// Map of every entities sprites.
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
-    std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithoutHands;
-    std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithHands;
+    std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
 
 private:
