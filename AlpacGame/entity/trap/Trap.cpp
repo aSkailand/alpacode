@@ -1,6 +1,3 @@
-//
-// Created by Trong on 24/11/2017.
-//
 
 #include "Trap.h"
 
@@ -121,7 +118,7 @@ void Trap::startContact(Entity::CollisionID selfCollision, Entity::CollisionID o
             if (!checkIfTouching(contactEntity) && otherCollision == Entity::CollisionID::HIT) {
                 auto *wolf = dynamic_cast<Wolf *>(contactEntity);
                 if (!wolf->isStunned) {
-                    currentlyTouchingEntities.push_back(wolf);
+                    currentlyTouchingWolves.push_back(wolf);
                 }
             }
             break;
@@ -144,7 +141,7 @@ void Trap::endContact(Entity::CollisionID selfCollision, Entity::CollisionID oth
         }
         case ID::WOLF: {
             if (checkIfTouching(contactEntity) && otherCollision == Entity::CollisionID::HIT) {
-                currentlyTouchingEntities.remove(dynamic_cast<Wolf *>(contactEntity));
+                currentlyTouchingWolves.remove(dynamic_cast<Wolf *>(contactEntity));
             }
 
             break;
@@ -178,11 +175,13 @@ void Trap::update() {
     switch (currentMode) {
         case Mode::CLOSED: {
 
+            // Reset Timer when trap is held and closed
             if (!trapClock.isRunning()) {
-                if (isHeld) trapClock.reset(true);
+                if (isHeld){
+                    trapClock.reset(true);
+                }
             }
-
-            if (trapClock.getElapsedTime().asSeconds() >= openTick) {
+            else if (trapClock.getElapsedTime().asSeconds() >= openTick) {
                 currentMode = Mode::OPEN;
                 trapClock.reset(false);
 
@@ -194,10 +193,12 @@ void Trap::update() {
             break;
         }
         case Mode::READY: {
-            if (!currentlyTouchingEntities.empty()) {
+
+            // If trap is currently touching wolves
+            if (!currentlyTouchingWolves.empty()) {
 
                 // Select target and stun it
-                stunnedTarget = currentlyTouchingEntities.front();
+                stunnedTarget = currentlyTouchingWolves.front();
                 stunnedTarget->performStun();
 
                 // Start latch time
@@ -244,8 +245,8 @@ void Trap::update() {
 }
 
 bool Trap::checkIfTouching(Entity *entity) {
-    return std::find(currentlyTouchingEntities.begin(), currentlyTouchingEntities.end(),
-                     entity) != currentlyTouchingEntities.end();
+    return std::find(currentlyTouchingWolves.begin(), currentlyTouchingWolves.end(),
+                     entity) != currentlyTouchingWolves.end();
 }
 
 bool Trap::checkIfTargetIsDead() {
