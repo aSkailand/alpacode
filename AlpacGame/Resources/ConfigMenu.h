@@ -61,6 +61,7 @@ public:
      * @return returns a tgui::Picture
      */
     tgui::Picture::Ptr &getPictureMenu();
+
     tgui::Picture::Ptr &getPictureTittle();
 
     /// Mappings of the different layouts and widgets
@@ -96,7 +97,6 @@ private:
     tgui::TextBox::Ptr textBoxHighscore;
 
 
-
     /// CheckBox
     bool checkBoxMuteChecked = false;
 
@@ -105,7 +105,7 @@ private:
     /// Changes made
     bool changesMadeVideo = false;
 
-    bool changesMadeSound = false;
+    bool changesMadeSound = true;
 
     bool changesMadeControls = false;
 
@@ -144,9 +144,9 @@ private:
      */
     void loadHighscore(std::string highScoreFile);
 
-     /**
-      * Creates the defeat screen layout
-      */
+    /**
+     * Creates the defeat screen layout
+     */
     void defeatScreenLayout();
 
 

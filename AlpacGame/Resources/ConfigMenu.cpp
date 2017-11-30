@@ -103,6 +103,13 @@ void ConfigMenu::createButton(buttonID buttonID,
 }
 
 
+void ConfigMenu::createSlider(buttonID sliderType) {
+    // Temporary slider
+    tgui::Slider::Ptr tempSlider = theme->load("Slider");
+    tempSlider->setValue(10);
+    mapSliders.emplace(sliderType, tempSlider);
+}
+
 void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Creates the different layouts
 
@@ -138,7 +145,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Settings layout
     tgui::VerticalLayout::Ptr optionsVerticalLayout = tgui::VerticalLayout::create();
     optionsVerticalLayout->setSize(windowWidth / 3, windowHeight);
-    optionsVerticalLayout->setPosition(windowWidth - (windowWidth ), 0);
+    optionsVerticalLayout->setPosition(windowWidth - (windowWidth), 0);
     optionsVerticalLayout->removeAllWidgets();
     optionsVerticalLayout->addSpace(0.5f);
     optionsVerticalLayout->add(mapButtons[buttonID::VIDEO]);
@@ -290,7 +297,11 @@ void ConfigMenu::videoSettingsLayout() {
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
 
+
 void ConfigMenu::soundSettingsLayout() {
+
+    mapButtons[buttonID::APPLY_SETTINGS]->enable();
+    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
 
     // Layout setup
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();
@@ -302,6 +313,7 @@ void ConfigMenu::soundSettingsLayout() {
     tgui::Label::Ptr masterLabel = tgui::Label::create();
     masterLabel->setText("Master volume");
     masterLabel->setTextColor(sf::Color::White);
+
 
     // Scrollbar music label
     tgui::Label::Ptr musicLabel = tgui::Label::create();
@@ -345,14 +357,6 @@ void ConfigMenu::soundSettingsLayout() {
 
     // Emplaces the soundlayout to the layout map
     mapLayouts.emplace(layouts::SOUND, layout);
-}
-
-
-void ConfigMenu::createSlider(buttonID sliderType) {
-    // Temporary slider
-    tgui::Slider::Ptr tempSlider = theme->load("Slider");
-    tempSlider->setValue(10);
-    mapSliders.emplace(sliderType, tempSlider);
 }
 
 
@@ -577,8 +581,13 @@ void ConfigMenu::applyChanges() {
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
         machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
+        mapButtons[buttonID::APPLY_SETTINGS]->enable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
     }
     mapButtons[buttonID::APPLY_SETTINGS]->disable();
     mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+
+    mapButtons[buttonID::APPLY_SETTINGS]->enable();
+    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
     changesMadeVideo = false;
 }

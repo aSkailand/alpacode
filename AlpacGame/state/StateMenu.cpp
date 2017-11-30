@@ -13,6 +13,11 @@ void StateMenu::goNext(StateMachine &stateMachine) {
     menuGUI->add(machine->configMenu->getPictureTittle());
     menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::MAINMENU]);
 
+
+    if (!machine->configSound.isMenuMusicPlaying ) {
+        machine->configSound.playMenuMusic(true);
+    }
+
     window->setMouseCursorVisible(true);
 
     while (pollMenu()) {

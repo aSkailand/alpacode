@@ -6,6 +6,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
+
     menuGUI = machine->configWindow.getMenuGUI();
     menuGUI->removeAllWidgets();
 
@@ -35,8 +36,15 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
 
+    /// Play music
+    if (!machine->configSound.isGameMusicPlaying) {
+        machine->configSound.playGameMusic(true);
+    }
+
     /// Poll game
     while (pollGame()) {
+
+
 
         /// Save current mouse coordinates relatively to view
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);

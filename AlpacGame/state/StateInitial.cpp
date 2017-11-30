@@ -4,6 +4,8 @@
 
 void StateInitial::goNext(StateMachine &stateMachine) {
 
+
+
     // Run ConfigWindow
     stateMachine.configWindow.run();
 
