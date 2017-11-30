@@ -257,6 +257,7 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
+            machine->configSound.shotgunSound();
             if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
                 dynamic_cast<Usable *>(farmer->holdingEntity)->use();
             }

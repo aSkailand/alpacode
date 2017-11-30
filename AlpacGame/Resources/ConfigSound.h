@@ -15,6 +15,8 @@ public:
 
     void playGameMusic(bool playMusic);
 
+    void shotgunSound();
+
     void run();
 
     void setMasterVolume(int masterVolume);
@@ -30,6 +32,8 @@ private:
     int soundEffects;
     sf::Music menuMusic;
     sf::Music gameMusic;
+    sf::Sound shotgun;
+    sf::SoundBuffer shotgunBuffer;
 };
 
 

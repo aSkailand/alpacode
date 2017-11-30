@@ -57,3 +57,9 @@ void ConfigSound::playGameMusic(bool playMusic) {
     gameMusic.play();
 }
 
+void ConfigSound::shotgunSound() {
+    shotgunBuffer.loadFromFile("Resources/shot.wav");
+    shotgun.setBuffer(shotgunBuffer);
+    shotgun.play();
+}
+
