@@ -88,6 +88,15 @@ void ConfigGame::loadAllTextures() {
     trapOpenTexture.loadFromFile("entity/trap/trap.png", sf::IntRect(0, 0, trapWidth, trapHeight));
     trapClosedTexture.loadFromFile("entity/trap/trap.png", sf::IntRect(trapWidth, 0, trapWidth, trapHeight));
 
+    // Cooldown Barometer
+    int cooldownWidth = 21;
+    int cooldownHeight = 21;
+    for (int i = 0; i < 5; ++i) {
+        auto *tempTexture = new sf::Texture();
+        tempTexture->loadFromFile("entity/cooldown/cooldown.png",
+                                 sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
+        cooldownTextures.push_back(tempTexture);
+    }
 
     // Farmer
     int farmerWidth = 50;

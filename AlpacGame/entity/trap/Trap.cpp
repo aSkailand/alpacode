@@ -46,9 +46,13 @@ Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y)
     sfShape = new sf::RectangleShape(sf::Vector2f(length, height));
     sfShape->setOrigin(length / 2, height / 2);
 
+    // Create shape for sensor
     sf_HitSensor = new sf::CircleShape(fixture_hit->GetShape()->m_radius * SCALE);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(fixture_hit->GetShape()->m_radius * SCALE, fixture_hit->GetShape()->m_radius * SCALE);
+
+    // Create barometer
+    trapCooldownBarometer = new CooldownBarometer(configGame->cooldownTextures, &trapClock, 30.f, 30.f);
 
 }
 
@@ -102,6 +106,13 @@ void Trap::render(sf::RenderWindow *window) {
     }
 
     window->draw(*sfShape);
+
+
+    trapCooldownBarometer->setPlacement(
+            getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+            getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE,
+            sfShape->getRotation());
+    trapCooldownBarometer->render(window);
 }
 
 void Trap::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
@@ -109,7 +120,6 @@ void Trap::startContact(Entity::CollisionID selfCollision, Entity::CollisionID o
     switch (contactEntity->getID()) {
         case ID::PLANET: {
             if (selfCollision == Entity::CollisionID::BODY) {
-                currentStatus = Status::GROUNDED;
             }
             break;
         }
@@ -135,7 +145,6 @@ void Trap::endContact(Entity::CollisionID selfCollision, Entity::CollisionID oth
     switch (contactEntity->getID()) {
         case ID::PLANET: {
             if (selfCollision == Entity::CollisionID::BODY) {
-                currentStatus = Status::AIRBORNE;
             }
             break;
         }
@@ -164,7 +173,6 @@ void Trap::performHold() {
 void Trap::performThrow() {
     if (currentMode == Mode::CLOSED) {
         trapClock.reset(false);
-        printf("Closed...\n");
     } else if (currentMode == Mode::OPEN) {
         currentMode = Mode::READY;
     }
@@ -179,13 +187,17 @@ void Trap::update() {
             if (!trapClock.isRunning()) {
                 if (isHeld){
                     trapClock.reset(true);
+                    trapCooldownBarometer->calcTicks(openTick);
                 }
-            }
-            else if (trapClock.getElapsedTime().asSeconds() >= openTick) {
-                currentMode = Mode::OPEN;
-                trapClock.reset(false);
+            } else{
 
-                printf("Open!\n");
+                if (trapClock.getElapsedTime().asSeconds() >= openTick) {
+                    currentMode = Mode::OPEN;
+                    trapClock.reset(false);
+
+
+                    printf("Open!\n");
+                }
             }
             break;
         }
@@ -203,6 +215,7 @@ void Trap::update() {
 
                 // Start latch time
                 currentMode = Mode::LATCHED;
+                trapCooldownBarometer->calcTicks(stunTick);
                 trapClock.reset(true);
             }
             break;
@@ -237,6 +250,7 @@ void Trap::update() {
                 // Move target accordingly to the trap
                 b2Vec2 offset = getBody()->GetWorldPoint(b2Vec2(0.f, -0.5f));
                 stunnedTarget->getBody()->SetTransform(offset, getBody()->GetAngle());
+
             }
 
             break;

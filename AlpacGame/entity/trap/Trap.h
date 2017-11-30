@@ -7,6 +7,7 @@
 #include "../Holdable.h"
 #include "../wolf/Wolf.h"
 #include "../../Resources/ConfigGame.h"
+#include "../cooldown/CooldownBarometer.h"
 
 /**
  * Entity Trap, handling the creation and logic of the trap used in-game.
@@ -18,12 +19,10 @@ public:
     Trap(ConfigGame *configGame, float length, float height, float x, float y);
 
     /// Trap time control
+    CooldownBarometer *trapCooldownBarometer = nullptr;
     sftools::Chronometer trapClock;
     float stunTick = 10.0f;
-    float openTick = 1.0f;
-
-    // todo: delete?
-    Status currentStatus = Status::AIRBORNE;
+    float openTick = 5.0f;
 
     /// EntityCold Functions
     void render(sf::RenderWindow *window) override;
