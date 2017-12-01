@@ -105,7 +105,7 @@ void ConfigGame::loadAllTextures() {
     int alpacaHeight = 110;
 
     alpacaSprites[EntityWarm::Action::IDLE].startFrame = 0;
-    alpacaSprites[EntityWarm::Action::IDLE].endFrame = 3;
+    alpacaSprites[EntityWarm::Action::IDLE].endFrame = 4;
     loadTexture(alpacaSpriteSheet, alpacaSprites, alpacaWidth, alpacaHeight, 0,
                 EntityWarm::Action::IDLE);
 
@@ -122,7 +122,7 @@ void ConfigGame::loadAllTextures() {
     int wolfHeight = 80;
 
     wolfSprites[EntityWarm::Action::IDLE].startFrame = 0;
-    wolfSprites[EntityWarm::Action::IDLE].endFrame = 0;
+    wolfSprites[EntityWarm::Action::IDLE].endFrame = 3;
     loadTexture(wolfSpriteSheet1,wolfSprites,wolfWidth,wolfHeight, 0,
                 EntityWarm::Action::IDLE);
 

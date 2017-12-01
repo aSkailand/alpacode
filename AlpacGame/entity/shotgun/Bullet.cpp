@@ -79,26 +79,27 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
         case ID::FARMER:
             break;
         case ID::ALPACA: {
-            dynamic_cast<EntityWarm*> (contactEntity)->dealDamage(1);
-            b2Vec2 force = contactEntity->getBody()->GetWorldVector(b2Vec2(0,-1.f));
-            float32 mass =contactEntity->getBody()->GetMass();
-            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * force ,true);
+            dynamic_cast<EntityWarm *> (contactEntity)->dealDamage(1);
+            b2Vec2 force = contactEntity->getBody()->GetWorldVector(b2Vec2(0, -2.f));
+            float32 mass = contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * force, true);
             break;
         }
         case ID::WOLF: {
-            dynamic_cast<EntityWarm*> (contactEntity)->dealDamage(1);
+            dynamic_cast<EntityWarm *> (contactEntity)->dealDamage(1);
+            b2Vec2 force = contactEntity->getBody()->GetWorldVector(b2Vec2(0, -2.f));
+            float32 mass = contactEntity->getBody()->GetMass();
+            contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * force, true);
             break;
         }
-        case ID::SHOTGUN:
-            break;
-        case ID::BULLET:
+        default:
             break;
     }
 
     sfShape->setFillColor(sf::Color::Red);
     sfShape->setOutlineThickness(0);
 
-    if(!hit){
+    if (!hit) {
         fixture_body->SetFilterData(filter);
         hit = true;
     }

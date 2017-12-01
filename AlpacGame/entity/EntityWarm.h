@@ -16,21 +16,89 @@ class EntityWarm : public Entity
 
 public:
 
-    int HP = 0;
-    bool alive = true;
-    void dealDamage(int damage){
+    enum class Health {
+        ALIVE = 0,
+        DEAD = 1,
+        GHOST = 2
+    };
 
+    Health currentHealth = Health ::ALIVE;
+
+    sf::RectangleShape *ghostShape = nullptr;
+
+    sftools::Chronometer deathClock;
+    float ghostTick = 15.0f;
+    float decayTick = 5.0f;
+    float deathTick = 3.0f;
+
+    int HP = 0;
+    bool alive = true;  // todo: Remove later
+    void dealDamage(int damage){
         if(!alive)
             return;
-
         HP -= damage;
+    }
 
-        if(HP <= 0){
-            alive = false;
-            initDeath();
+    void handleHealth(){
+
+        switch (currentHealth) {
+
+            case Health::ALIVE: {
+
+                if (HP <= 0) {
+
+                    printf("AAA");
+
+                    // Create filter of dead entity
+                    b2Filter deadFilter;
+                    deadFilter.categoryBits = (uint16) getID();
+                    deadFilter.maskBits = (uint16) ID::PLANET;
+
+                    // Set filter
+                    fixture_body->SetFilterData(deadFilter);
+                    fixture_hit->SetFilterData(deadFilter);
+
+                    if(fixture_detection != nullptr){
+                        fixture_detection->SetFilterData(deadFilter);
+                    }
+
+                    // Proceed state
+                    currentHealth = Health::DEAD;
+                    deathClock.reset(true);
+
+                }
+                break;
+            }
+
+            case Health::DEAD: {
+
+                if (deathClock.getElapsedTime().asSeconds() >= deathTick) {
+
+                    // Set update ghostShape
+                    ghostShape->setPosition(sfShape->getPosition());
+                    ghostShape->setRotation(sfShape->getRotation());
+                    ghostShape->rotate(-45);
+
+                    // Proceed state
+                    currentHealth = Health::GHOST;
+                    deathClock.reset(true);
+                }
+                break;
+
+            }
+            case Health::GHOST: {
+
+                if (deathClock.getElapsedTime().asSeconds() >= ghostTick) {
+
+                    // Stop clock to kill entity
+                    deathClock.reset(false);
+                }
+                break;
+
+            }
+
         }
     }
-    virtual void initDeath() = 0;
 
     /**
      * The label above entities' head in-game.

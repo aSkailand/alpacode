@@ -99,22 +99,12 @@ int Alpaca::nextId = 0;
 
 void Alpaca::switchAction() {
 
+    // Check current health and update according to current health
+    handleHealth();
 
-    switch (currentHealth) {
-        case Health::ALIVE: {
-            break;
-        }
-        case Health::DEAD: {
-            if (deathClock.getElapsedTime().asSeconds() >= ghostTick) {
-                currentHealth = Health::GHOST;
-                ghostShape->setPosition(sfShape->getPosition());
-                ghostShape->setRotation(sfShape->getRotation());
-            }
-            return;
-        }
-        case Health::GHOST:
-            return;
-    }
+    // Cancel if not alive
+    if (currentHealth != Health::ALIVE)
+        return;
 
 
     switch (currentBehavior) {
@@ -185,17 +175,35 @@ void Alpaca::render(sf::RenderWindow *window) {
     /// Render sfShape
 
     // Switch Texture
-    switch (currentStatus) {
-        case Status::GROUNDED: {
-            sfShape->setTexture(alpacaMapPtr[Action::IDLE][0]);
+    switch (currentHealth) {
+        case Health::ALIVE: {
+
+            switch (currentStatus) {
+                case Status::GROUNDED: {
+                    sfShape->setTexture(alpacaMapPtr[Action::IDLE][0]);
+                    break;
+                }
+                case Status::AIRBORNE: {
+                    if (isHeld) sfShape->setTexture(alpacaMapPtr[Action::IDLE][3]);
+                    else sfShape->setTexture(alpacaMapPtr[Action::WALKING][1]);
+                    break;
+                }
+            }
+            break;
+
+        }
+        case Health::DEAD: {
+            sfShape->setTexture(alpacaMapPtr[Action::IDLE][4]);
             break;
         }
-        case Status::AIRBORNE: {
-            if (isHeld) sfShape->setTexture(alpacaMapPtr[Action::IDLE][3]);
-            else sfShape->setTexture(alpacaMapPtr[Action::WALKING][1]);
+        case Health::GHOST: {
+            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
+                sfShape->setFillColor(sfShape->getFillColor() - sf::Color(0, 0, 0, 1));
+            }
             break;
         }
     }
+
 
     float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
     b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
@@ -203,31 +211,35 @@ void Alpaca::render(sf::RenderWindow *window) {
     float shape_x = offsetPoint.x * SCALE;
     float shape_y = offsetPoint.y * SCALE;
 
-    if (currentHealth != Health::GHOST) {
-        sfShape->setPosition(shape_x, shape_y);
-        sfShape->setRotation(body->GetAngle() * DEGtoRAD);
-    } else {
-        ghostShape->setPosition(shape_x, shape_y);
-        ghostShape->setRotation(body->GetAngle() * DEGtoRAD);
+    sfShape->setPosition(shape_x, shape_y);
+    sfShape->setRotation(body->GetAngle() * DEGtoRAD);
+
+    if (currentHealth == Health::GHOST) {
+        b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
+        ghostShape->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
         window->draw(*ghostShape);
     }
 
     window->draw(*sfShape);
 
-
     if (configGame->showLabels) {
 
         // Draw SFShape debug
         sfShape->setOutlineThickness(2);
-        if (farmerTouch) sfShape->setOutlineColor(sf::Color::Yellow);
-        else sfShape->setOutlineColor(sf::Color::Black);
+        if (farmerTouch)
+            sfShape->setOutlineColor(sf::Color::Yellow);
+        else
+            sfShape->setOutlineColor(sf::Color::Black);
 
         // Detect Sensor Draw
         sf_DetectSensor->setOutlineThickness(2);
         sf_DetectSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        if (currentBehavior == Behavior::AWARE) sf_DetectSensor->setOutlineColor(sf::Color::Yellow);
-        else if (currentBehavior == Behavior::AFRAID) sf_DetectSensor->setOutlineColor(sf::Color::Red);
-        else if (currentBehavior == Behavior::NORMAL) sf_DetectSensor->setOutlineColor(sf::Color::Green);
+        if (currentBehavior == Behavior::AWARE)
+            sf_DetectSensor->setOutlineColor(sf::Color::Yellow);
+        else if (currentBehavior == Behavior::AFRAID)
+            sf_DetectSensor->setOutlineColor(sf::Color::Red);
+        else if (currentBehavior == Behavior::NORMAL)
+            sf_DetectSensor->setOutlineColor(sf::Color::Green);
         window->draw(*sf_DetectSensor);
 
         // Draw hitSensor debug
@@ -245,8 +257,8 @@ void Alpaca::render(sf::RenderWindow *window) {
 
         // Draw label_HP
         label_HP->setString(std::to_string(HP));
-        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE,
-                              getBody()->GetWorldCenter().y * SCALE);
+
+        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
         label_HP->setRotation(sfShape->getRotation());
         window->draw(*label_HP);
 
@@ -343,7 +355,7 @@ void Alpaca::startContact(CollisionID selfCollision, CollisionID otherCollision,
 }
 
 bool Alpaca::deadCheck() {
-    return currentHealth == Health::GHOST && deathClock.getElapsedTime().asSeconds() >= deathTick;
+    return currentHealth == Health::GHOST && !deathClock.isRunning();
 }
 
 Alpaca::~Alpaca() {
@@ -443,20 +455,9 @@ void Alpaca::endContact_detection(Entity::CollisionID otherCollision, Entity *co
     }
 }
 
-void Alpaca::initDeath() {
-    printf("Alpaca %i is dieing.\n", id);
+//void Alpaca::switchCurrentTexture() {
+//
+//
+//}
 
-    b2Filter deadFilter;
-    deadFilter.categoryBits = (uint16) ID::ALPACA;
-    deadFilter.maskBits = (uint16) ID::PLANET;
-//    fixture_body->SetFilterData(deadFilter);
-    fixture_hit->SetFilterData(deadFilter);
-    fixture_detection->SetFilterData(deadFilter);
-
-    sfShape->setScale(1.f, -1.f);
-
-    currentHealth = Health::DEAD;
-
-    deathClock.reset(true);
-}
 

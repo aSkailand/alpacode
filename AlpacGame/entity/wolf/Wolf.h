@@ -93,10 +93,6 @@ private:
     bool spriteSwitch = false;
     std::map<EntityWarm::Action , SpriteInfo> wolfMapPtr;
 
-public:
-    void initDeath() override;
-    sftools::Chronometer deathClock;
-    float deathTick = 3.0f;
 
 public:
 

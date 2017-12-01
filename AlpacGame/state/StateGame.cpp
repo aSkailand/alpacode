@@ -68,39 +68,12 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-//            if(!bodyIter->IsAwake())
-//                continue;
-
             // Calculate Radial Gravitation on all bodies
             float gravitationForce = 10.0f;
             float bodyMass = bodyIter->GetMass();
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
             delta.Normalize();
-
-
-
-            Alpaca* alpaca = dynamic_cast<Alpaca*>((Entity*)bodyIter->GetUserData());
-            if(alpaca && alpaca->currentHealth == Alpaca::Health::GHOST) {
-                bodyIter->ApplyForceToCenter(1.f * bodyMass * -delta, true);
-            } else{
-                bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, true);
-            }
-
-
-
-//            EntityWarm* warm_e = dynamic_cast<EntityWarm*>((Entity*)bodyIter->GetUserData());
-//            if(warm_e && !warm_e->alive) {
-//                bodyIter->SetLinearVelocity(bodyIter->GetWorldVector(b2Vec2(0,-1.0f)));
-////                delta = bodyIter->GetWorldCenter() - planet->getBody()->GetWorldCenter();
-////                bodyIter->ApplyForceToCenter(0.1f * bodyMass * delta, true);
-//
-//            } else{
-//
-//
-//            }
-
-
-
+            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, true);
 
             // Calibrate rotation of entity according to planet's center by force
             float desiredAngle = atan2f(-delta.x, delta.y);
@@ -117,9 +90,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
-
-        /// Render Phase
-        window->clear(sf::Color::Blue);
 
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
@@ -138,6 +108,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        /// Render Phase
+        window->clear(sf::Color::Blue);
+
         /// Activate all warm entities
         for (Entity *e : *entities) {
 
@@ -153,12 +126,12 @@ void StateGame::goNext(StateMachine &stateMachine) {
             e->render(window);
         }
 
-
+        /// Draw crosshair
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
 
         // Finding angle of farmer
-        if(farmer->alive){
+        if (farmer->currentHealth == EntityWarm::Health::ALIVE) {
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
             delta.Normalize();
             float angle = atan2f(-delta.x, delta.y);

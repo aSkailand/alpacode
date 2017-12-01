@@ -69,8 +69,13 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(radius, radius);
 
+    ghostShape = new sf::RectangleShape(sf::Vector2f(width, height));
+    ghostShape->setOrigin(width / 2, height / 2);
+    ghostShape->setTexture(wolfMapPtr[Action::WALKING][0]);
+    ghostShape->setFillColor(sf::Color(200, 200, 200, 100));
+
     // Set HP
-    HP = 10;
+    HP = 1;
 
     // Create ID text
     createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
@@ -96,8 +101,11 @@ int Wolf::nextId = 0;
 
 void Wolf::switchAction() {
 
-//    if(!alive)
-//        return;
+
+    handleHealth();
+
+    if(currentHealth != Health::ALIVE)
+        return;
 
     // Check if it is time for randomizing the wolf's current state
     if (randomActionTriggered(randomActionTick) && currentBehavior == Behavior::NORMAL) {
@@ -164,7 +172,7 @@ void Wolf::switchAction() {
 
 void Wolf::performAction() {
 
-    if(!alive)
+    if(currentHealth != Health::ALIVE)
         return;
 
     // Check if the randomActionClock has triggered
@@ -194,19 +202,43 @@ void Wolf::render(sf::RenderWindow *window) {
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
 
     // Switch Texture
-    switch (currentStatus) {
-        case Status::GROUNDED: {
-            if (currentAction == Action::IDLE) {
-                sfShape->setTexture(wolfMapPtr[Action::IDLE][0]);
-            } else {
-                sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
+    switch (currentHealth) {
+        case Health::ALIVE: {
+
+            // Switch Texture
+            switch (currentStatus) {
+                case Status::GROUNDED: {
+                    if (currentAction == Action::IDLE) {
+                        sfShape->setTexture(wolfMapPtr[Action::IDLE][0]);
+                    } else {
+                        sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
+                    }
+                    break;
+                }
+                case Status::AIRBORNE: {
+                    sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
+                    break;
+                }
+            }
+            break;
+
+        }
+        case Health::DEAD: {
+            sfShape->setTexture(wolfMapPtr[Action::IDLE][3]);
+            break;
+        }
+        case Health::GHOST: {
+            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
+                sfShape->setFillColor(sfShape->getFillColor() - sf::Color(0, 0, 0, 1));
             }
             break;
         }
-        case Status::AIRBORNE: {
-            sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
-            break;
-        }
+    }
+
+    if (currentHealth == Health::GHOST) {
+        b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
+        ghostShape->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+        window->draw(*ghostShape);
     }
 
     window->draw(*sfShape);
@@ -258,7 +290,7 @@ void Wolf::render(sf::RenderWindow *window) {
 }
 
 bool Wolf::deadCheck() {
-    return !alive && deathClock.getElapsedTime().asSeconds() >= deathTick;
+    return currentHealth == Health::GHOST && !deathClock.isRunning();
 }
 
 Wolf::~Wolf() {
@@ -431,15 +463,15 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
     }
 }
 
-void Wolf::initDeath() {
-    printf("Wolf %i is dieing.\n", id);
-    b2Filter deadFilter;
-    deadFilter.categoryBits = (uint16) ID::WOLF;
-    deadFilter.maskBits = (uint16) ID::PLANET;
-    fixture_body->SetFilterData(deadFilter);
-    fixture_hit->SetFilterData(deadFilter);
-    fixture_detection->SetFilterData(deadFilter);
-
-    sfShape->setFillColor(sf::Color(200,200,200,100));
-    deathClock.reset(true);
-}
+//void Wolf::initDeath() {
+//    printf("Wolf %i is dieing.\n", id);
+//    b2Filter deadFilter;
+//    deadFilter.categoryBits = (uint16) ID::WOLF;
+//    deadFilter.maskBits = (uint16) ID::PLANET;
+//    fixture_body->SetFilterData(deadFilter);
+//    fixture_hit->SetFilterData(deadFilter);
+//    fixture_detection->SetFilterData(deadFilter);
+//
+//    sfShape->setFillColor(sf::Color(200,200,200,100));
+//    deathClock.reset(true);
+//}

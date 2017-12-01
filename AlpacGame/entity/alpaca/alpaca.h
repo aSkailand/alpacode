@@ -15,13 +15,6 @@
 class Alpaca : public Mob, public Holdable {
 public:
 
-    enum class Health {
-        ALIVE = 0,
-        DEAD = 1,
-        GHOST = 2
-    };
-
-    Health currentHealth = Health ::ALIVE;
 
     ~Alpaca() override;
 
@@ -37,17 +30,12 @@ public:
 
     static int nextId;
 
-    bool ghost = false;
-
 private:
 
-    sf::RectangleShape *ghostShape = nullptr;
+//    void switchCurrentTexture() override;
 
-    void initDeath() override;
 
-    sftools::Chronometer deathClock;
-    float ghostTick = 3.0f;
-    float deathTick = 6.0f;
+private:
 
 
     /// AI Behavior

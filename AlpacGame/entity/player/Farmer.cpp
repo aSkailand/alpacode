@@ -56,11 +56,16 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
     sfShape->setOrigin(width / 2, height / 2);
 
+    ghostShape = new sf::RectangleShape(sf::Vector2f(width, height));
+    ghostShape->setOrigin(width / 2, height / 2);
+    ghostShape->setTexture(farmerSpriteMapPtr[Action::WALKING][2]);
+    ghostShape->setFillColor(sf::Color(200, 200, 200, 100));
+
     sf_HitSensor = new sf::CircleShape(radius);
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(radius, radius);
 
-    HP = 10;
+    HP = 1;
 
     createLabel(label_ID, &this->configGame->fontID, "P1");
 
@@ -68,6 +73,56 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
 
 
 void Farmer::render(sf::RenderWindow *window) {
+
+    // Switch Texture
+    bool isHolding = (holdingEntity != nullptr);
+
+    // Switch Texture
+    switch (currentHealth) {
+        case Health::ALIVE: {
+
+            if (isHolding) {
+                if (holdingEntity->getID() == ID::SHOTGUN) {
+                    if (currentStatus == Status::AIRBORNE) {
+                        sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 4 : 5]);
+                    } else if (currentStatus == Status::GROUNDED) {
+                        sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][2]);
+                    }
+                } else {
+                    if (currentStatus == Status::AIRBORNE) {
+                        sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
+                    } else if (currentStatus == Status::GROUNDED) {
+                        sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][1]);
+                    }
+                }
+            } else {
+                if (currentStatus == Status::AIRBORNE) {
+                    sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
+                } else if (currentStatus == Status::GROUNDED) {
+                    sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][0]);
+                }
+            }
+            break;
+
+        }
+        case Health::DEAD: {
+            sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][2]);
+            break;
+        }
+        case Health::GHOST: {
+            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
+                sfShape->setFillColor(sfShape->getFillColor() - sf::Color(0, 0, 0, 1));
+            }
+            break;
+        }
+    }
+
+    if (currentHealth == Health::GHOST) {
+        b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
+        ghostShape->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+        window->draw(*ghostShape);
+    }
+
 
     // Draw sfShape Debug
     float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
@@ -78,31 +133,6 @@ void Farmer::render(sf::RenderWindow *window) {
 
     sfShape->setPosition(shape_x, shape_y);
     sfShape->setRotation((body->GetAngle() * DEGtoRAD));
-
-    // Switch Texture
-    bool isHolding = holdingEntity != nullptr;
-
-    if (isHolding) {
-        if (holdingEntity->getID() == ID::SHOTGUN) {
-            if (currentStatus == Status::AIRBORNE) {
-                sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 4 : 5]);
-            } else if (currentStatus == Status::GROUNDED) {
-                sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][2]);
-            }
-        } else {
-            if (currentStatus == Status::AIRBORNE) {
-                sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
-            } else if (currentStatus == Status::GROUNDED) {
-                sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][1]);
-            }
-        }
-    } else {
-        if (currentStatus == Status::AIRBORNE) {
-            sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
-        } else if (currentStatus == Status::GROUNDED) {
-            sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][0]);
-        }
-    }
 
     window->draw(*sfShape);
 
@@ -134,9 +164,14 @@ void Farmer::render(sf::RenderWindow *window) {
 
 void Farmer::switchAction() {
 
-    if(!alive)
+    // Check current health and update according to current health
+    handleHealth();
+
+    // Cancel if not alive
+    if(currentHealth != Health::ALIVE)
         return;
 
+    // Handle input
     switch (configGame->currentInput) {
         case sf::Keyboard::W: {
             currentAction = Action::JUMP;
@@ -176,6 +211,9 @@ void Farmer::switchAction() {
 }
 
 void Farmer::performAction() {
+
+    if(currentHealth != Health::ALIVE)
+        return;
 
     if (currentAction != Action::IDLE && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
 
@@ -338,7 +376,7 @@ void Farmer::startContact(CollisionID selfCollision, CollisionID otherCollision,
 }
 
 bool Farmer::deadCheck() {
-    return !alive && deathClock.getElapsedTime().asSeconds() >= deathTick;
+    return currentHealth == Health::GHOST && !deathClock.isRunning();
 }
 
 bool Farmer::checkIfTouching(Entity *entity) {
@@ -414,15 +452,15 @@ void Farmer::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
     }
 }
 
-void Farmer::initDeath() {
-
-    b2Filter deadFilter;
-    deadFilter.categoryBits = (uint16) ID::FARMER;
-    deadFilter.maskBits = (uint16) ID::PLANET;
-    fixture_body->SetFilterData(deadFilter);
-    fixture_hit->SetFilterData(deadFilter);
-
-//    body->SetTransform(body->GetWorldCenter(), )
-    sfShape->setFillColor(sf::Color(200,200,200,100));
-    deathClock.reset(true);
-}
+//void Farmer::switchCurrentTexture() {
+//
+//    b2Filter deadFilter;
+//    deadFilter.categoryBits = (uint16) ID::FARMER;
+//    deadFilter.maskBits = (uint16) ID::PLANET;
+//    fixture_body->SetFilterData(deadFilter);
+//    fixture_hit->SetFilterData(deadFilter);
+//
+////    body->SetTransform(body->GetWorldCenter(), )
+//    sfShape->setFillColor(sf::Color(200,200,200,100));
+//    deathClock.reset(true);
+//}
