@@ -5,14 +5,18 @@ void ConfigSound::run() {
 
     isMenuMusicPlaying = false;
     isGameMusicPlaying = false;
+
+    // Initiate default volume levels
     masterVolume = 10;
     musicVolume = 6;
     soundEffects = 8;
 
+    // Sets the default volume
     menuMusic.setVolume(musicVolume * 10);
     gameMusic.setVolume(musicVolume * 10);
 
-    loadJumpSound();
+    // Loads all the different sounds
+    loadSounds();
 
 }
 
@@ -44,6 +48,42 @@ void ConfigSound::playGameMusic(bool playMusic) {
     gameMusic.play();
 }
 
+void ConfigSound::setMasterVolume(int masterVolume) {
+    ConfigSound::masterVolume = masterVolume;
+}
+
+void ConfigSound::setMusicVolume(int musicVolume) {
+    ConfigSound::musicVolume = musicVolume;
+    menuMusic.setVolume(musicVolume * 10);
+    gameMusic.setVolume(musicVolume * 10);
+}
+
+void ConfigSound::setSoundEffects(int soundEffects) {
+    ConfigSound::soundEffects = soundEffects;
+    mapSounds[ConfigSound::soundsID::JUMP].setVolume(soundEffects * 10);
+    mapSounds[ConfigSound::soundsID::STEPPING].setVolume(soundEffects * 10);
+    mapSounds[ConfigSound::soundsID::SHOTGUN].setVolume(soundEffects * 10);
+
+}
+
+void ConfigSound::loadSounds() {
+
+    tempJumpBuffer.loadFromFile("Resources/Sound/jump.wav");
+
+    jumpSound.setBuffer(tempJumpBuffer);
+    mapSounds.emplace(soundsID::JUMP, jumpSound);
+
+    tempStepBuffer.loadFromFile("Resources/Sound/step.wav");
+
+    stepSound.setBuffer(tempStepBuffer);
+    mapSounds.emplace(soundsID::STEPPING, stepSound);
+
+    tempShotgunBuffer.loadFromFile("Resources/Sound/shot.wav");
+
+    shotgunSound.setBuffer(tempShotgunBuffer);
+    mapSounds.emplace(soundsID::SHOTGUN, shotgunSound);
+}
+
 
 int ConfigSound::getMasterVolume() const {
     return masterVolume;
@@ -56,44 +96,3 @@ int ConfigSound::getMusicVolume() const {
 int ConfigSound::getSoundEffects() const {
     return soundEffects;
 }
-
-void ConfigSound::setMasterVolume(int masterVolume) {
-    ConfigSound::masterVolume = masterVolume;
-
-    std::cout << masterVolume << std::endl;
-}
-
-void ConfigSound::setMusicVolume(int musicVolume) {
-    ConfigSound::musicVolume = musicVolume;
-    menuMusic.setVolume(musicVolume * 10);
-    gameMusic.setVolume(musicVolume * 10);
-    std::cout << musicVolume << std::endl;
-}
-
-void ConfigSound::setSoundEffects(int soundEffects) {
-    ConfigSound::soundEffects = soundEffects;
-    std::cout << soundEffects << std::endl;
-}
-
-void ConfigSound::loadJumpSound() {
-
-    tempJumpBuffer.loadFromFile("Resources/Sound/jump.wav");
-
-    tempJumpSound.setBuffer(tempJumpBuffer);
-    mapSounds.emplace(soundsID::JUMP,tempJumpSound);
-
-    tempStepBuffer.loadFromFile("Resources/Sound/step.wav");
-
-    tempStepSound.setBuffer(tempStepBuffer);
-    mapSounds.emplace(soundsID::STEPPING, tempStepSound);
-
-    tempShotgunBuffer.loadFromFile("Resources/Sound/shot.wav");
-
-    tempShotgunSound.setBuffer(tempShotgunBuffer);
-    mapSounds.emplace(soundsID::SHOTGUN, tempShotgunSound);
-
-
-}
-
-
-

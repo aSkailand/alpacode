@@ -45,6 +45,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  });
     createButton(buttonID::VIDEO, "Video", "pressed",
                  [&] {
+                     if (!changesMadeVideo) {
+                         mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                     }
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
@@ -569,7 +573,6 @@ void ConfigMenu::defeatScreenLayout() {
 
 void ConfigMenu::applyChanges() {
     if (changesMadeVideo) {
-
         currentResolution = machine->configWindow.mapResolutionString[machine->configWindow.currentResolution];
         if (checkBoxFullScreenChecked) {
             machine->configWindow.setWindowResolution(getCurrentResolution(), sf::Style::Fullscreen);
@@ -579,7 +582,6 @@ void ConfigMenu::applyChanges() {
             isFullScreen = false;
 
         }
-
         mapButtons[buttonID::APPLY_SETTINGS]->disable();
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
     }
@@ -590,10 +592,15 @@ void ConfigMenu::applyChanges() {
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
         machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
+        if (checkBoxMuteChecked) {
+            machine->configSound.setMasterVolume(0);
+            machine->configSound.setMusicVolume(0);
+            machine->configSound.setSoundEffects(0);
+        }
         mapButtons[buttonID::APPLY_SETTINGS]->enable();
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
     }
 
-
     changesMadeVideo = false;
+    changesMadeSound = false;
 }
