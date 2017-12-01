@@ -17,7 +17,7 @@ void StateInitial::goNext(StateMachine &stateMachine) {
     stateMachine.configMenu->run(stateMachine);
 
     // Run ConfigGame
-    stateMachine.configGame.run(stateMachine.configWindow.getWindow());
+    stateMachine.configGame.run(stateMachine.configWindow.getWindow(), stateMachine.configSound);
 
     // Change State
     stateMachine.setCurrentState(StateMachine::stateID::MENU);

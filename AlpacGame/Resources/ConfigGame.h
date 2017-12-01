@@ -9,6 +9,7 @@
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
 #include "../Resources/SpriteInfo.h"
+#include "../Resources/ConfigSound.h"
 
 /**
  * Common resources accessible by all game entities.
@@ -34,11 +35,15 @@ public:
     Entity* farmer = nullptr;
     b2Body* planetBody = nullptr;
 
+
     void reset();
 
     sf::RenderWindow *window = nullptr;
 
+    ConfigSound *configSound;
+
     std::vector<Entity*> *entities = nullptr;
+
 
 
     /**
@@ -69,7 +74,7 @@ public:
      * Run the given configurations.
      * @param window the shared window.
      */
-    void run(sf::RenderWindow &window);
+    void run(sf::RenderWindow &window, ConfigSound &configSound);
 
     /**
      * Calculates the x position on the circle's outline given by the angle.

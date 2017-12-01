@@ -6,6 +6,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
+    configSound = &machine->configSound;
 
     menuGUI = machine->configWindow.getMenuGUI();
     menuGUI->removeAllWidgets();
@@ -231,7 +232,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
         }
         case sf::Keyboard::Num3: {
             entities->emplace_back(
-                    new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+                    new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Z: {
@@ -257,7 +258,6 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            machine->configSound.shotgunSound();
             if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
                 dynamic_cast<Usable *>(farmer->holdingEntity)->use();
             }

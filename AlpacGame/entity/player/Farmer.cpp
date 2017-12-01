@@ -1,9 +1,11 @@
 #include "Farmer.h"
 #include "../alpaca/alpaca.h"
 
-Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y) {
+Farmer::Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x, float y) {
 
     this->configGame = configGame;
+    this->configSound = configSound;
+
     farmerWithHandsMapPtr = configGame->farmerSpritesWithHands;
     farmerWithoutHandsMapPtr = configGame->farmerSpritesWithoutHands;
 
@@ -178,6 +180,7 @@ void Farmer::performAction() {
         switch (currentAction) {
 
             case Action::WALKING: {
+                configSound->mapSounds[ConfigSound::soundsID::STEPPING].play();
                 forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
                 break;
             }
@@ -187,6 +190,7 @@ void Farmer::performAction() {
                 } else {
                     forcePushBody((int) Action::JUMP, getBody(), jumpForce, Direction::RIGHT);
                 }
+                configSound->mapSounds[ConfigSound::soundsID::JUMP].play();
                 break;
             }
             case Action::IDLE: {

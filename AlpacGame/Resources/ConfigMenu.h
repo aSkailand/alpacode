@@ -133,7 +133,6 @@ private:
     void soundSettingsLayout();
 
     /**
-<<<<<<< HEAD
      * Creates the highscore layout
      */
     void highscoreLayout();

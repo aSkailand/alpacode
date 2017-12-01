@@ -1,11 +1,17 @@
 #ifndef ALPACGAME_CONFIGSOUND_H
 #define ALPACGAME_CONFIGSOUND_H
 
+#include <map>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include "../Resources/ConfigMenu.h"
 
 class ConfigSound {
 public:
+
+    enum class soundsID{SHOTGUN, STEPPING, JUMP};
+
+    void run();
 
     bool isMenuMusicPlaying;
 
@@ -15,9 +21,7 @@ public:
 
     void playGameMusic(bool playMusic);
 
-    void shotgunSound();
-
-    void run();
+    void loadJumpSound();
 
     void setMasterVolume(int masterVolume);
 
@@ -25,15 +29,31 @@ public:
 
     void setSoundEffects(int soundEffects);
 
-private:
+    int getMasterVolume() const;
 
+    int getMusicVolume() const;
+
+    int getSoundEffects() const;
+
+    std::map<soundsID, sf::Sound> mapSounds;
+
+private:
     int masterVolume;
     int musicVolume;
     int soundEffects;
+
     sf::Music menuMusic;
     sf::Music gameMusic;
-    sf::Sound shotgun;
-    sf::SoundBuffer shotgunBuffer;
+
+    sf::SoundBuffer tempStepBuffer;
+    sf::SoundBuffer tempJumpBuffer;
+    sf::SoundBuffer tempShotgunBuffer;
+
+    sf::Sound tempJumpSound;
+    sf::Sound tempStepSound;
+    sf::Sound tempShotgunSound;
+
+
 };
 
 

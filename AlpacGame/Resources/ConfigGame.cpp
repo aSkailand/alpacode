@@ -5,9 +5,10 @@
 #include "../entity/CollisionListener.h"
 #include "../entity/planet/planet.h"
 
-void ConfigGame::run(sf::RenderWindow &window) {
+void ConfigGame::run(sf::RenderWindow &window, ConfigSound &configSound) {
 
     this->window = &window;
+    this->configSound = &configSound;
 
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
 
@@ -152,7 +153,7 @@ void ConfigGame::reset() {
     planetBody = planet->getBody();
 
     delete farmer;
-    farmer = new Farmer(this, 30, 100, 100, 100, -200);
+    farmer = new Farmer(this, this->configSound, 30, 100, 100, 100, -200);
 
     delete entities;
     entities = new std::vector<Entity *>;

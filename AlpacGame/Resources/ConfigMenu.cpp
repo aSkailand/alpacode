@@ -61,6 +61,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SOUND]);
 
+
+                     mapButtons[buttonID::APPLY_SETTINGS]->enable();
+                     mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
                  });
 
     createButton(buttonID::APPLY_SETTINGS, "Apply changes", "pressed", [&] {
@@ -300,8 +303,6 @@ void ConfigMenu::videoSettingsLayout() {
 
 void ConfigMenu::soundSettingsLayout() {
 
-    mapButtons[buttonID::APPLY_SETTINGS]->enable();
-    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
 
     // Layout setup
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();
@@ -337,6 +338,13 @@ void ConfigMenu::soundSettingsLayout() {
     backButton->setText("Back");
     backButton->setSize(100, 50);
     backButton->setPosition(10, windowHeight - 60);
+
+
+    // Adjust the sliders to the initial position
+    mapSliders[buttonID::MASTER_SLIDER]->setValue(machine->configSound.getMasterVolume());
+    mapSliders[buttonID::MUSIC_SLIDER]->setValue(machine->configSound.getMusicVolume());
+    mapSliders[buttonID::EFFECT_SLIDER]->setValue(machine->configSound.getSoundEffects());
+
 
     // Adds all the layouts and widgets to the GUI
     horiLayout->add(muteSound);
@@ -572,22 +580,20 @@ void ConfigMenu::applyChanges() {
 
         }
 
+        mapButtons[buttonID::APPLY_SETTINGS]->disable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
     }
     if (changesMadeControls) {
 
     }
     if (changesMadeSound) {
-
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
         machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
         mapButtons[buttonID::APPLY_SETTINGS]->enable();
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
     }
-    mapButtons[buttonID::APPLY_SETTINGS]->disable();
-    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
 
-    mapButtons[buttonID::APPLY_SETTINGS]->enable();
-    mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+
     changesMadeVideo = false;
 }

@@ -5,7 +5,7 @@
 #include <list>
 
 #include "../../Resources/ConfigGame.h"
-
+#include "../../Resources/ConfigSound.h"
 #include "../EntityWarm.h"
 
 class Farmer : public EntityWarm {
@@ -20,7 +20,7 @@ public:
      * @param x the x-position of the farmer's origin, in pixels.
      * @param y the y-position of the farmer's origin, in pixels.
      */
-    Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y);
+    Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x, float y);
 
     /**
      * Current held entity.
@@ -81,6 +81,7 @@ private:
 
     /// Pointers
     ConfigGame *configGame;
+    ConfigSound *configSound;
 
     /// Animation
     bool spriteSwitch = false;

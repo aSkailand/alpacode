@@ -42,6 +42,7 @@ private:
     /// Pointers
     StateMachine *machine;
     ConfigGame *configGame;
+    ConfigSound *configSound;
 
     sf::RenderWindow *window;
     tgui::Gui *menuGUI;

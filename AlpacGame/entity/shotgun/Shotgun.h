@@ -8,6 +8,7 @@
 
 #include "../EntityCold.h"
 #include "../../Resources/ConfigGame.h"
+#include "../../Resources/ConfigSound.h"
 #include "../Usable.h"
 #include "../Holdable.h"
 
@@ -22,9 +23,11 @@ public:
 
     ConfigGame *configGame;
 
+    ConfigSound *configSound;
+
     b2World *world;
 
-    Shotgun(ConfigGame *configGame, float length, float height, float x, float y);
+    Shotgun(ConfigGame *configGame, ConfigSound *configSound, float length, float height, float x, float y);
 
     void render(sf::RenderWindow *window) override;
 

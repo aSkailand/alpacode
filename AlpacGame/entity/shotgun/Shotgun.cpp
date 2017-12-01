@@ -2,10 +2,11 @@
 #include "Shotgun.h"
 #include "Bullet.h"
 
-Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, float y) {
+Shotgun::Shotgun(ConfigGame *configGame, ConfigSound *configSound, float length, float height, float x, float y) {
 
     // Assign pointers
     this->configGame = configGame;
+    this->configSound = configSound;
     this->world = configGame->world;
     this->length = length;
 
@@ -101,6 +102,9 @@ void Shotgun::use() {
 
     // Shoot bullets
     shootBullets(40.f, 10.f, 5);
+
+    // Plays a shotgun sound
+    configSound->mapSounds[ConfigSound::soundsID::SHOTGUN].play();
 
     // Recoil push
     b2Body *farmerBody = configGame->farmer->getBody();
