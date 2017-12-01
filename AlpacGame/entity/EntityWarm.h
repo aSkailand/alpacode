@@ -24,6 +24,8 @@ public:
     sf::Text *label_ID = new sf::Text();
     sf::Text *label_HP = new sf::Text();
 
+
+
     void createLabel(sf::Text *label, sf::Font *font, std::string text) {
         label->setString(text);
         label->setFont(*font);
@@ -94,6 +96,7 @@ protected:
     }
 
     sf::CircleShape *sf_DetectSensor = nullptr;
+
 
 private:
 

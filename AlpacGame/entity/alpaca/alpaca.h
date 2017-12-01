@@ -106,8 +106,6 @@ private:
     ConfigGame *configGame;
 
     /// Animation tool
-    bool spriteSwitch = false;
-
     std::map<EntityWarm::Action , SpriteInfo> alpacaMapPtr;
 
 public:
@@ -124,9 +122,6 @@ public:
     void endContact_hit(CollisionID otherCollision, Entity *contactEntity);
     void endContact_body(CollisionID otherCollision, Entity *contactEntity);
     void endContact_detection(CollisionID otherCollision, Entity *contactEntity);
-
-
-
 
 };
 

@@ -215,6 +215,9 @@ void Alpaca::render(sf::RenderWindow *window) {
         window->draw(*label_ID);
 
         // Draw label_HP
+
+
+
         label_HP->setString(std::to_string(HP));
         label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE,
                               getBody()->GetWorldCenter().y * SCALE);

@@ -123,6 +123,8 @@ public:
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
+    sf::Texture heartTexture;
+
     /// Map of every entities sprites.
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
