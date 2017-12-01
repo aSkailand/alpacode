@@ -10,6 +10,7 @@
 #include "../entity/EntityWarm.h"
 #include "../Resources/SpriteInfo.h"
 #include "../scenery/Scenery.h"
+#include "../scenery/DayCycle/DayCycle.h"
 
 
 /**
@@ -29,7 +30,7 @@ public:
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius = 600;
+    unsigned int planetRadius = 700;
 
     bool newGame = true;
 
@@ -128,6 +129,19 @@ public:
     sf::Texture night_11;
     sf::Texture night_12;
 
+    sf::Texture earth_1;
+    sf::Texture earth_2;
+    sf::Texture earth_3;
+    sf::Texture earth_4;
+    sf::Texture earth_5;
+    sf::Texture earth_6;
+    sf::Texture earth_7;
+    sf::Texture earth_8;
+    sf::Texture earth_9;
+    sf::Texture earth_10;
+    sf::Texture earth_11;
+    sf::Texture earth_12;
+
     sf::Texture sun_1;
     sf::Texture sun_2;
     sf::Texture moon_1;
@@ -141,6 +155,7 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithoutHands;
     std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithHands;
+    //std::map<DayCycle::BackgroundCycle , sf::Texture> backgroundTextures;
 
 
 private:

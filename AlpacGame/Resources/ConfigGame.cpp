@@ -82,6 +82,21 @@ void ConfigGame::loadAllTextures() {
     night_11.loadFromFile("scenery/DayCycle/11_Night.png");
     night_12.loadFromFile("scenery/DayCycle/12_Night.png");
 
+    earth_1.loadFromFile("scenery/DayCycle/Earth_1.png");
+    earth_2.loadFromFile("scenery/DayCycle/Earth_2.png");
+    earth_3.loadFromFile("scenery/DayCycle/Earth_3.png");
+    earth_4.loadFromFile("scenery/DayCycle/Earth_4.png");
+    earth_5.loadFromFile("scenery/DayCycle/Earth_5.png");
+    earth_6.loadFromFile("scenery/DayCycle/Earth_6.png");
+    earth_7.loadFromFile("scenery/DayCycle/Earth_7.png");
+    earth_8.loadFromFile("scenery/DayCycle/Earth_8.png");
+    earth_9.loadFromFile("scenery/DayCycle/Earth_9.png");
+    earth_10.loadFromFile("scenery/DayCycle/Earth_10.png");
+    earth_11.loadFromFile("scenery/DayCycle/Earth_11.png");
+    earth_12.loadFromFile("scenery/DayCycle/Earth_12.png");
+
+    // Background frames
+
     sun_1.loadFromFile("scenery/DayCycle/Sun_1.png");
     sun_2.loadFromFile("scenery/DayCycle/Sun_2.png");
     moon_1.loadFromFile("scenery/DayCycle/Moon_1.png");

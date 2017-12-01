@@ -20,7 +20,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         planet = configGame->planet;
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
         dayCycle = dynamic_cast<DayCycle *>(configGame->dayCycle);
-        
+
         configGame->newGame = false;
     }
 
