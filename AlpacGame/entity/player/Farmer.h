@@ -22,6 +22,8 @@ public:
      */
     Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
+    virtual ~Farmer();
+
     /**
      * Current held entity.
      */

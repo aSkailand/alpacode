@@ -351,7 +351,7 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
                 contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
 
-                static_cast<EntityWarm*>(contactEntity)->dealDamage(1);
+                dynamic_cast<EntityWarm*>(contactEntity)->dealDamage(1);
             }
             break;
 
@@ -374,7 +374,7 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
                 contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
 
-                static_cast<EntityWarm*>(contactEntity)->dealDamage(1);
+                dynamic_cast<EntityWarm*>(contactEntity)->dealDamage(1);
 
             }
             break;
@@ -462,16 +462,3 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
             break;
     }
 }
-
-//void Wolf::initDeath() {
-//    printf("Wolf %i is dieing.\n", id);
-//    b2Filter deadFilter;
-//    deadFilter.categoryBits = (uint16) ID::WOLF;
-//    deadFilter.maskBits = (uint16) ID::PLANET;
-//    fixture_body->SetFilterData(deadFilter);
-//    fixture_hit->SetFilterData(deadFilter);
-//    fixture_detection->SetFilterData(deadFilter);
-//
-//    sfShape->setFillColor(sf::Color(200,200,200,100));
-//    deathClock.reset(true);
-//}

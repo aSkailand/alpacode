@@ -11,8 +11,7 @@
  *  1. An entity (Check Entity.h).
  *  2. Can move by own will.
  */
-class EntityWarm : public Entity
-{
+class EntityWarm : public Entity {
 
 public:
 
@@ -22,7 +21,7 @@ public:
         GHOST = 2
     };
 
-    Health currentHealth = Health ::ALIVE;
+    Health currentHealth = Health::ALIVE;
 
     sf::RectangleShape *ghostShape = nullptr;
 
@@ -32,22 +31,18 @@ public:
     float deathTick = 3.0f;
 
     int HP = 0;
-    bool alive = true;  // todo: Remove later
-    void dealDamage(int damage){
-        if(!alive)
-            return;
+
+    void dealDamage(int damage) {
         HP -= damage;
     }
 
-    void handleHealth(){
+    void handleHealth() {
 
         switch (currentHealth) {
 
             case Health::ALIVE: {
 
                 if (HP <= 0) {
-
-                    printf("AAA");
 
                     // Create filter of dead entity
                     b2Filter deadFilter;
@@ -57,10 +52,7 @@ public:
                     // Set filter
                     fixture_body->SetFilterData(deadFilter);
                     fixture_hit->SetFilterData(deadFilter);
-
-                    if(fixture_detection != nullptr){
-                        fixture_detection->SetFilterData(deadFilter);
-                    }
+                    if (fixture_detection) fixture_detection->SetFilterData(deadFilter);
 
                     // Proceed state
                     currentHealth = Health::DEAD;
@@ -76,8 +68,8 @@ public:
 
                     // Set update ghostShape
                     ghostShape->setPosition(sfShape->getPosition());
-                    ghostShape->setRotation(sfShape->getRotation());
-                    ghostShape->rotate(-45);
+                    ghostShape->setRotation(sfShape->getRotation() -45);
+//                    ghostShape->rotate();
 
                     // Proceed state
                     currentHealth = Health::GHOST;
@@ -143,11 +135,9 @@ public:
     Status currentStatus = Status::AIRBORNE;
 
 
-
 protected:
 
     sftools::Chronometer behaviorClock;
-
 
 
     /**

@@ -1,7 +1,6 @@
 
 #include "StateGame.h"
 
-
 void StateGame::goNext(StateMachine &stateMachine) {
 
     /// Assign pointers
@@ -130,8 +129,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
 
-        // Finding angle of farmer
+        /// Check if game is over
         if (farmer->currentHealth == EntityWarm::Health::ALIVE) {
+
+            // Finding angle of farmer
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
             delta.Normalize();
             float angle = atan2f(-delta.x, delta.y);
@@ -140,10 +141,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
             float viewX = configGame->calcX(angle * DEGtoRAD);
             float viewY = configGame->calcY(angle * DEGtoRAD);
 
+            // Set view accordingly to farmer
             view.setCenter(viewX, viewY);
-
             view.setRotation(angle * DEGtoRAD);
 
+            // Activate view
             window->setView(view);
         }
 

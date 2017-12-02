@@ -42,9 +42,9 @@ public:
     };
 
     /// Fixture pointers
-    b2Fixture *fixture_body;
-    b2Fixture *fixture_hit;
-    b2Fixture *fixture_detection;
+    b2Fixture *fixture_body = nullptr;
+    b2Fixture *fixture_hit = nullptr;
+    b2Fixture *fixture_detection = nullptr;
 
     sf::CircleShape *sf_HitSensor = nullptr;
 

@@ -89,12 +89,12 @@ void ConfigGame::loadAllTextures() {
     int farmerHeight = 70;
 
     farmerSprites[EntityWarm::Action::IDLE].startFrame = 0;
-    farmerSprites[EntityWarm::Action::IDLE].endFrame = 2;
+    farmerSprites[EntityWarm::Action::IDLE].endFrame = 3;
     loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0,
                 EntityWarm::Action::IDLE);
 
-    farmerSprites[EntityWarm::Action::WALKING].startFrame = 3;
-    farmerSprites[EntityWarm::Action::WALKING].endFrame = 8;
+    farmerSprites[EntityWarm::Action::WALKING].startFrame = 4;
+    farmerSprites[EntityWarm::Action::WALKING].endFrame = 9;
     loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0 ,
                 EntityWarm::Action::WALKING);
 

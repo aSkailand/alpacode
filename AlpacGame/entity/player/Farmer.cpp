@@ -106,7 +106,8 @@ void Farmer::render(sf::RenderWindow *window) {
 
         }
         case Health::DEAD: {
-            sfShape->setTexture(farmerSpriteMapPtr[Action::WALKING][2]);
+            sfShape->setTexture(farmerSpriteMapPtr[Action::IDLE][3]);
+
             break;
         }
         case Health::GHOST: {
@@ -132,7 +133,8 @@ void Farmer::render(sf::RenderWindow *window) {
     float shape_y = offsetPoint.y * SCALE;
 
     sfShape->setPosition(shape_x, shape_y);
-    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+    if(currentHealth == Health::ALIVE)  sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+    else                                sfShape->setRotation(getBody()->GetAngle() * DEGtoRAD + 90);
 
     window->draw(*sfShape);
 
@@ -168,8 +170,12 @@ void Farmer::switchAction() {
     handleHealth();
 
     // Cancel if not alive
-    if(currentHealth != Health::ALIVE)
+    if(currentHealth != Health::ALIVE){
+        if(holdingEntity != nullptr){
+            dynamic_cast<Holdable*>(holdingEntity)->isHeld = false;
+        }
         return;
+    }
 
     // Handle input
     switch (configGame->currentInput) {
@@ -212,10 +218,11 @@ void Farmer::switchAction() {
 
 void Farmer::performAction() {
 
-    if(currentHealth != Health::ALIVE)
-        return;
-
-    if (currentAction != Action::IDLE && currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
+    // If alive and allowed to move
+    if (currentHealth == Health::ALIVE
+        && currentAction != Action::IDLE
+        && currentStatus == Status::GROUNDED
+        && isMovementAvailable(moveAvailableTick)) {
 
         switch (currentAction) {
 
@@ -238,8 +245,14 @@ void Farmer::performAction() {
         }
     }
 
+    // Throw held entity if not alive
+    if(currentHealth != Health::ALIVE){
+        if(holdingEntity != nullptr){
+            currentGrasp = Grasp::THROWING;
+        }
+    }
 
-// Check the current status of grasp
+    // Check the current status of grasp
     switch (currentGrasp) {
         case Grasp::HOLDING: {
 
@@ -316,17 +329,14 @@ void Farmer::performAction() {
             holdingEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
 
             // Get mouse angle
-            b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter() -
-                              b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
+            b2Vec2 toTarget = holdingEntity->getBody()->GetWorldCenter()
+                              - b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE);
             toTarget.Normalize();
 
             float mass = holdingEntity->getBody()->GetMass();
 
             // Push body
             holdingEntity->getBody()->ApplyLinearImpulseToCenter(throwForce * mass * -toTarget, true);
-
-//             Reset touching in case it is dropped and is still in range
-//            currentlyTouchingEntities.push_back(holdingEntity);
 
             // Reset variables
             holdingEntity = nullptr;
@@ -452,15 +462,7 @@ void Farmer::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
     }
 }
 
-//void Farmer::switchCurrentTexture() {
-//
-//    b2Filter deadFilter;
-//    deadFilter.categoryBits = (uint16) ID::FARMER;
-//    deadFilter.maskBits = (uint16) ID::PLANET;
-//    fixture_body->SetFilterData(deadFilter);
-//    fixture_hit->SetFilterData(deadFilter);
-//
-////    body->SetTransform(body->GetWorldCenter(), )
-//    sfShape->setFillColor(sf::Color(200,200,200,100));
-//    deathClock.reset(true);
-//}
+Farmer::~Farmer() {
+    printf("Farmer is dead\n");
+
+}
