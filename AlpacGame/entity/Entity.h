@@ -27,7 +27,12 @@ public:
         ALPACA  = 0x0004,
         WOLF    = 0x0008,
         SHOTGUN = 0x0010,
-        BULLET  = 0x0100
+        BULLET  = 0x0020,
+        TRAP    = 0x0040
+    };
+
+    enum class Status {
+        GROUNDED, AIRBORNE
     };
 
     enum class Direction{
@@ -46,7 +51,9 @@ public:
     b2Fixture *fixture_hit = nullptr;
     b2Fixture *fixture_detection = nullptr;
 
-    sf::CircleShape *sf_HitSensor = nullptr;
+    sf::CircleShape *sf_DebugBody = nullptr;
+    sf::CircleShape *sf_DebugHit = nullptr;
+    sf::CircleShape *sf_DebugDetection = nullptr;
 
     /**
      * Adjust the position and rotation of the shape (SFML) to fit the body (Box2D).
@@ -57,16 +64,16 @@ public:
      * Setter for entity type of the child inheriting this class.
      * @param id entity type to set the child to.
      */
-    void setID(ID id) {
-        Entity::id = id;
+    void setEntity_ID(ID id) {
+        Entity::entity_ID = id;
     };
 
     /**
      * Getter for entity type of the child inheriting this class.
      * @return the entity type of the child.
      */
-    ID getID() const {
-        return id;
+    ID getEntity_ID() const {
+        return entity_ID;
     };
 
     /**
@@ -111,11 +118,11 @@ protected:
 
     /// Important Entity Properties
 
-    ID id = ID::VOID;
+    ID entity_ID = ID::VOID;
 
     b2Body *body = nullptr;
 
-    sf::Shape *sfShape = nullptr;
+    sf::Shape *sf_ShapeEntity = nullptr;
 
     /// Unit Vector + Force functions
 

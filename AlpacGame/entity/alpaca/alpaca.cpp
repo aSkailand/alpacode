@@ -48,7 +48,7 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     fixtureDef_detection.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF;
 
     // Store information
-    setID(Entity::ID::ALPACA);
+    setEntity_ID(Entity::ID::ALPACA);
     body->SetUserData((void *) this);
 
     // Connect fixture to body
@@ -62,17 +62,17 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     fixture_detection->SetUserData(convertToVoidPtr((int) CollisionID::DETECTION));
 
     // Creating SFML shape
-    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
-    sfShape->setOrigin(width / 2, height / 2);
+    sf_ShapeEntity = new sf::RectangleShape(sf::Vector2f(width, height));
+    sf_ShapeEntity->setOrigin(width / 2, height / 2);
 
-    ghostShape = new sf::RectangleShape(sf::Vector2f(width, height));
-    ghostShape->setOrigin(width / 2, height / 2);
-    ghostShape->setTexture(alpacaMapPtr[Action::IDLE][0]);
-    ghostShape->setFillColor(sf::Color(200, 200, 200, 100));
+    sf_ShapeGhost = new sf::RectangleShape(sf::Vector2f(width, height));
+    sf_ShapeGhost->setOrigin(width / 2, height / 2);
+    sf_ShapeGhost->setTexture(alpacaMapPtr[Action::IDLE][0]);
+    sf_ShapeGhost->setFillColor(sf::Color(200, 200, 200, 100));
 
-    sf_HitSensor = new sf::CircleShape(radius);
-    sf_HitSensor->setFillColor(sf::Color::Transparent);
-    sf_HitSensor->setOrigin(radius, radius);
+    sf_DebugHit = new sf::CircleShape(radius);
+    sf_DebugHit->setFillColor(sf::Color::Transparent);
+    sf_DebugHit->setOrigin(radius, radius);
 
 
     // Set HP
@@ -88,9 +88,9 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     currentBehavior = Behavior::NORMAL;
 
     /// Paint sensor
-    sf_DetectSensor = new sf::CircleShape(radius + 300);
-    sf_DetectSensor->setFillColor(sf::Color::Transparent);
-    sf_DetectSensor->setOrigin(radius + 300, radius + 300);
+    sf_DebugDetection = new sf::CircleShape(radius + 300);
+    sf_DebugDetection->setFillColor(sf::Color::Transparent);
+    sf_DebugDetection->setOrigin(radius + 300, radius + 300);
 
 
 }
@@ -116,11 +116,11 @@ void Alpaca::switchAction() {
                         currentDirection = (Direction) randomNumberGenerator(0, 1);
                         switch (currentDirection) {
                             case Direction::LEFT: {
-                                sfShape->setScale(-1.f, 1.f);
+                                sf_ShapeEntity->setScale(-1.f, 1.f);
                                 break;
                             }
                             case Direction::RIGHT: {
-                                sfShape->setScale(1.f, 1.f);
+                                sf_ShapeEntity->setScale(1.f, 1.f);
                                 break;
                             }
                         }
@@ -144,10 +144,10 @@ void Alpaca::switchAction() {
 
                 if (currentDirection == Direction::LEFT) {
                     currentDirection = Direction::RIGHT;
-                    sfShape->setScale(1.f, 1.f);
+                    sf_ShapeEntity->setScale(1.f, 1.f);
                 } else {
                     currentDirection = Direction::LEFT;
-                    sfShape->setScale(-1.f, 1.f);
+                    sf_ShapeEntity->setScale(-1.f, 1.f);
                 }
 
                 // Reset defaults to false
@@ -180,12 +180,12 @@ void Alpaca::render(sf::RenderWindow *window) {
 
             switch (currentStatus) {
                 case Status::GROUNDED: {
-                    sfShape->setTexture(alpacaMapPtr[Action::IDLE][0]);
+                    sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][0]);
                     break;
                 }
                 case Status::AIRBORNE: {
-                    if (isHeld) sfShape->setTexture(alpacaMapPtr[Action::IDLE][3]);
-                    else sfShape->setTexture(alpacaMapPtr[Action::WALKING][1]);
+                    if (isHeld) sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][3]);
+                    else sf_ShapeEntity->setTexture(alpacaMapPtr[Action::WALKING][1]);
                     break;
                 }
             }
@@ -193,60 +193,60 @@ void Alpaca::render(sf::RenderWindow *window) {
 
         }
         case Health::DEAD: {
-            sfShape->setTexture(alpacaMapPtr[Action::IDLE][4]);
+            sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][4]);
             break;
         }
         case Health::GHOST: {
             if(deathClock.getElapsedTime().asSeconds() >= decayTick){
-                sfShape->setFillColor(sfShape->getFillColor() - sf::Color(0, 0, 0, 1));
+                sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
             }
             break;
         }
     }
 
 
-    float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
+    float delta_Y = sf_ShapeEntity->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
     b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
 
     float shape_x = offsetPoint.x * SCALE;
     float shape_y = offsetPoint.y * SCALE;
 
-    sfShape->setPosition(shape_x, shape_y);
-    sfShape->setRotation(body->GetAngle() * DEGtoRAD);
+    sf_ShapeEntity->setPosition(shape_x, shape_y);
+    sf_ShapeEntity->setRotation(body->GetAngle() * DEGtoRAD);
 
     if (currentHealth == Health::GHOST) {
         b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
-        ghostShape->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
-        window->draw(*ghostShape);
+        sf_ShapeGhost->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+        window->draw(*sf_ShapeGhost);
     }
 
-    window->draw(*sfShape);
+    window->draw(*sf_ShapeEntity);
 
     if (configGame->showLabels) {
 
         // Draw SFShape debug
-        sfShape->setOutlineThickness(2);
+        sf_ShapeEntity->setOutlineThickness(2);
         if (farmerTouch)
-            sfShape->setOutlineColor(sf::Color::Yellow);
+            sf_ShapeEntity->setOutlineColor(sf::Color::Yellow);
         else
-            sfShape->setOutlineColor(sf::Color::Black);
+            sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
         // Detect Sensor Draw
-        sf_DetectSensor->setOutlineThickness(2);
-        sf_DetectSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugDetection->setOutlineThickness(2);
+        sf_DebugDetection->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
         if (currentBehavior == Behavior::AWARE)
-            sf_DetectSensor->setOutlineColor(sf::Color::Yellow);
+            sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
         else if (currentBehavior == Behavior::AFRAID)
-            sf_DetectSensor->setOutlineColor(sf::Color::Red);
+            sf_DebugDetection->setOutlineColor(sf::Color::Red);
         else if (currentBehavior == Behavior::NORMAL)
-            sf_DetectSensor->setOutlineColor(sf::Color::Green);
-        window->draw(*sf_DetectSensor);
+            sf_DebugDetection->setOutlineColor(sf::Color::Green);
+        window->draw(*sf_DebugDetection);
 
         // Draw hitSensor debug
-        sf_HitSensor->setOutlineThickness(2);
-        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*sf_HitSensor);
+        sf_DebugHit->setOutlineThickness(2);
+        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_DebugHit);
 
         // Draw label_ID
         float offset = fixture_body->GetShape()->m_radius + 1.f;
@@ -259,23 +259,23 @@ void Alpaca::render(sf::RenderWindow *window) {
         label_HP->setString(std::to_string(HP));
 
         label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
-        label_HP->setRotation(sfShape->getRotation());
+        label_HP->setRotation(sf_ShapeEntity->getRotation());
         window->draw(*label_HP);
 
         switch (currentStatus) {
             case Status::GROUNDED: {
-                sf_HitSensor->setOutlineColor(sf::Color::White);
+                sf_DebugHit->setOutlineColor(sf::Color::White);
                 break;
             }
             case Status::AIRBORNE: {
-                sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
+                sf_DebugHit->setOutlineColor(sf::Color(100, 100, 100));
                 break;
             }
         }
 
     } else {
-        sfShape->setOutlineThickness(0);
-        sf_HitSensor->setOutlineThickness(0);
+        sf_ShapeEntity->setOutlineThickness(0);
+        sf_DebugHit->setOutlineThickness(0);
     }
 }
 
@@ -340,7 +340,7 @@ void Alpaca::startContact(CollisionID selfCollision, CollisionID otherCollision,
         }
     }
 
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::WOLF: {
             if (selfCollision == CollisionID::DETECTION) {
                 // ignores detect sensor of Wolf
@@ -363,7 +363,7 @@ Alpaca::~Alpaca() {
 }
 
 void Alpaca::startContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::PLANET: {
             currentStatus = Status::GROUNDED;
             break;
@@ -374,7 +374,7 @@ void Alpaca::startContact_body(Entity::CollisionID otherCollision, Entity *conta
 }
 
 void Alpaca::startContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::FARMER: {
             farmerTouch = true;
             break;
@@ -386,7 +386,7 @@ void Alpaca::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
 }
 
 void Alpaca::startContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::WOLF: {
             if (otherCollision == CollisionID::HIT) {
 
@@ -395,20 +395,20 @@ void Alpaca::startContact_detection(Entity::CollisionID otherCollision, Entity *
                 if (currentBehavior == Behavior::NORMAL) {
                     currentBehavior = Behavior::AWARE;
                     if (delta.x > 0) {
-                        sfShape->setScale(1.f, 1.f);
+                        sf_ShapeEntity->setScale(1.f, 1.f);
                         currentDirection = Direction::RIGHT;
                     } else {
-                        sfShape->setScale(-1.f, 1.f);
+                        sf_ShapeEntity->setScale(-1.f, 1.f);
                         currentDirection = Direction::LEFT;
                     }
                 }
 
                 if (currentBehavior == Behavior::AFRAID) {
                     if (delta.x > 0) {
-                        sfShape->setScale(-1.f, 1.f);
+                        sf_ShapeEntity->setScale(-1.f, 1.f);
                         currentDirection = Direction::LEFT;
                     } else {
-                        sfShape->setScale(1.f, 1.f);
+                        sf_ShapeEntity->setScale(1.f, 1.f);
                         currentDirection = Direction::RIGHT;
                     }
                 }
@@ -427,7 +427,7 @@ void Alpaca::startContact_detection(Entity::CollisionID otherCollision, Entity *
 }
 
 void Alpaca::endContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::FARMER: {
             farmerTouch = false;
             break;
@@ -438,7 +438,7 @@ void Alpaca::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
 }
 
 void Alpaca::endContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::PLANET: {
             currentStatus = Status::AIRBORNE;
             break;
@@ -449,10 +449,18 @@ void Alpaca::endContact_body(Entity::CollisionID otherCollision, Entity *contact
 }
 
 void Alpaca::endContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         default:
             break;
     }
+}
+
+void Alpaca::performHold() {
+
+}
+
+void Alpaca::performThrow() {
+
 }
 
 

@@ -14,9 +14,11 @@
 class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
 
-//    bool farmerTouch = false;
+    void update() override;
 
-//    bool isHeld = false;
+    void performHold() override;
+
+    void performThrow() override;
 
     float length;
 

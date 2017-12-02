@@ -1,5 +1,6 @@
 
 #include "StateGame.h"
+#include "../entity/trap/Trap.h"
 
 void StateGame::goNext(StateMachine &stateMachine) {
 
@@ -67,12 +68,15 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
+            if(!bodyIter->IsAwake())
+                continue;
+
             // Calculate Radial Gravitation on all bodies
             float gravitationForce = 10.0f;
             float bodyMass = bodyIter->GetMass();
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - bodyIter->GetWorldCenter();
             delta.Normalize();
-            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, true);
+            bodyIter->ApplyForceToCenter(gravitationForce * bodyMass * delta, false);
 
             // Calibrate rotation of entity according to planet's center by force
             float desiredAngle = atan2f(-delta.x, delta.y);
@@ -82,7 +86,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             while (totalRotation > 180 / DEGtoRAD) totalRotation -= 360 / DEGtoRAD;
             float desiredAngularVelocity = totalRotation * 60;
             float impulse = bodyIter->GetInertia() * desiredAngularVelocity;// disregard time factor
-            bodyIter->ApplyAngularImpulse(impulse, true);
+            bodyIter->ApplyAngularImpulse(impulse, false);
 
 
         }
@@ -110,6 +114,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Render Phase
         window->clear(sf::Color::Blue);
 
+        /// Update all cold entities
+        for(Entity *e : *entities){
+            auto cold_e = dynamic_cast<EntityCold *> (e);
+            if (cold_e != nullptr) {
+                cold_e->update();
+            }
+        }
+
         /// Activate all warm entities
         for (Entity *e : *entities) {
 
@@ -121,7 +133,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
             }
 
-            // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        }
+
+        // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        for(Entity *e : *entities){
             e->render(window);
         }
 
@@ -212,12 +227,17 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace(entities->begin(),new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos) );
             break;
         }
         case sf::Keyboard::Num3: {
             entities->emplace_back(
                     new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::Num4:{
+            entities->emplace_back(
+                    new Trap(configGame, 150, 75, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Z: {

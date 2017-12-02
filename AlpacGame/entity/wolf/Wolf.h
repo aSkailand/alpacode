@@ -11,6 +11,8 @@
 #include "../EntityWarm.h"
 #include "../Mob.h"
 
+class Trap;
+
 class Wolf : public Mob{
 public:
 
@@ -30,19 +32,18 @@ public:
 
     bool deadCheck() override;
 
+    /// Stun properties
+
+    bool isStunned = false;
+    void performStun();
+    void removeStun();
+
 private:
     /// Entity Properties
     const int id;
     float density = 1.0f;
     float friction = 1.0f;
     float restitution = 0.0f;
-
-    uint16 categoryBits = (uint16) ID::WOLF;
-
-    uint16 maskBits =   (uint16) ID::PLANET
-                      | (uint16) ID::FARMER
-                      | (uint16) ID::ALPACA
-                      | (uint16) ID::BULLET;
 
     float walkForce = 5.f;
     float walkAngle = 30.f;   // Right, Degrees
@@ -91,7 +92,7 @@ private:
 
     /// Animation tools
     bool spriteSwitch = false;
-    std::map<EntityWarm::Action , SpriteInfo> wolfMapPtr;
+    std::map<EntityWarm::Action , SpriteInfo> wolfTextureMap;
 
 
 public:

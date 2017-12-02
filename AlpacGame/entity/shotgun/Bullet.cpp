@@ -38,15 +38,15 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
     fixture_body = body->CreateFixture(&fixtureDef);
 
     // Store info
-    setID(Entity::ID::BULLET);
+    setEntity_ID(Entity::ID::BULLET);
     body->SetUserData((void *) this);
 
     // Create SFML Shape
-    sfShape = new sf::CircleShape(radius);
-    sfShape->setOrigin(radius, radius);
-    sfShape->setFillColor(sf::Color::White);
-    sfShape->setOutlineThickness(2);
-    sfShape->setOutlineColor(sf::Color::Black);
+    sf_ShapeEntity = new sf::CircleShape(radius);
+    sf_ShapeEntity->setOrigin(radius, radius);
+    sf_ShapeEntity->setFillColor(sf::Color::White);
+    sf_ShapeEntity->setOutlineThickness(2);
+    sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
     decayClock.restart();
 
@@ -57,10 +57,10 @@ void Bullet::render(sf::RenderWindow *window) {
     float shape_x = SCALE * body->GetPosition().x;
     float shape_y = SCALE * body->GetPosition().y;
 
-    sfShape->setPosition(shape_x, shape_y);
-    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+    sf_ShapeEntity->setPosition(shape_x, shape_y);
+    sf_ShapeEntity->setRotation((body->GetAngle() * DEGtoRAD));
 
-    window->draw(*sfShape);
+    window->draw(*sf_ShapeEntity);
 }
 
 bool Bullet::deadCheck() {
@@ -73,7 +73,7 @@ Bullet::~Bullet() {
 
 void
 Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::PLANET:
             break;
         case ID::FARMER:
@@ -96,8 +96,8 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
             break;
     }
 
-    sfShape->setFillColor(sf::Color::Red);
-    sfShape->setOutlineThickness(0);
+    sf_ShapeEntity->setFillColor(sf::Color::Red);
+    sf_ShapeEntity->setOutlineThickness(0);
 
     if (!hit) {
         fixture_body->SetFilterData(filter);
@@ -106,5 +106,9 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
 }
 
 void Bullet::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
+
+}
+
+void Bullet::update() {
 
 }

@@ -23,7 +23,7 @@ public:
 
     Health currentHealth = Health::ALIVE;
 
-    sf::RectangleShape *ghostShape = nullptr;
+    sf::RectangleShape *sf_ShapeGhost = nullptr;
 
     sftools::Chronometer deathClock;
     float ghostTick = 15.0f;
@@ -46,7 +46,7 @@ public:
 
                     // Create filter of dead entity
                     b2Filter deadFilter;
-                    deadFilter.categoryBits = (uint16) getID();
+                    deadFilter.categoryBits = (uint16) getEntity_ID();
                     deadFilter.maskBits = (uint16) ID::PLANET;
 
                     // Set filter
@@ -67,8 +67,8 @@ public:
                 if (deathClock.getElapsedTime().asSeconds() >= deathTick) {
 
                     // Set update ghostShape
-                    ghostShape->setPosition(sfShape->getPosition());
-                    ghostShape->setRotation(sfShape->getRotation() -45);
+                    sf_ShapeGhost->setPosition(sf_ShapeEntity->getPosition());
+                    sf_ShapeGhost->setRotation(sf_ShapeEntity->getRotation() - 45);
 //                    ghostShape->rotate();
 
                     // Proceed state
@@ -126,9 +126,7 @@ public:
         IDLE = 0, WALKING = 1, JUMP = 2
     };
 
-    enum class Status {
-        GROUNDED, AIRBORNE
-    };
+
 
     Direction currentDirection = Direction::RIGHT;
     Action currentAction = Action::IDLE;
@@ -164,8 +162,6 @@ protected:
         }
         return triggered;
     }
-
-    sf::CircleShape *sf_DetectSensor = nullptr;
 
 private:
 

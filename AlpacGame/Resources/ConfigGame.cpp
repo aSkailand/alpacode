@@ -82,6 +82,22 @@ void ConfigGame::loadAllTextures() {
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
 
+    // Trap
+    int trapWidth = 50;
+    int trapHeight = 25;
+    trapOpenTexture.loadFromFile("entity/trap/trap.png", sf::IntRect(0, 0, trapWidth, trapHeight));
+    trapClosedTexture.loadFromFile("entity/trap/trap.png", sf::IntRect(trapWidth, 0, trapWidth, trapHeight));
+
+    // Cooldown Barometer
+    int cooldownWidth = 21;
+    int cooldownHeight = 21;
+    for (int i = 0; i < 5; ++i) {
+        auto *tempTexture = new sf::Texture();
+        tempTexture->loadFromFile("entity/cooldown/cooldown.png",
+                                 sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
+        cooldownTextures.push_back(tempTexture);
+    }
+
     // Farmer
     std::string farmerSpriteSheet = "entity/player/farmer-sprite.png";
 
@@ -149,6 +165,7 @@ void ConfigGame::reset() {
     delete farmer;
     farmer = new Farmer(this, 30, 100, 100, 100, -200);
 
+    /// Create Vectors
     delete entities;
     entities = new std::vector<Entity *>;
     entities->push_back(farmer);

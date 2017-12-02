@@ -1,86 +1,102 @@
 #include "Wolf.h"
+#include "../trap/Trap.h"
 
 Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y)
         : id(nextId++), Mob(id) {
 
-    // Assign Pointers
+    /// Assign Pointers
     this->configGame = configGame;
-    wolfMapPtr = configGame->wolfSprites;
+
+    /// Set ID
+    setEntity_ID(Entity::ID::WOLF);
+
+    /// Set in-game values
+    // Set HP
+    HP = 1;
 
     // Convert angle and store unit vectors
     convertAngleToVectors(((int) Action::WALKING), walkAngle);
 
-    // Create body definition
+    /// Create Box2D body
     b2BodyDef bodyDef;
     bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
     bodyDef.type = b2_dynamicBody;
-
-    // Create body
+    bodyDef.userData = this;
     body = configGame->world->CreateBody(&bodyDef);
 
-    // Create Fixture
+    /// Create Box2D fixtures
+    // Fixture: Body
     b2CircleShape b2Shape;
     b2Shape.m_radius = radius / SCALE;
     b2FixtureDef fixtureDef_body;
+    fixtureDef_body.shape = &b2Shape;
     fixtureDef_body.density = density;
     fixtureDef_body.friction = friction;
     fixtureDef_body.restitution = restitution;
-    fixtureDef_body.filter.categoryBits = categoryBits;
-    fixtureDef_body.filter.maskBits = maskBits;
-    fixtureDef_body.shape = &b2Shape;
+    fixtureDef_body.filter.categoryBits = (uint16) getEntity_ID();
+    fixtureDef_body.filter.maskBits = (uint16) ID::PLANET;
+    fixtureDef_body.userData = convertToVoidPtr((int) CollisionID::BODY);
+    fixture_body = body->CreateFixture(&fixtureDef_body);
 
-    /// Body Sensor
+    // Fixture: Hit
     b2CircleShape b2Shape2;
-    b2Shape2.m_radius = radius / SCALE;
+    b2Shape2.m_radius = (radius + 10) / SCALE;
     b2FixtureDef fixtureDef_hit;
     fixtureDef_hit.shape = &b2Shape2;
     fixtureDef_hit.isSensor = true;
-    fixtureDef_hit.filter.categoryBits = (uint16) ID::WOLF;
-    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::ALPACA;
+    fixtureDef_hit.filter.categoryBits = (uint16) getEntity_ID();
+    fixtureDef_hit.filter.maskBits =
+            (uint16) ID::FARMER | (uint16) ID::ALPACA | (uint16) ID::TRAP | (uint16) ID::BULLET;
+    fixtureDef_hit.userData = convertToVoidPtr((int) CollisionID::HIT);
+    fixture_hit = body->CreateFixture(&fixtureDef_hit);
 
-    /// Detect Sensor
+    // Fixture: Detection
     b2CircleShape b2Shape3;
     b2FixtureDef fixtureDef_detection;
     b2Shape3.m_radius = (radius + 300) / SCALE;
     fixtureDef_detection.shape = &b2Shape3;
     fixtureDef_detection.isSensor = true;
-    fixtureDef_detection.filter.categoryBits = (uint16) ID::WOLF;
+    fixtureDef_detection.filter.categoryBits = (uint16) getEntity_ID();
     fixtureDef_detection.filter.maskBits = (uint16) ID::ALPACA | (uint16) ID::FARMER;
-
-    // Store information
-    setID(Entity::ID::WOLF);
-    body->SetUserData((void *) this);
-
-    // Connect fixture to body
-    fixture_body = body->CreateFixture(&fixtureDef_body);
-    fixture_hit = body->CreateFixture(&fixtureDef_hit);
+    fixtureDef_detection.userData = convertToVoidPtr((int) CollisionID::DETECTION);
     fixture_detection = body->CreateFixture(&fixtureDef_detection);
 
-    // Set Hit and Detect Fixture as Sensor
-    fixture_body->SetUserData(convertToVoidPtr((int) CollisionID::BODY));
-    fixture_hit->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
-    fixture_detection->SetUserData(convertToVoidPtr((int) CollisionID::DETECTION));
+    /// Create SFML shapes
+    // Assign texture map
+    wolfTextureMap = configGame->wolfSprites;
 
-    // Create SFML shape
-    sfShape = new sf::RectangleShape(sf::Vector2f(width, height));
-    sfShape->setOrigin(width / 2, height / 2);
+    // Shape: Entity
+    sf_ShapeEntity = new sf::RectangleShape(sf::Vector2f(width, height));
+    sf_ShapeEntity->setOrigin(width / 2, height / 2);
 
-    sf_HitSensor = new sf::CircleShape(radius);
-    sf_HitSensor->setFillColor(sf::Color::Transparent);
-    sf_HitSensor->setOrigin(radius, radius);
+    // Shape: Ghost
+    sf_ShapeGhost = new sf::RectangleShape(sf::Vector2f(width, height));
+    sf_ShapeGhost->setOrigin(width / 2, height / 2);
+    sf_ShapeGhost->setTexture(wolfTextureMap[Action::WALKING][0]);
+    sf_ShapeGhost->setFillColor(sf::Color(200, 200, 200, 100));
 
-    ghostShape = new sf::RectangleShape(sf::Vector2f(width, height));
-    ghostShape->setOrigin(width / 2, height / 2);
-    ghostShape->setTexture(wolfMapPtr[Action::WALKING][0]);
-    ghostShape->setFillColor(sf::Color(200, 200, 200, 100));
+    // Debug Shape: Body
+    sf_DebugBody = new sf::CircleShape(radius);
+    sf_DebugBody->setOrigin(radius, radius);
+    sf_DebugBody->setFillColor(sf::Color::Transparent);
 
-    // Set HP
-    HP = 1;
+    // Debug Shape: Hit
+    sf_DebugHit = new sf::CircleShape(fixture_hit->GetShape()->m_radius * SCALE);
+    sf_DebugHit->setOrigin(sf_DebugHit->getRadius(), sf_DebugHit->getRadius());
+    sf_DebugHit->setFillColor(sf::Color::Transparent);
 
-    // Create ID text
+    // Debug Shape: Detection
+    sf_DebugDetection = new sf::CircleShape(radius + 300);
+    sf_DebugDetection->setOrigin(sf_DebugDetection->getRadius(), sf_DebugDetection->getRadius());
+    sf_DebugDetection->setFillColor(sf::Color::Transparent);
+
+    // Debug text: ID
     createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
+
+    // Debug text: HP
     createLabel(label_HP, &this->configGame->fontID, std::to_string(HP));
 
+    // todo: Determine where to put this chunk of code
     /// Initialize behavior
     currentBehavior = Behavior::NORMAL;
     wolfBase = new sf::CircleShape(10);
@@ -89,26 +105,23 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     wolfBase->setPosition(0, 0);
 
 
-    ///Paint Sensor;
-    sf_DetectSensor = new sf::CircleShape(radius + 300);
-    sf_DetectSensor->setFillColor(sf::Color::Transparent);
-    sf_DetectSensor->setOrigin(radius + 300, radius + 300);
-
-
 }
 
 int Wolf::nextId = 0;
 
 void Wolf::switchAction() {
 
-
     handleHealth();
 
-    if(currentHealth != Health::ALIVE)
+    if (currentHealth != Health::ALIVE)
         return;
 
+    if (isStunned) {
+        return;
+    }
+
     // Check if it is time for randomizing the wolf's current state
-    if (randomActionTriggered(randomActionTick) && currentBehavior == Behavior::NORMAL) {
+    if (currentBehavior == Behavior::NORMAL && randomActionTriggered(randomActionTick)) {
 
         currentAction = (Action) randomNumberGenerator(0, 1);
         switch (currentAction) {
@@ -116,11 +129,11 @@ void Wolf::switchAction() {
                 currentDirection = (Direction) randomNumberGenerator(0, 1);
                 switch (currentDirection) {
                     case Wolf::Direction::LEFT: {
-                        sfShape->setScale(-1.f, 1.f);
+                        sf_ShapeEntity->setScale(-1.f, 1.f);
                         break;
                     }
                     case Wolf::Direction::RIGHT: {
-                        sfShape->setScale(1.f, 1.f);
+                        sf_ShapeEntity->setScale(1.f, 1.f);
                         break;
                     }
                 }
@@ -137,15 +150,16 @@ void Wolf::switchAction() {
 
     }
 
+    // todo: Remove when behavior is done.
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
         currentDirection = (Direction) randomNumberGenerator(0, 1);
         switch (currentDirection) {
             case Wolf::Direction::LEFT: {
-                sfShape->setScale(-1.f, 1.f);
+                sf_ShapeEntity->setScale(-1.f, 1.f);
                 break;
             }
             case Wolf::Direction::RIGHT: {
-                sfShape->setScale(1.f, 1.f);
+                sf_ShapeEntity->setScale(1.f, 1.f);
                 break;
             }
         }
@@ -172,8 +186,12 @@ void Wolf::switchAction() {
 
 void Wolf::performAction() {
 
-    if(currentHealth != Health::ALIVE)
+    if (currentHealth != Health::ALIVE)
         return;
+
+    if (isStunned) {
+        return;
+    }
 
     // Check if the randomActionClock has triggered
     if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
@@ -192,14 +210,14 @@ void Wolf::performAction() {
 void Wolf::render(sf::RenderWindow *window) {
 
     /// Render sfShape
-    float delta_Y = sfShape->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
+    float delta_Y = sf_ShapeEntity->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
     b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
 
     float shape_x = offsetPoint.x * SCALE;
     float shape_y = offsetPoint.y * SCALE;
 
-    sfShape->setPosition(shape_x, shape_y);
-    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+    sf_ShapeEntity->setPosition(shape_x, shape_y);
+    sf_ShapeEntity->setRotation((body->GetAngle() * DEGtoRAD));
 
     // Switch Texture
     switch (currentHealth) {
@@ -209,14 +227,14 @@ void Wolf::render(sf::RenderWindow *window) {
             switch (currentStatus) {
                 case Status::GROUNDED: {
                     if (currentAction == Action::IDLE) {
-                        sfShape->setTexture(wolfMapPtr[Action::IDLE][0]);
+                        sf_ShapeEntity->setTexture(wolfTextureMap[Action::IDLE][0]);
                     } else {
-                        sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
+                        sf_ShapeEntity->setTexture(wolfTextureMap[Action::WALKING][(spriteSwitch ? 0 : 1)]);
                     }
                     break;
                 }
                 case Status::AIRBORNE: {
-                    sfShape->setTexture(wolfMapPtr[Action::WALKING][(spriteSwitch ? 0 : 1)]);
+                    sf_ShapeEntity->setTexture(wolfTextureMap[Action::WALKING][(spriteSwitch ? 0 : 1)]);
                     break;
                 }
             }
@@ -224,12 +242,12 @@ void Wolf::render(sf::RenderWindow *window) {
 
         }
         case Health::DEAD: {
-            sfShape->setTexture(wolfMapPtr[Action::IDLE][3]);
+            sf_ShapeEntity->setTexture(wolfTextureMap[Action::IDLE][3]);
             break;
         }
         case Health::GHOST: {
-            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
-                sfShape->setFillColor(sfShape->getFillColor() - sf::Color(0, 0, 0, 1));
+            if (deathClock.getElapsedTime().asSeconds() >= decayTick) {
+                sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
             }
             break;
         }
@@ -237,17 +255,17 @@ void Wolf::render(sf::RenderWindow *window) {
 
     if (currentHealth == Health::GHOST) {
         b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
-        ghostShape->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
-        window->draw(*ghostShape);
+        sf_ShapeGhost->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+        window->draw(*sf_ShapeGhost);
     }
 
-    window->draw(*sfShape);
+    window->draw(*sf_ShapeEntity);
 
     if (configGame->showLabels) {
 
         /// Draw SFShape debug
-        sfShape->setOutlineThickness(2);
-        sfShape->setOutlineColor(sf::Color::Black);
+        sf_ShapeEntity->setOutlineThickness(2);
+        sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
         /// Draw Base THIS SHOULD BE FIXED
         wolfBase->setOutlineThickness(2);
@@ -256,36 +274,41 @@ void Wolf::render(sf::RenderWindow *window) {
             wolfBase->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
         window->draw(*wolfBase);
 
+        sf_DebugBody->setOutlineThickness(2);
+        sf_DebugBody->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugBody->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_DebugBody);
+
         /// Detect Sensor Draw
-        sf_DetectSensor->setOutlineThickness(2);
-        sf_DetectSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        if (currentBehavior == Behavior::NORMAL) sf_DetectSensor->setOutlineColor(sf::Color::Yellow);
-        else if (currentBehavior == Behavior::HUNTING) sf_DetectSensor->setOutlineColor(sf::Color::Red);
-        else if (currentBehavior == Behavior::AFRAID) sf_DetectSensor->setOutlineColor(sf::Color::Green);
-        window->draw(*sf_DetectSensor);
+        sf_DebugDetection->setOutlineThickness(2);
+        sf_DebugDetection->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        if (currentBehavior == Behavior::NORMAL) sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
+        else if (currentBehavior == Behavior::HUNTING) sf_DebugDetection->setOutlineColor(sf::Color::Red);
+        else if (currentBehavior == Behavior::AFRAID) sf_DebugDetection->setOutlineColor(sf::Color::Green);
+        window->draw(*sf_DebugDetection);
 
         // Draw hitSensor debug
-        sf_HitSensor->setOutlineThickness(2);
-        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*sf_HitSensor);
+        sf_DebugHit->setOutlineThickness(2);
+        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_DebugHit);
 
         // Draw label_ID
         float offset = fixture_body->GetShape()->m_radius + 1.f;
         label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                               body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(sfShape->getRotation());
+        label_ID->setRotation(sf_ShapeEntity->getRotation());
         window->draw(*label_ID);
 
         // Draw label_HP
         label_HP->setString(std::to_string(HP));
         label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
-        label_HP->setRotation(sfShape->getRotation());
+        label_HP->setRotation(sf_ShapeEntity->getRotation());
         window->draw(*label_HP);
 
 
     } else {
-        sfShape->setOutlineThickness(0);
+        sf_ShapeEntity->setOutlineThickness(0);
     }
 }
 
@@ -295,6 +318,8 @@ bool Wolf::deadCheck() {
 
 Wolf::~Wolf() {
     printf("Wolf %i died.\n", id);
+    isStunned = false;
+
 }
 
 void Wolf::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
@@ -317,13 +342,12 @@ void Wolf::startContact(CollisionID selfCollision, CollisionID otherCollision, E
 }
 
 void Wolf::startContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::PLANET: {
             currentStatus = Status::GROUNDED;
             spriteSwitch = !spriteSwitch;
-            sf_HitSensor->setOutlineColor(sf::Color::White);
+            sf_DebugHit->setOutlineColor(sf::Color::White);
             body->SetLinearVelocity(b2Vec2(0, 0));
-            body->SetAwake(false);
             break;
         }
         default:
@@ -332,9 +356,12 @@ void Wolf::startContact_body(Entity::CollisionID otherCollision, Entity *contact
 }
 
 void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::FARMER: {
-            if (otherCollision == CollisionID::HIT) {
+            if (currentHealth == Health::ALIVE
+                && !isStunned
+                && otherCollision == CollisionID::HIT) {
+
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
 
                 /// Self sensor hits contact sensor
@@ -351,14 +378,17 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
                 contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
 
-                dynamic_cast<EntityWarm*>(contactEntity)->dealDamage(1);
+                dynamic_cast<EntityWarm *>(contactEntity)->dealDamage(1);
             }
             break;
 
         }
         case ID::ALPACA: {
 
-            if (otherCollision == CollisionID::HIT) {
+            if (currentHealth == Health::ALIVE
+                && !isStunned
+                && otherCollision == CollisionID::HIT) {
+
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
                 /// Self sensor hits contact sensor
                 float mass = contactEntity->getBody()->GetMass();
@@ -374,7 +404,7 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
                 contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
 
-                dynamic_cast<EntityWarm*>(contactEntity)->dealDamage(1);
+                dynamic_cast<EntityWarm *>(contactEntity)->dealDamage(1);
 
             }
             break;
@@ -385,20 +415,20 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
 }
 
 void Wolf::startContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::FARMER:
             break;
         case ID::ALPACA: {
             /// All sensor his
-            if (otherCollision == CollisionID::HIT) {
+            if (!isStunned && otherCollision == CollisionID::HIT) {
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
                 if (delta.x > 0) {
                     currentDirection = Direction::RIGHT;
-                    sfShape->setScale(1.f, 1.f);
+                    sf_ShapeEntity->setScale(1.f, 1.f);
 
                 } else {
                     currentDirection = Direction::LEFT;
-                    sfShape->setScale(-1.f, 1.f);
+                    sf_ShapeEntity->setScale(-1.f, 1.f);
                 }
             }
             break;
@@ -426,10 +456,10 @@ void Wolf::endContact(CollisionID selfCollision, CollisionID otherCollision, Ent
 }
 
 void Wolf::endContact_body(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch (contactEntity->getID()) {
+    switch (contactEntity->getEntity_ID()) {
         case ID::PLANET: {
             currentStatus = Status::AIRBORNE;
-            sf_HitSensor->setOutlineColor(sf::Color(100, 100, 100));
+            sf_DebugHit->setOutlineColor(sf::Color(100, 100, 100));
             break;
         }
         default:
@@ -442,18 +472,19 @@ void Wolf::endContact_hit(Entity::CollisionID otherCollision, Entity *contactEnt
 }
 
 void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
-    switch(contactEntity->getID()){
-        case ID::FARMER:break;
-        case ID::ALPACA:{
-            if(otherCollision == CollisionID::HIT){
+    switch (contactEntity->getEntity_ID()) {
+        case ID::FARMER:
+            break;
+        case ID::ALPACA: {
+            if (otherCollision == CollisionID::HIT) {
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
                 if (delta.x > 0) {
                     currentDirection = Direction::RIGHT;
-                    sfShape->setScale(1.f, 1.f);
+                    sf_ShapeEntity->setScale(1.f, 1.f);
 
                 } else {
                     currentDirection = Direction::LEFT;
-                    sfShape->setScale(-1.f, 1.f);
+                    sf_ShapeEntity->setScale(-1.f, 1.f);
                 }
             }
             break;
@@ -462,3 +493,42 @@ void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *cont
             break;
     }
 }
+
+void Wolf::performStun() {
+
+    printf("Wolf %i is stunned!\n", id);
+
+    // Set bool
+    isStunned = true;
+
+    // Switch OFF certain collisions
+    b2Filter tempFilter = fixture_hit->GetFilterData();
+    tempFilter.maskBits ^= (uint16) ID::FARMER | (uint16) ID::ALPACA;
+    fixture_hit->SetFilterData(tempFilter);
+
+    // Sleep body
+    getBody()->SetAwake(false);
+
+    // Reset values
+    currentAction = Action::IDLE;
+}
+
+void Wolf::removeStun() {
+
+    printf("Wolf %i is no longer stunned!\n", id);
+
+    // Set bool
+    isStunned = false;
+
+    // Switch ON certain collisions
+    b2Filter tempFilter = fixture_hit->GetFilterData();
+    tempFilter.maskBits |= (uint16) ID::FARMER | (uint16) ID::ALPACA;
+    fixture_hit->SetFilterData(tempFilter);
+
+    // Wake body
+    getBody()->SetAwake(true);
+
+    // Reset values
+    getBody()->SetLinearVelocity(b2Vec2(0, 0));
+}
+

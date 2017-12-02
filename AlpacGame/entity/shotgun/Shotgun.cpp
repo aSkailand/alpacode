@@ -24,7 +24,7 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     fixtureDef.restitution = 0.5f;
     fixtureDef.shape = &b2shape;
     fixtureDef.filter.categoryBits = (uint16) ID::SHOTGUN;
-    fixtureDef.filter.maskBits = (uint16) ID::PLANET | (uint16) ID::WOLF | (uint16) ID::ALPACA;
+    fixtureDef.filter.maskBits = (uint16) ID::PLANET;
 
     // Create Sensor
     b2CircleShape b2Shape2;
@@ -44,56 +44,56 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     fixture_hit->SetUserData(convertToVoidPtr((int) CollisionID::HIT));
 
     // Store Information
-    setID(Entity::ID::SHOTGUN);
+    setEntity_ID(Entity::ID::SHOTGUN);
     body->SetUserData((void *) this);
 
     // Create SFML shape
-    sfShape = new sf::RectangleShape(sf::Vector2f(length, height));
-    sfShape->setOrigin(length / 2, height / 2);
-    sfShape->setOutlineColor(sf::Color::Black);
+    sf_ShapeEntity = new sf::RectangleShape(sf::Vector2f(length, height));
+    sf_ShapeEntity->setOrigin(length / 2, height / 2);
+    sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
-    sf_HitSensor = new sf::CircleShape(length / 2);
-    sf_HitSensor->setFillColor(sf::Color::Transparent);
-    sf_HitSensor->setOrigin(length / 2, length / 2);
+    sf_DebugHit = new sf::CircleShape(length / 2);
+    sf_DebugHit->setFillColor(sf::Color::Transparent);
+    sf_DebugHit->setOrigin(length / 2, length / 2);
 
 }
 
 void Shotgun::render(sf::RenderWindow *window) {
 
-    // Render sfShape
+    // Render sf_ShapeEntity
     float shape_x = SCALE * body->GetPosition().x;
     float shape_y = SCALE * body->GetPosition().y;
 
-    sfShape->setPosition(shape_x, shape_y);
-    sfShape->setRotation((body->GetAngle() * DEGtoRAD));
+    sf_ShapeEntity->setPosition(shape_x, shape_y);
+    sf_ShapeEntity->setRotation((body->GetAngle() * DEGtoRAD));
 
     if (isHeld) {
-        sfShape->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
-        sfShape->setTexture(&configGame->shotgunHeldTexture);
+        sf_ShapeEntity->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
+        sf_ShapeEntity->setTexture(&configGame->shotgunHeldTexture);
     } else {
-        sfShape->setScale(1.f, 1.f);
-        sfShape->setTexture(&configGame->shotgunDropTexture);
+        sf_ShapeEntity->setScale(1.f, 1.f);
+        sf_ShapeEntity->setTexture(&configGame->shotgunDropTexture);
     }
 
-    window->draw(*sfShape);
+    window->draw(*sf_ShapeEntity);
 
     if (configGame->showLabels) {
-        // Draw sfShape Debug
-        sfShape->setOutlineThickness(2);
+        // Draw sf_ShapeEntity Debug
+        sf_ShapeEntity->setOutlineThickness(2);
 
         // Draw hitSensor debug
-        sf_HitSensor->setOutlineThickness(2);
-        sf_HitSensor->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        sf_HitSensor->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*sf_HitSensor);
+        sf_DebugHit->setOutlineThickness(2);
+        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(*sf_DebugHit);
 
         if (farmerTouch) {
-            sfShape->setOutlineColor(sf::Color::Yellow);
+            sf_ShapeEntity->setOutlineColor(sf::Color::Yellow);
         } else {
-            sfShape->setOutlineColor(sf::Color::Black);
+            sf_ShapeEntity->setOutlineColor(sf::Color::Black);
         }
     } else {
-        sfShape->setOutlineThickness(0);
+        sf_ShapeEntity->setOutlineThickness(0);
     }
 }
 
@@ -148,5 +148,17 @@ void Shotgun::startContact(Entity::CollisionID selfCollision, Entity::CollisionI
 }
 
 void Shotgun::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
+
+}
+
+void Shotgun::performHold() {
+
+}
+
+void Shotgun::performThrow() {
+
+}
+
+void Shotgun::update() {
 
 }

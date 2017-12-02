@@ -26,16 +26,16 @@ Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, fl
     body->CreateFixture(&fixtureDef);
 
     // Store info
-    setID(Entity::ID::PLANET);
+    setEntity_ID(Entity::ID::PLANET);
     body->SetUserData((void *) this);
 
     // Create SFML Shape
-    sfShape = new sf::CircleShape(radius);
-    sfShape->setOrigin(radius, radius);
-    sfShape->setFillColor(sf::Color::White);
-    sfShape->setTexture(&configGame->planetTexture);
-    sfShape->setOutlineThickness(3);
-    sfShape->setOutlineColor(sf::Color::Black);
+    sf_ShapeEntity = new sf::CircleShape(radius);
+    sf_ShapeEntity->setOrigin(radius, radius);
+    sf_ShapeEntity->setFillColor(sf::Color::White);
+    sf_ShapeEntity->setTexture(&configGame->planetTexture);
+    sf_ShapeEntity->setOutlineThickness(3);
+    sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
 }
 
@@ -44,8 +44,8 @@ void Planet::render(sf::RenderWindow *window) {
     float shape_x = getBody()->GetPosition().x * SCALE;
     float shape_y = getBody()->GetPosition().y * SCALE;
 
-    sfShape->setPosition(shape_x, shape_y);
-    window->draw(*sfShape);
+    sf_ShapeEntity->setPosition(shape_x, shape_y);
+    window->draw(*sf_ShapeEntity);
 }
 
 void Planet::startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) {
@@ -58,5 +58,9 @@ void Planet::endContact(CollisionID selfCollision, CollisionID otherCollision, E
 
 bool Planet::deadCheck() {
     return false;
+}
+
+void Planet::update() {
+
 }
 

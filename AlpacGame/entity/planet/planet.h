@@ -23,6 +23,8 @@ public:
 
     bool deadCheck() override;
 
+    void update() override;
+
 private:
 
     /**
@@ -42,7 +44,8 @@ private:
                         | (uint16) ID::ALPACA
                         | (uint16) ID::WOLF
                         | (uint16) ID::SHOTGUN
-                        | (uint16) ID::BULLET;
+                        | (uint16) ID::BULLET
+                        | (uint16) ID::TRAP;
 
 
 public:
