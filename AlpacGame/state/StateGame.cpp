@@ -209,7 +209,7 @@ bool StateGame::pollGame() {
 void StateGame::keyPressedHandler(sf::Event event) {
     switch (event.key.code) {
         case sf::Keyboard::I: {
-            configGame->showLabels = !configGame->showLabels;
+            configGame->showDebugMode = !configGame->showDebugMode;
             break;
         }
         case sf::Keyboard::R: {

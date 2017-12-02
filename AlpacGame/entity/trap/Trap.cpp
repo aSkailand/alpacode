@@ -90,7 +90,7 @@ void Trap::render(sf::RenderWindow *window) {
     sf_ShapeEntity->setRotation((body->GetAngle() * DEGtoRAD));
 
 
-    if (configGame->showLabels) {
+    if (configGame->showDebugMode) {
 
         // Draw hitSensor debug
         sf_DebugHit->setOutlineThickness(2);

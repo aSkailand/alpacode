@@ -43,7 +43,7 @@ public:
     /**
      * Show in-game labels or not.
      */
-    bool showLabels = false;
+    bool showDebugMode = false;
 
     /**
      * The position of the planet's center relatively to the game window.

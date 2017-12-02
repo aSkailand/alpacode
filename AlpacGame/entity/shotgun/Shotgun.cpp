@@ -77,7 +77,7 @@ void Shotgun::render(sf::RenderWindow *window) {
 
     window->draw(*sf_ShapeEntity);
 
-    if (configGame->showLabels) {
+    if (configGame->showDebugMode) {
         // Draw sf_ShapeEntity Debug
         sf_ShapeEntity->setOutlineThickness(2);
 

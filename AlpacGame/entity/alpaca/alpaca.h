@@ -30,6 +30,10 @@ public:
 
     static int nextId;
 
+    void switchCurrentTexture() override;
+
+    void renderDebugMode() override;
+
     void performHold() override;
 
     void performThrow() override;

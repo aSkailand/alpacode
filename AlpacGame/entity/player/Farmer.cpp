@@ -64,7 +64,7 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     sf_DebugHit->setFillColor(sf::Color::Transparent);
     sf_DebugHit->setOrigin(radius, radius);
 
-    HP = 1;
+    HP = 10;
 
     createLabel(label_ID, &this->configGame->fontID, "P1");
 
@@ -74,91 +74,20 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
 void Farmer::render(sf::RenderWindow *window) {
 
     // Switch Texture
-    bool isHolding = (holdingEntity != nullptr);
+    switchCurrentTexture();
 
-    // Switch Texture
-    switch (currentHealth) {
-        case Health::ALIVE: {
-
-            if (isHolding) {
-                if (holdingEntity->getEntity_ID() == ID::SHOTGUN) {
-                    if (currentStatus == Status::AIRBORNE) {
-                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 4 : 5]);
-                    } else if (currentStatus == Status::GROUNDED) {
-                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][2]);
-                    }
-                } else {
-                    if (currentStatus == Status::AIRBORNE) {
-                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
-                    } else if (currentStatus == Status::GROUNDED) {
-                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][1]);
-                    }
-                }
-            } else {
-                if (currentStatus == Status::AIRBORNE) {
-                    sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
-                } else if (currentStatus == Status::GROUNDED) {
-                    sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][0]);
-                }
-            }
-            break;
-
-        }
-        case Health::DEAD: {
-            sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][3]);
-            break;
-        }
-        case Health::GHOST: {
-            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
-                sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
-            }
-            break;
-        }
-    }
+    calcShapeEntityPlacement();
+    if(currentHealth != Health::ALIVE)
+        sf_ShapeEntity->setRotation((getBody()->GetAngle() * DEGtoRAD + 90));
 
     if (currentHealth == Health::GHOST) {
-        b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
-        sf_ShapeGhost->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+        renderDeath();
         window->draw(*sf_ShapeGhost);
     }
 
-
-    // Draw sf_ShapeEntity Debug
-    float delta_Y = sf_ShapeEntity->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
-    b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
-
-    float shape_x = offsetPoint.x * SCALE;
-    float shape_y = offsetPoint.y * SCALE;
-
-    sf_ShapeEntity->setPosition(shape_x, shape_y);
-    if(currentHealth == Health::ALIVE)  sf_ShapeEntity->setRotation((body->GetAngle() * DEGtoRAD));
-    else                                sf_ShapeEntity->setRotation(getBody()->GetAngle() * DEGtoRAD + 90);
-
     window->draw(*sf_ShapeEntity);
 
-    if (configGame->showLabels) {
-
-        // Draw sf_ShapeEntity
-        sf_ShapeEntity->setOutlineThickness(2);
-        sf_ShapeEntity->setOutlineColor(sf::Color::Black);
-
-        // Draw label_ID
-        float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
-                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(sf_ShapeEntity->getRotation());
-        window->draw(*label_ID);
-
-        // Draw hitSensor debug
-        sf_DebugHit->setOutlineThickness(2);
-        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*sf_DebugHit);
-
-    } else {
-        sf_ShapeEntity->setOutlineThickness(0);
-    }
-
+    renderDebugMode();
 
 }
 
@@ -466,5 +395,70 @@ void Farmer::endContact_hit(Entity::CollisionID otherCollision, Entity *contactE
 
 Farmer::~Farmer() {
     printf("Farmer is dead\n");
+}
 
+void Farmer::switchCurrentTexture() {
+
+    switch (currentHealth) {
+        case Health::ALIVE: {
+            if (holdingEntity != nullptr) {
+                if (holdingEntity->getEntity_ID() == ID::SHOTGUN) {
+                    if (currentStatus == Status::AIRBORNE) {
+                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 4 : 5]);
+                    } else if (currentStatus == Status::GROUNDED) {
+                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][2]);
+                    }
+                } else {
+                    if (currentStatus == Status::AIRBORNE) {
+                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 2 : 3]);
+                    } else if (currentStatus == Status::GROUNDED) {
+                        sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][1]);
+                    }
+                }
+            } else {
+                if (currentStatus == Status::AIRBORNE) {
+                    sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::WALKING][spriteSwitch ? 0 : 1]);
+                } else if (currentStatus == Status::GROUNDED) {
+                    sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][0]);
+                }
+            }
+            break;
+
+        }
+        case Health::DEAD: {
+            sf_ShapeEntity->setTexture(farmerSpriteMapPtr[Action::IDLE][3]);
+            break;
+        }
+        case Health::GHOST: {
+            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
+                sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
+            }
+            break;
+        }
+    }
+}
+
+void Farmer::renderDebugMode() {
+    if (configGame->showDebugMode) {
+
+        // Draw sf_ShapeEntity
+        sf_ShapeEntity->setOutlineThickness(2);
+        sf_ShapeEntity->setOutlineColor(sf::Color::Black);
+
+        // Draw label_ID
+        float offset = fixture_body->GetShape()->m_radius + 1.f;
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label_ID->setRotation(sf_ShapeEntity->getRotation());
+        configGame->window->draw(*label_ID);
+
+        // Draw hitSensor debug
+        sf_DebugHit->setOutlineThickness(2);
+        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
+        configGame->window->draw(*sf_DebugHit);
+
+    } else {
+        sf_ShapeEntity->setOutlineThickness(0);
+    }
 }

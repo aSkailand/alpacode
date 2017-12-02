@@ -172,111 +172,21 @@ void Alpaca::switchAction() {
 
 void Alpaca::render(sf::RenderWindow *window) {
 
-    /// Render sfShape
 
-    // Switch Texture
-    switch (currentHealth) {
-        case Health::ALIVE: {
+    switchCurrentTexture();
 
-            switch (currentStatus) {
-                case Status::GROUNDED: {
-                    sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][0]);
-                    break;
-                }
-                case Status::AIRBORNE: {
-                    if (isHeld) sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][3]);
-                    else sf_ShapeEntity->setTexture(alpacaMapPtr[Action::WALKING][1]);
-                    break;
-                }
-            }
-            break;
-
-        }
-        case Health::DEAD: {
-            sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][4]);
-            break;
-        }
-        case Health::GHOST: {
-            if(deathClock.getElapsedTime().asSeconds() >= decayTick){
-                sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
-            }
-            break;
-        }
-    }
-
-
-    float delta_Y = sf_ShapeEntity->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
-    b2Vec2 offsetPoint = body->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
-
-    float shape_x = offsetPoint.x * SCALE;
-    float shape_y = offsetPoint.y * SCALE;
-
-    sf_ShapeEntity->setPosition(shape_x, shape_y);
-    sf_ShapeEntity->setRotation(body->GetAngle() * DEGtoRAD);
+    calcShapeEntityPlacement();
 
     if (currentHealth == Health::GHOST) {
-        b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
-        sf_ShapeGhost->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+        renderDeath();
         window->draw(*sf_ShapeGhost);
     }
 
     window->draw(*sf_ShapeEntity);
 
-    if (configGame->showLabels) {
+    renderDebugMode();
 
-        // Draw SFShape debug
-        sf_ShapeEntity->setOutlineThickness(2);
-        if (farmerTouch)
-            sf_ShapeEntity->setOutlineColor(sf::Color::Yellow);
-        else
-            sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
-        // Detect Sensor Draw
-        sf_DebugDetection->setOutlineThickness(2);
-        sf_DebugDetection->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        if (currentBehavior == Behavior::AWARE)
-            sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
-        else if (currentBehavior == Behavior::AFRAID)
-            sf_DebugDetection->setOutlineColor(sf::Color::Red);
-        else if (currentBehavior == Behavior::NORMAL)
-            sf_DebugDetection->setOutlineColor(sf::Color::Green);
-        window->draw(*sf_DebugDetection);
-
-        // Draw hitSensor debug
-        sf_DebugHit->setOutlineThickness(2);
-        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*sf_DebugHit);
-
-        // Draw label_ID
-        float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
-                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*label_ID);
-
-        // Draw label_HP
-        label_HP->setString(std::to_string(HP));
-
-        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
-        label_HP->setRotation(sf_ShapeEntity->getRotation());
-        window->draw(*label_HP);
-
-        switch (currentStatus) {
-            case Status::GROUNDED: {
-                sf_DebugHit->setOutlineColor(sf::Color::White);
-                break;
-            }
-            case Status::AIRBORNE: {
-                sf_DebugHit->setOutlineColor(sf::Color(100, 100, 100));
-                break;
-            }
-        }
-
-    } else {
-        sf_ShapeEntity->setOutlineThickness(0);
-        sf_DebugHit->setOutlineThickness(0);
-    }
 }
 
 void Alpaca::performAction() {
@@ -461,6 +371,93 @@ void Alpaca::performHold() {
 
 void Alpaca::performThrow() {
 
+}
+
+void Alpaca::switchCurrentTexture() {
+
+    switch (currentHealth) {
+        case Health::ALIVE: {
+
+            switch (currentStatus) {
+                case Status::GROUNDED: {
+                    sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][0]);
+                    break;
+                }
+                case Status::AIRBORNE: {
+                    if (isHeld) sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][3]);
+                    else sf_ShapeEntity->setTexture(alpacaMapPtr[Action::WALKING][1]);
+                    break;
+                }
+            }
+            break;
+
+        }
+        case Health::DEAD: {
+            sf_ShapeEntity->setTexture(alpacaMapPtr[Action::IDLE][4]);
+            break;
+        }
+        case Health::GHOST: {
+            break;
+        }
+    }
+}
+
+void Alpaca::renderDebugMode() {
+    if (configGame->showDebugMode) {
+
+        // Draw SFShape debug
+        sf_ShapeEntity->setOutlineThickness(2);
+        if (farmerTouch)
+            sf_ShapeEntity->setOutlineColor(sf::Color::Yellow);
+        else
+            sf_ShapeEntity->setOutlineColor(sf::Color::Black);
+
+        // Detect Sensor Draw
+        sf_DebugDetection->setOutlineThickness(2);
+        sf_DebugDetection->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        if (currentBehavior == Behavior::AWARE)
+            sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
+        else if (currentBehavior == Behavior::AFRAID)
+            sf_DebugDetection->setOutlineColor(sf::Color::Red);
+        else if (currentBehavior == Behavior::NORMAL)
+            sf_DebugDetection->setOutlineColor(sf::Color::Green);
+        configGame->window->draw(*sf_DebugDetection);
+
+        // Draw hitSensor debug
+        sf_DebugHit->setOutlineThickness(2);
+        sf_DebugHit->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
+        sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
+        configGame->window->draw(*sf_DebugHit);
+
+        // Draw label_ID
+        float offset = fixture_body->GetShape()->m_radius + 1.f;
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label_ID->setRotation(body->GetAngle() * DEGtoRAD);
+        configGame->window->draw(*label_ID);
+
+        // Draw label_HP
+        label_HP->setString(std::to_string(HP));
+
+        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
+        label_HP->setRotation(sf_ShapeEntity->getRotation());
+        configGame->window->draw(*label_HP);
+
+        switch (currentStatus) {
+            case Status::GROUNDED: {
+                sf_DebugHit->setOutlineColor(sf::Color::White);
+                break;
+            }
+            case Status::AIRBORNE: {
+                sf_DebugHit->setOutlineColor(sf::Color(100, 100, 100));
+                break;
+            }
+        }
+
+    } else {
+        sf_ShapeEntity->setOutlineThickness(0);
+        sf_DebugHit->setOutlineThickness(0);
+    }
 }
 
 

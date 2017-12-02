@@ -32,6 +32,8 @@ public:
 
     bool deadCheck() override;
 
+    void switchCurrentTexture() override;
+
     /// Stun properties
 
     bool isStunned = false;
@@ -50,6 +52,11 @@ private:
 
     float attackForce = 8.f;
     float attackAngle = 25.f;
+
+public:
+    void renderDebugMode() override;
+
+private:
 
 
     /// Pointers

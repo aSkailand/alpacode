@@ -24,6 +24,10 @@ public:
 
     virtual ~Farmer();
 
+    void switchCurrentTexture() override;
+
+    void renderDebugMode() override;
+
     /**
      * Current held entity.
      */

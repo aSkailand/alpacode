@@ -120,12 +120,44 @@ public:
      */
     virtual void performAction() = 0;
 
+
+    virtual void switchCurrentTexture() = 0;
+
+    void calcShapeEntityPlacement() {
+
+        float delta_Y = sf_ShapeEntity->getLocalBounds().height / 2 - fixture_body->GetShape()->m_radius * SCALE;
+        b2Vec2 offsetPoint = getBody()->GetWorldPoint(b2Vec2(0.f, -delta_Y / SCALE));
+
+        float shape_x = offsetPoint.x * SCALE;
+        float shape_y = offsetPoint.y * SCALE;
+
+        sf_ShapeEntity->setPosition(shape_x, shape_y);
+        sf_ShapeEntity->setRotation((getBody()->GetAngle() * DEGtoRAD));
+
+    }
+
+    void renderDeath() {
+
+        // Fade Entity Shape when decay begins
+        if (deathClock.getElapsedTime().asSeconds() >= decayTick) {
+            sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
+        }
+
+        // Move Ghost upwards
+        b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
+        sf_ShapeGhost->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
+
+    }
+
+
+
+    virtual void renderDebugMode() = 0;
+
     /// Enums
 
     enum class Action {
         IDLE = 0, WALKING = 1, JUMP = 2
     };
-
 
 
     Direction currentDirection = Direction::RIGHT;
