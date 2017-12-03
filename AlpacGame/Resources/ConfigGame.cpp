@@ -42,6 +42,7 @@ void ConfigGame::loadAllFonts() {
 
 void ConfigGame::loadTexture(std::string filename,
                              std::map<EntityWarm::Action, SpriteInfo> &spriteMap,
+
                              int width,
                              int height,
                              int top,

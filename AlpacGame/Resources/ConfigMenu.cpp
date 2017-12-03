@@ -592,6 +592,7 @@ void ConfigMenu::applyChanges() {
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
         machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
+
         if (checkBoxMuteChecked) {
             machine->configSound.setMasterVolume(0);
             machine->configSound.setMusicVolume(0);
@@ -602,5 +603,5 @@ void ConfigMenu::applyChanges() {
     }
 
     changesMadeVideo = false;
-    changesMadeSound = false;
+    changesMadeSound = true;
 }
