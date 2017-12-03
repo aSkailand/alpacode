@@ -27,6 +27,7 @@ public:
     unsigned int planetRadius = 600;
 
     bool newGame = true;
+    bool isPaused = false;
 
     b2World* world = nullptr;
     Entity* planet = nullptr;
@@ -38,6 +39,8 @@ public:
     sf::RenderWindow *window = nullptr;
 
     std::vector<Entity*> *entities = nullptr;
+
+    sf::CircleShape mouseArrow;
 
 
     /**

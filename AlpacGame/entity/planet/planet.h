@@ -12,6 +12,10 @@
 class Planet : public EntityCold{
 public:
 
+    void pause() override;
+
+    void resume() override;
+
     /**
      * CONSTRUCTOR: Create a planet and adds it to the window.
      * @param world the world to add the world to.

@@ -16,6 +16,10 @@ class Alpaca : public Mob, public Holdable {
 public:
 
 
+    void pause() override;
+
+    void resume() override;
+
     ~Alpaca() override;
 
     /**

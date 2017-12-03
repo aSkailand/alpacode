@@ -67,12 +67,14 @@ void Shotgun::render(sf::RenderWindow *window) {
     sf_ShapeEntity->setPosition(shape_x, shape_y);
     sf_ShapeEntity->setRotation((body->GetAngle() * DEGtoRAD));
 
-    if (isHeld) {
-        sf_ShapeEntity->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
-        sf_ShapeEntity->setTexture(&configGame->shotgunHeldTexture);
-    } else {
-        sf_ShapeEntity->setScale(1.f, 1.f);
-        sf_ShapeEntity->setTexture(&configGame->shotgunDropTexture);
+    if (!configGame->isPaused) {
+        if (isHeld) {
+            sf_ShapeEntity->setScale(1.f, configGame->mouseInLeftSide ? -1.f : 1.f);
+            sf_ShapeEntity->setTexture(&configGame->shotgunHeldTexture);
+        } else {
+            sf_ShapeEntity->setScale(1.f, 1.f);
+            sf_ShapeEntity->setTexture(&configGame->shotgunDropTexture);
+        }
     }
 
     window->draw(*sf_ShapeEntity);
@@ -143,7 +145,8 @@ bool Shotgun::deadCheck() {
     return false;
 }
 
-void Shotgun::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
+void
+Shotgun::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
 }
 
@@ -160,5 +163,11 @@ void Shotgun::performThrow() {
 }
 
 void Shotgun::update() {
+}
+
+void Shotgun::pause() {
+}
+
+void Shotgun::resume() {
 
 }

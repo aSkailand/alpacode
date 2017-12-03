@@ -48,14 +48,12 @@ protected:
         return distribution(generator);
     }
 
-
-
-private:
-
     /**
      * The clock used to check if the AI is ready to switch action.
      */
-    sf::Clock randomActionClock{};
+    sftools::Chronometer randomActionClock{};
+
+private:
 
     /**
      * The random number generator.

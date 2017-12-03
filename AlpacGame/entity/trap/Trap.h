@@ -2,11 +2,17 @@
 #ifndef ALPACGAME_TRAP_H
 #define ALPACGAME_TRAP_H
 
+#include <list>
+
+#include "../../Resources/ConfigGame.h"
+
 #include "../EntityCold.h"
+
 #include "../Usable.h"
 #include "../Holdable.h"
+
 #include "../wolf/Wolf.h"
-#include "../../Resources/ConfigGame.h"
+
 #include "../cooldown/CooldownBarometer.h"
 
 /**
@@ -58,6 +64,11 @@ private:
 
     /// Pointers
     ConfigGame *configGame = nullptr;
+
+public:
+    void pause() override;
+
+    void resume() override;
 };
 
 

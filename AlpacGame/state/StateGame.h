@@ -20,6 +20,7 @@
 #include "../entity/alpaca/Alpaca.h"
 #include "../entity/wolf/Wolf.h"
 #include "../entity/shotgun/Shotgun.h"
+#include "../entity/trap/Trap.h"
 
 
 class StateGame : public State{

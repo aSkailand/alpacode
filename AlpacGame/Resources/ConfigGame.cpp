@@ -11,6 +11,11 @@ void ConfigGame::run(sf::RenderWindow &window) {
 
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
 
+    mouseArrow.setRadius(5);
+    mouseArrow.setFillColor(sf::Color::Red);
+    mouseArrow.setOutlineColor(sf::Color::Black);
+    mouseArrow.setOutlineThickness(5);
+
     loadAllTextures();
     loadAllFonts();
 }

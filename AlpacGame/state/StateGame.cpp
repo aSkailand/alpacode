@@ -1,6 +1,5 @@
 
 #include "StateGame.h"
-#include "../entity/trap/Trap.h"
 
 void StateGame::goNext(StateMachine &stateMachine) {
 
@@ -21,13 +20,13 @@ void StateGame::goNext(StateMachine &stateMachine) {
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
 
         configGame->newGame = false;
+
+        /// View
+        view = sf::View(window->getDefaultView());
+        view.zoom(viewNonZoomed);
+
+        window->setMouseCursorVisible(false);
     }
-
-    /// View
-    view = sf::View(window->getDefaultView());
-    view.zoom(viewNonZoomed);
-
-    window->setMouseCursorVisible(false);
 
     // todo fix aim
     sf::CircleShape mouseAim;
@@ -49,7 +48,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
         double center = configGame->window->getSize().x / 2;
         configGame->mouseInLeftSide = mouse < center;
 
-
         /// Save current input
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             configGame->currentInput = sf::Keyboard::W;
@@ -63,12 +61,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
             configGame->currentInput = sf::Keyboard::Unknown;
         }
 
-
         /// Box2D Physics Calculations
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-            if(!bodyIter->IsAwake())
+            if (!bodyIter->IsAwake())
                 continue;
 
             // Calculate Radial Gravitation on all bodies
@@ -111,20 +108,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
-        /// Render Phase
-        window->clear(sf::Color::Blue);
-
-        /// Update all cold entities
-        for(Entity *e : *entities){
-            auto cold_e = dynamic_cast<EntityCold *> (e);
-            if (cold_e != nullptr) {
-                cold_e->update();
-            }
-        }
-
         /// Activate all warm entities
         for (Entity *e : *entities) {
-
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
             if (warm_e != nullptr) {
@@ -132,17 +117,30 @@ void StateGame::goNext(StateMachine &stateMachine) {
                 warm_e->performAction();
 
             }
-
         }
 
-        // Adjust SFML shape to Box2D body's position and rotation, then draw it.
-        for(Entity *e : *entities){
-            e->render(window);
+        /// Update all cold entities
+        for (Entity *e : *entities) {
+            auto cold_e = dynamic_cast<EntityCold *> (e);
+            if (cold_e != nullptr) {
+                cold_e->update();
+            }
         }
+
+        /// Render Phase
+        window->clear(sf::Color::Blue);
 
         /// Draw crosshair
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
+
+        // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        for (Entity *e : *entities) {
+            e->render(window);
+        }
+
+        configGame->mouseArrow.setPosition(configGame->mouseXpos, configGame->mouseYpos);
+        window->draw(configGame->mouseArrow);
 
         /// Check if game is over
         if (farmer->currentHealth == EntityWarm::Health::ALIVE) {
@@ -182,9 +180,8 @@ bool StateGame::pollGame() {
                 if (event.key.code == sf::Keyboard::Escape) {
                     machine->setCurrentState(StateMachine::stateID::MENU);
                     return false;
-                } else if (event.key.code == sf::Keyboard::Space) {
-                    // todo: Add actual pause.
-//                    machine->setCurrentState(StateMachine::stateID::PAUSE);
+                } else if (event.key.code == sf::Keyboard::P) {
+                    machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
                 } else {
                     keyPressedHandler(event);
@@ -213,21 +210,19 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::R: {
-            configGame->newGame = true;
+            if (!configGame->isPaused) {
+                configGame->newGame = true;
+            }
+            break;
+        }
 
-            break;
-        }
-        case sf::Keyboard::P: {
-            printf("X pos: %f\n", configGame->mouseXpos);
-            printf("Y pos: %f\n\n", configGame->mouseYpos);
-            break;
-        }
         case sf::Keyboard::Num1: {
             entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace(entities->begin(),new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos) );
+            entities->emplace(entities->begin(),
+                              new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num3: {
@@ -235,7 +230,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
                     new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
-        case sf::Keyboard::Num4:{
+        case sf::Keyboard::Num4: {
             entities->emplace_back(
                     new Trap(configGame, 150, 75, configGame->mouseXpos, configGame->mouseYpos));
             break;
@@ -263,7 +258,7 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
+            if (!configGame->isPaused && dynamic_cast<Usable *>(farmer->holdingEntity)) {
                 dynamic_cast<Usable *>(farmer->holdingEntity)->use();
             }
             break;

@@ -14,11 +14,17 @@
 class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
 
+
     void update() override;
 
     void performHold() override;
 
     void performThrow() override;
+
+    // todo add Shotgun reload cooldown
+    void pause() override;
+    void resume() override;
+
 
     float length;
 

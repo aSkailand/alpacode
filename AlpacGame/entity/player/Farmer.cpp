@@ -68,6 +68,10 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
 
     createLabel(label_ID, &this->configGame->fontID, "P1");
 
+    graspClock.reset(true);
+    movementTriggerClock.reset(true);
+
+
 }
 
 
@@ -194,7 +198,7 @@ void Farmer::performAction() {
 
                 currentGrasp = Grasp::HOLDING;
 
-                graspClock.restart();
+                graspClock.reset(true);
 
             }
             break;
@@ -439,6 +443,7 @@ void Farmer::switchCurrentTexture() {
 }
 
 void Farmer::renderDebugMode() {
+
     if (configGame->showDebugMode) {
 
         // Draw sf_ShapeEntity
@@ -460,5 +465,21 @@ void Farmer::renderDebugMode() {
 
     } else {
         sf_ShapeEntity->setOutlineThickness(0);
+    }
+
+}
+
+void Farmer::pause() {
+    graspClock.pause();
+    movementTriggerClock.pause();
+    deathClock.pause();
+}
+
+void Farmer::resume() {
+    graspClock.resume();
+    movementTriggerClock.resume();
+
+    if(currentHealth != Health::ALIVE){
+        deathClock.resume();
     }
 }

@@ -92,6 +92,9 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     sf_DebugDetection->setFillColor(sf::Color::Transparent);
     sf_DebugDetection->setOrigin(radius + 300, radius + 300);
 
+    /// Initialize clocks
+    randomActionClock.reset(true);
+    movementTriggerClock.reset(true);
 
 }
 
@@ -461,4 +464,22 @@ void Alpaca::renderDebugMode() {
 }
 
 
+
+
+void Alpaca::pause() {
+    movementTriggerClock.pause();
+    randomActionClock.pause();
+    behaviorClock.pause();
+    deathClock.pause();
+}
+
+void Alpaca::resume() {
+    movementTriggerClock.resume();
+    randomActionClock.resume();
+    behaviorClock.resume();
+
+    if(currentHealth != Health::ALIVE){
+        deathClock.resume();
+    }
+}
 

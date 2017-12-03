@@ -61,6 +61,11 @@ bool Planet::deadCheck() {
 }
 
 void Planet::update() {
+}
 
+void Planet::pause() {
+}
+
+void Planet::resume() {
 }
 

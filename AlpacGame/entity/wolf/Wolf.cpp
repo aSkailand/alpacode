@@ -103,6 +103,8 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     wolfBase->setOrigin(10, 10);
     wolfBase->setPosition(0, 0);
 
+    randomActionClock.reset(true);
+    movementTriggerClock.reset(true);
 
 }
 
@@ -520,6 +522,23 @@ void Wolf::renderDebugMode() {
 
     } else {
         sf_ShapeEntity->setOutlineThickness(0);
+    }
+}
+
+void Wolf::pause() {
+    movementTriggerClock.pause();
+    randomActionClock.pause();
+    behaviorClock.pause();
+    deathClock.pause();
+}
+
+void Wolf::resume() {
+    movementTriggerClock.resume();
+    randomActionClock.resume();
+    behaviorClock.resume();
+
+    if(currentHealth != Health::ALIVE){
+        deathClock.resume();
     }
 }
 

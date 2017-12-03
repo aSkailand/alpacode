@@ -9,9 +9,6 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
 
     this->configGame = configGame;
 
-    filter.categoryBits = (uint16) ID::BULLET;
-    filter.maskBits = (uint16) ID::PLANET;
-
     // Create Body
     b2BodyDef bodyDef;
     bodyDef.position = position;
@@ -48,7 +45,8 @@ Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 posi
     sf_ShapeEntity->setOutlineThickness(2);
     sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
-    decayClock.restart();
+    // Clock
+    decayClock.reset(true);
 
 }
 
@@ -64,7 +62,7 @@ void Bullet::render(sf::RenderWindow *window) {
 }
 
 bool Bullet::deadCheck() {
-    return decayClock.getElapsedTime().asSeconds() > decayTick;
+    return decayClock.getElapsedTime().asSeconds() >= decayTick;
 }
 
 Bullet::~Bullet() {
@@ -73,6 +71,7 @@ Bullet::~Bullet() {
 
 void
 Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
+
     switch (contactEntity->getEntity_ID()) {
         case ID::PLANET:
             break;
@@ -100,10 +99,17 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
     sf_ShapeEntity->setOutlineThickness(0);
 
     if (!hit) {
+
+        // Disable bullets
+        b2Filter filter;
+        filter.categoryBits = (uint16) ID::BULLET;
+        filter.maskBits = (uint16) ID::PLANET;
         fixture_body->SetFilterData(filter);
         hit = true;
     }
+
 }
+
 
 void Bullet::endContact(Entity::CollisionID selfCollision, Entity::CollisionID otherCollision, Entity *contactEntity) {
 
@@ -111,4 +117,12 @@ void Bullet::endContact(Entity::CollisionID selfCollision, Entity::CollisionID o
 
 void Bullet::update() {
 
+}
+
+void Bullet::pause() {
+    decayClock.pause();
+}
+
+void Bullet::resume() {
+    decayClock.resume();
 }

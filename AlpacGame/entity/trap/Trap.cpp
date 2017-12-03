@@ -1,5 +1,6 @@
 
 #include "Trap.h"
+#include "../wolf/Wolf.h"
 
 Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y) {
     this->configGame = configGame;
@@ -262,8 +263,17 @@ bool Trap::checkIfTouching(Entity *entity) {
 }
 
 bool Trap::checkIfTargetIsDead() {
-    return std::find(configGame->entities->begin(), configGame->entities->end(), stunnedTarget) ==
-           configGame->entities->end();
+    return stunnedTarget->currentHealth != EntityWarm::Health::ALIVE;
+}
+
+void Trap::pause() {
+    trapClock.pause();
+}
+
+void Trap::resume() {
+    if((isHeld && currentMode == Mode::CLOSED) || currentMode == Mode::LATCHED){
+        trapClock.resume();
+    }
 }
 
 

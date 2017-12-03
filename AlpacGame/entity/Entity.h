@@ -19,6 +19,9 @@ class Entity {
 
 public:
 
+    virtual void pause() = 0;
+    virtual void resume() = 0;
+
     /// Enums
     enum class ID {
         VOID    = 0x0000,
@@ -35,12 +38,12 @@ public:
         GROUNDED, AIRBORNE
     };
 
-    enum class Direction{
+    enum class Direction {
         RIGHT = 0,
         LEFT = 1
     };
 
-    enum class CollisionID{
+    enum class CollisionID {
         BODY = 0,
         HIT = 1,
         DETECTION = 2
@@ -122,16 +125,17 @@ public:
     }
 
     /// For Detection
-    void* convertToVoidPtr(int enumValue){
+    void *convertToVoidPtr(int enumValue) {
         return reinterpret_cast<void *>(enumValue);
     };
 
-    static CollisionID convertToCollisionID(void* voidPtr){
-        return (CollisionID&) voidPtr;
+    static CollisionID convertToCollisionID(void *voidPtr) {
+        return (CollisionID &) voidPtr;
     };
 
     /// Contact Functions
     virtual void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) = 0;
+
     virtual void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) = 0;
 
     //virtual void startDetect(Entity *contactEntity) = 0;
@@ -198,10 +202,7 @@ private:
     std::map<int, std::vector<b2Vec2>> angleVectors;
 
 
-
-
 };
-
 
 
 #endif //ALPACGAME_ENTITY_H

@@ -5,7 +5,6 @@
 #include <random>
 #include <chrono>
 
-#include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
 
 #include "../EntityWarm.h"
@@ -15,6 +14,10 @@ class Trap;
 
 class Wolf : public Mob{
 public:
+
+    void pause() override;
+
+    void resume() override;
 
     virtual ~Wolf();
 
