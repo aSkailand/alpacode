@@ -468,6 +468,7 @@ void Wolf::switchCurrentTexture() {
 }
 
 void Wolf::renderDebugMode() {
+
     if (configGame->showDebugMode) {
 
         // Draw debug: Entity Shape

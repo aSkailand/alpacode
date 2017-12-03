@@ -49,7 +49,7 @@ public:
 
 
     /*
-     * FIXTURE EXPLANATION:
+     * BOX2D FIXTURE EXPLANATION:
      * Each entity is made of multiple fixtures, which are basically Box2D shapes.
      * Collisions between two entities are actually collisions between fixtures.
      * A fixture can either be a sensor or a non-sensor. A fixture that is a sensor
@@ -57,8 +57,8 @@ public:
      * Depending on the entity type, the fixtures are defined as this:
      *
      * 1. Body Fixture (non-sensor):
-     *      Warm Entities: Used to emulate physical collisions with the planet and bullets.
-     *      Cold Entities: Used to emulate physical collisions with the planet.
+     *      Warm Entities: Used to emulate physical collisions logic.
+     *      Cold Entities: Used to emulate physical collisions logic.
      *
      * 2. Hit Fixture (sensor):
      *      Warm Entities: Used to determine touching logic when the entity hit box collides.
@@ -67,6 +67,13 @@ public:
      * 3. Detection Fixture (sensor):
      *      Warm Entities: Used by mobs to determine detection logic.
      *      Cold Entities: Not used by cold entities.
+     *
+     * WHY HAVE A FIXTURE FOR BOTH BODY AND HIT:
+     * Without the sensor fixture hit, it would be difficult to check if two entities
+     * were touching without having them physical collide. E.g. a farmer wants to be
+     * able to walk through alpacas, but in the same time be able to tell if he is
+     * in vicinity of the alpacas.
+     *
      */
 
     /// Fixture pointers

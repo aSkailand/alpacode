@@ -15,27 +15,67 @@ class EntityWarm : public Entity {
 
 public:
 
+    /// HEALTH LOGIC
+
+    /*
+     * HEALTH LOGIC EXPLANATION:
+     *
+     * The health logic of an entity is following an one-way, acyclic pattern,
+     * meaning that when the state changes, it won't be able to return to
+     * the previous state.
+     *
+     * A warm entity must be in one of three different health states:
+     *      1. Alive:  Entity is alive and will behave normally.
+     *      2. Dead:   Entity is dead, and will therefore not move anymore.
+     *      3. Ghost:  Entity is still dead, and the ghost of it has spawned.
+     *
+     * Note: A warm entity is to be deleted if the two statements are true:
+     *          1. The entity is in the ghost state.
+     *          2. The deathClock has stopped.
+     *
+     * Note: A cold entity can also "die" and be deleted, but a warm entity has
+     *       additional logic to it to handle the ghost and decay of the entity.
+     */
+
+    // Health states
     enum class Health {
         ALIVE = 0,
         DEAD = 1,
         GHOST = 2
     };
 
+    // Current Health state
     Health currentHealth = Health::ALIVE;
 
+    // The shape of the ghost
     sf::RectangleShape *sf_ShapeGhost = nullptr;
 
+    // The Clock to handle the death + ghost state
     sftools::Chronometer deathClock;
-    float ghostTick = 15.0f;
-    float decayTick = 5.0f;
-    float deathTick = 3.0f;
 
+    float deathTick = 3.0f;     // How many seconds after killing blow before change to ghost state.
+    float decayTick = 5.0f;     // How many seconds after death before the decay will start.
+    float ghostTick = 15.0f;    // How many seconds the ghost will last.
+
+    // Health points
     int HP = 0;
 
+    /**
+     * How much damage to substract from entity's HP.
+     * @param damage the amount to substract from entity's HP.
+     */
     void dealDamage(int damage) {
         HP -= damage;
     }
 
+    /**
+     * Handles the health state logic.
+     * In short, it handles when to transition through the health states.
+     * In detail, when:
+     *      Alive:  Check if hp <= 0. Move to dead state if true.
+     *      Dead:   Check if it is time to change to ghost state.
+     *      Ghost:  Check if it is time to stop death clock.
+     */
     void handleHealth() {
 
         switch (currentHealth) {
@@ -69,7 +109,6 @@ public:
                     // Set update ghostShape
                     sf_ShapeGhost->setPosition(sf_ShapeEntity->getPosition());
                     sf_ShapeGhost->setRotation(sf_ShapeEntity->getRotation() - 45);
-//                    ghostShape->rotate();
 
                     // Proceed state
                     currentHealth = Health::GHOST;
@@ -82,7 +121,7 @@ public:
 
                 if (deathClock.getElapsedTime().asSeconds() >= ghostTick) {
 
-                    // Stop clock to kill entity
+                    // Stop clock to signal deletion of entity
                     deathClock.reset(false);
                 }
                 break;
