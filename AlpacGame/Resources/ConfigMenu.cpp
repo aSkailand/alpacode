@@ -394,21 +394,25 @@ void ConfigMenu::highscoreLayout() {
     tgui::Label::Ptr highscoreTitle = tgui::Label::create();
     highscoreTitle->setText("Highscore!");
     highscoreTitle->setTextSize(42);
+    highscoreTitle->setTextColor(sf::Color::White);
 
     // Rank label
     tgui::Label::Ptr noLabel = tgui::Label::create();
     noLabel->setText("Rank:");
     noLabel->setTextSize(20);
+    noLabel->setTextColor(sf::Color::White);
 
     // Name label
     tgui::Label::Ptr namelabel = tgui::Label::create();
     namelabel->setText("Name:");
     namelabel->setTextSize(20);
+    namelabel->setTextColor(sf::Color::White);
 
     // Score label
     tgui::Label::Ptr scoreLabel = tgui::Label::create();
     scoreLabel->setText("Score:");
     scoreLabel->setTextSize(20);
+    scoreLabel->setTextColor(sf::Color::White);
 
     // Back button setup
     tgui::Button::Ptr backButton = tgui::Button::copy(masterButton);
@@ -439,7 +443,7 @@ void ConfigMenu::highscoreLayout() {
     labelsLayout->addSpace(1);
 
     // Horizontal layout which contains the highscore title
-    tempHighscoreLayout->addSpace(0.3333f);
+    tempHighscoreLayout->addSpace(0.55f);
     tempHighscoreLayout->add(highscoreTitle);
 
     // Vertical layout which contains all of the widgets and layouts
