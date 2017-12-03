@@ -10,6 +10,7 @@
 
 #include "../EntityWarm.h"
 #include "../Mob.h"
+#include "../Heart/HeartBarometer.h"
 
 class Wolf : public Mob{
 public:
@@ -25,6 +26,8 @@ public:
      * @param y the y-coordinate of the origin of the wolf, in pixels.
      */
     Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y);
+
+    HeartBarometer *heartBarometer = nullptr;
 
     static int nextId;
 

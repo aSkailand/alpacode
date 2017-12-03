@@ -83,7 +83,7 @@ void ConfigGame::loadAllTextures() {
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
 
     // Heart
-    heartTexture.loadFromFile("Resources/heart.png");
+    heartTexture.loadFromFile("entity/Heart/heart1.png");
 
     // Farmer
     int farmerWidth = 50;

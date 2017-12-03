@@ -69,8 +69,12 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(radius, radius);
 
+
     // Set HP
     HP = 10;
+
+    // Create heart barometer
+    heartBarometer = new HeartBarometer(configGame->heartTexture, HP, 50.f,50.f);
 
     // Create ID text
     createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
@@ -249,6 +253,11 @@ void Wolf::render(sf::RenderWindow *window) {
     } else {
         sfShape->setOutlineThickness(0);
     }
+    heartBarometer->setPlacement(
+            getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x* SCALE,
+            getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE,
+            sfShape->getRotation());
+    heartBarometer->render(window);
 }
 
 bool Wolf::deadCheck() {

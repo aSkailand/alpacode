@@ -10,7 +10,14 @@ HeartBarometer::HeartBarometer(sf::Texture texture, int HP, float width, float h
     sfShape.setTexture(&Texture);
 }
 
+void HeartBarometer::setPlacement(float x, float y, float angle) {
+
+    sfShape.setPosition(x,y);
+    sfShape.setRotation(angle);
+}
+
 void HeartBarometer::render(sf::RenderWindow *window) {
 
-    sfShape.
+    window->draw(sfShape);
+
 }
