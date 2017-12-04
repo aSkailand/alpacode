@@ -69,37 +69,37 @@ void ConfigGame::loadAllTextures() {
     planetTexture.loadFromFile("entity/planet/planet.png");
 
     // Background
-    morning_1.loadFromFile("scenery/DayCycle/1_Morning.png");
-    morning_2.loadFromFile("scenery/DayCycle/2_Morning.png");
-    morning_3.loadFromFile("scenery/DayCycle/3_Morning.png");
-    afternoon_4.loadFromFile("scenery/DayCycle/4_Afternoon.png");
-    afternoon_5.loadFromFile("scenery/DayCycle/5_Afternoon.png");
-    afternoon_6.loadFromFile("scenery/DayCycle/6_Afternoon.png");
-    evening_7.loadFromFile("scenery/DayCycle/7_Evening.png");
-    evening_8.loadFromFile("scenery/DayCycle/8_Evening.png");
-    evening_9.loadFromFile("scenery/DayCycle/9_Evening.png");
-    night_10.loadFromFile("scenery/DayCycle/10_Night.png");
-    night_11.loadFromFile("scenery/DayCycle/11_Night.png");
-    night_12.loadFromFile("scenery/DayCycle/12_Night.png");
+    morning_1.loadFromFile(  "scenery/DayCycle/Background/1_Morning.png");
+    morning_2.loadFromFile(  "scenery/DayCycle/Background/2_Morning.png");
+    morning_3.loadFromFile(  "scenery/DayCycle/Background/3_Morning.png");
+    afternoon_4.loadFromFile("scenery/DayCycle/Background/4_Afternoon.png");
+    afternoon_5.loadFromFile("scenery/DayCycle/Background/5_Afternoon.png");
+    afternoon_6.loadFromFile("scenery/DayCycle/Background/6_Afternoon.png");
+    evening_7.loadFromFile(  "scenery/DayCycle/Background/7_Evening.png");
+    evening_8.loadFromFile(  "scenery/DayCycle/Background/8_Evening.png");
+    evening_9.loadFromFile(  "scenery/DayCycle/Background/9_Evening.png");
+    night_10.loadFromFile(   "scenery/DayCycle/Background/10_Night.png");
+    night_11.loadFromFile(   "scenery/DayCycle/Background/11_Night.png");
+    night_12.loadFromFile(   "scenery/DayCycle/Background/12_Night.png");
 
-    earth_1.loadFromFile("scenery/DayCycle/Earth_1.png");
-    earth_2.loadFromFile("scenery/DayCycle/Earth_2.png");
-    earth_3.loadFromFile("scenery/DayCycle/Earth_3.png");
-    earth_4.loadFromFile("scenery/DayCycle/Earth_4.png");
-    earth_5.loadFromFile("scenery/DayCycle/Earth_5.png");
-    earth_6.loadFromFile("scenery/DayCycle/Earth_6.png");
-    earth_7.loadFromFile("scenery/DayCycle/Earth_7.png");
-    earth_8.loadFromFile("scenery/DayCycle/Earth_8.png");
-    earth_9.loadFromFile("scenery/DayCycle/Earth_9.png");
-    earth_10.loadFromFile("scenery/DayCycle/Earth_10.png");
-    earth_11.loadFromFile("scenery/DayCycle/Earth_11.png");
-    earth_12.loadFromFile("scenery/DayCycle/Earth_12.png");
+    earth_1.loadFromFile( "scenery/DayCycle/Earth/Earth_1.png");
+    earth_2.loadFromFile( "scenery/DayCycle/Earth/Earth_2.png");
+    earth_3.loadFromFile( "scenery/DayCycle/Earth/Earth_3.png");
+    earth_4.loadFromFile( "scenery/DayCycle/Earth/Earth_4.png");
+    earth_5.loadFromFile( "scenery/DayCycle/Earth/Earth_5.png");
+    earth_6.loadFromFile( "scenery/DayCycle/Earth/Earth_6.png");
+    earth_7.loadFromFile( "scenery/DayCycle/Earth/Earth_7.png");
+    earth_8.loadFromFile( "scenery/DayCycle/Earth/Earth_8.png");
+    earth_9.loadFromFile( "scenery/DayCycle/Earth/Earth_9.png");
+    earth_10.loadFromFile("scenery/DayCycle/Earth/Earth_10.png");
+    earth_11.loadFromFile("scenery/DayCycle/Earth/Earth_11.png");
+    earth_12.loadFromFile("scenery/DayCycle/Earth/Earth_12.png");
 
     // Background frames
 
-    sun_1.loadFromFile("scenery/DayCycle/Sun_1.png");
-    sun_2.loadFromFile("scenery/DayCycle/Sun_2.png");
-    moon_1.loadFromFile("scenery/DayCycle/Moon_1.png");
+    sun_1.loadFromFile( "scenery/DayCycle/Sun/Sun_1.png");
+    sun_2.loadFromFile( "scenery/DayCycle/Sun/Sun_2.png");
+    moon_1.loadFromFile("scenery/DayCycle/Sun/Moon_1.png");
     // Shotgun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
