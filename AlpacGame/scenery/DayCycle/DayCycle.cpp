@@ -73,7 +73,6 @@ DayCycle::DayCycle(ConfigGame *configGame) {
     earthCycle.push_back(&configGame->earth_12);
 
     float period = 30.f;
-//    sunTick = 1.f / ((23.f * dayTime) / 2);
     sunTick = period / 360.f;
     printf("sunTick: %f\n",sunTick);
 
