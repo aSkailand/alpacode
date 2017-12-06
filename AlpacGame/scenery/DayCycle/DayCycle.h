@@ -25,16 +25,16 @@ private:
     float sunRadius = 250.f;
 
     /// Starting point
-    float sunAngle = 210.f;
+    float sunAngle = 0.f;
 
 public:
 
     DayCycle (ConfigGame *configGame);
 
-    sf::Shape *background = nullptr;
-    sf::Shape *earth = nullptr;
+    sf::CircleShape *background = nullptr;
+    sf::CircleShape *earth = nullptr;
 
-    sf::Shape *sun = nullptr;
+    sf::CircleShape *sun = nullptr;
 
 private:
 

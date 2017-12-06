@@ -15,35 +15,32 @@ DayCycle::DayCycle(ConfigGame *configGame) {
     float world_x = configGame->planetBody->GetWorldCenter().x * SCALE;
     float world_y = configGame->planetBody->GetWorldCenter().y * SCALE;
 
-    /// Intialize Background
-    background = new sf::CircleShape(3000 );
-    background->setOrigin(3000, 3000);
+    /// Initialize Background
+    background = new sf::CircleShape(3000);
+    background->setOrigin(background->getRadius(), background->getRadius());
     background->setPosition(world_x, world_y);
     background->setTexture(&configGame->morning_1);
 
-    earth = new sf::CircleShape(configGame->planetRadius+30);
-    earth->setOrigin(configGame->planetRadius+30, configGame->planetRadius +30);
+    earth = new sf::CircleShape(configGame->planetRadius+70);
+    earth->setOrigin(earth->getRadius(), earth->getRadius());
     earth->setPosition(world_x, world_y);
     earth->setTexture(&configGame->earth_1);
 
     /// Initialize Sun
     sun = new sf::CircleShape(sunRadius);
-    sun->setOrigin(sunRadius, sunRadius);
+    sun->setOrigin(sun->getRadius(), sun->getRadius());
     sun->setTexture(&configGame->sun_1);
 
     /// Iterate amove the picture
 
-    //Reset timer right away
-    cycleChrono.reset(true);
-    std::cout << "DayCycle Initialized" << std::endl;
+
 
     /** Calculation for the suns movement
      *  1.f / 23.f is for the sun to circulate the world in 1 second
      *  multipy by the amount of seconds in the cycle.
      *  divide be 2 for the equal amount of sun and night
      */
-    float dayTime = cycleTime * 12;
-    sunTick = 1.f / ((23.f * dayTime) / 2);
+
 
     bgCycle.push_back(&configGame->morning_1);
     bgCycle.push_back(&configGame->morning_2);
@@ -71,17 +68,35 @@ DayCycle::DayCycle(ConfigGame *configGame) {
     earthCycle.push_back(&configGame->earth_11);
     earthCycle.push_back(&configGame->earth_12);
 
+    float dayTime = 30.f;
+//    sunTick = 1.f / ((23.f * dayTime) / 2);
+    sunTick = dayTime / 360.f;
 
+    //Reset timer right away
+    cycleChrono.reset(true);
+    std::cout << "DayCycle Initialized" << std::endl;
     
 }
 
 void DayCycle::update(){
+
+//    if(cycleChrono.getElapsedTime().asSeconds() >= 5.0f){
+//        printf("sunAngleAAA: %f\n", sunAngle);
+//    }
+
+    if(sunAngle >= 60.f){
+        printf("Time: %f\n", cycleChrono.getElapsedTime().asSeconds());
+        printf("sunAngleAAA: %f\n", sunAngle);
+    }
+
     updateSunMovement();
 
     if(cycleChrono.getElapsedTime().asSeconds() >= cycleTime){
 
+//        printf("\tSun Angle: %f\n", sunAngle);
+
         counterBackground++;
-        if(counterBackground >= 12 ) counterBackground = 0;
+        if(counterBackground == 12 ) counterBackground = 0;
 
         // Day
         if(counterBackground == 0){
@@ -106,8 +121,17 @@ void DayCycle::update(){
 
 void DayCycle::updateSunMovement() {
 
-    float x = configGame->planetBody->GetWorldCenter().x * SCALE + cos(sunAngle) * (configGame->planetRadius + sunDistance);
-    float y = configGame->planetBody->GetWorldCenter().y * SCALE + sin(sunAngle) * (configGame->planetRadius + sunDistance);
+//    float x = configGame->planetBody->GetWorldCenter().x * SCALE + cos(sunAngle) * (configGame->planetRadius + sunDistance);
+//    float y = configGame->planetBody->GetWorldCenter().y * SCALE + sin(sunAngle) * (configGame->planetRadius + sunDistance);
+
+//    printf("Seconds: %f\n", cycleChrono.getElapsedTime().asSeconds());
+
+//    if(sunAngle >= 60.f){
+//        printf("sunAngleAAA: %f\n", sunAngle);
+//    }
+
+    float x = configGame->calcX(sunAngle, configGame->planetRadius + sunDistance);
+    float y = configGame->calcY(sunAngle, configGame->planetRadius + sunDistance);
 
     sun->setPosition(x,y);
     sunAngle += sunTick;
