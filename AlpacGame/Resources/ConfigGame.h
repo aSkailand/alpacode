@@ -101,6 +101,17 @@ public:
      */
     float calcY(float degree, float radius);
 
+    //Create label
+    void createLabel(sf::Text &label, sf::Font *font, std::string text) {
+        label.setString("HP: "+text);
+        label.setFont(*font);
+        label.setCharacterSize(20);
+        label.setFillColor(sf::Color::White);
+        label.setOutlineColor(sf::Color::Black);
+        label.setOutlineThickness(3);
+        label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
+    };
+
     /// Fonts
     sf::Font fontID;
 
@@ -123,7 +134,7 @@ public:
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
-    sf::Texture heartTexture;
+    sf::Texture healthTexture;
 
     /// Map of every entities sprites.
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;

@@ -61,6 +61,17 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     sf_HitSensor->setFillColor(sf::Color::Transparent);
     sf_HitSensor->setOrigin(radius, radius);
 
+    // Set HP
+    HP = 10;
+
+    // Create HitPoint barometer
+    hitPointBarometer = new HitPointBarometer(
+            this->configGame,
+            this->configGame->healthTexture,
+            std::to_string(HP),
+            25.f, 25.f);
+
+    // Create ID
     createLabel(label_ID, &this->configGame->fontID, "P1");
 
 }
@@ -127,7 +138,11 @@ void Farmer::render(sf::RenderWindow *window) {
     } else {
         sfShape->setOutlineThickness(0);
     }
-
+    // Draw HitPoint barometer
+    hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
+                                    getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
+                                    sfShape->getRotation());
+    hitPointBarometer->render(window, std::to_string(HP));
 
 }
 

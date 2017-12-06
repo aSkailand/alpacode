@@ -5,7 +5,7 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
 
     // Assign Pointers
     this->configGame = configGame;
-    alpacaMapPtr = configGame->alpacaSprites;
+    alpacaMapPtr = this->configGame->alpacaSprites;
 
     // Convert angle and store unit vectors
     convertAngleToVectors((int) Action::WALKING, walkAngle);
@@ -73,10 +73,17 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     // Set HP
     HP = 10;
 
+    // Create HitPoint barometer
+    hitPointBarometer = new HitPointBarometer(
+            this->configGame,
+            this->configGame->healthTexture,
+            std::to_string(HP),
+            25.f,25.f);
+
 
     // Create ID text
     createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
-    createLabel(label_HP, &this->configGame->fontID, std::to_string(HP));
+
 
 
     /// Initialize behavior
@@ -208,21 +215,13 @@ void Alpaca::render(sf::RenderWindow *window) {
         window->draw(*sf_HitSensor);
 
         // Draw label_ID
-        float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
-                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        float offset = fixture_body->GetShape()->m_radius;
+        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        //label_ID->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
         label_ID->setRotation(body->GetAngle() * DEGtoRAD);
         window->draw(*label_ID);
 
-        // Draw label_HP
 
-
-
-        label_HP->setString(std::to_string(HP));
-        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE,
-                              getBody()->GetWorldCenter().y * SCALE);
-        label_HP->setRotation(sfShape->getRotation());
-        window->draw(*label_HP);
 
         switch (currentStatus) {
             case Status::GROUNDED: {
@@ -239,6 +238,12 @@ void Alpaca::render(sf::RenderWindow *window) {
         sfShape->setOutlineThickness(0);
         sf_HitSensor->setOutlineThickness(0);
     }
+    // Draw HitPoint barometer
+    hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
+                                    getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
+                                    sfShape->getRotation());
+    hitPointBarometer->render(window, std::to_string(HP));
+
 }
 
 void Alpaca::performAction() {

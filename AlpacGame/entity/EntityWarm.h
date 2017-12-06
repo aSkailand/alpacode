@@ -3,6 +3,7 @@
 #define ALPACGAME_ENTITYWARM_H
 
 #include "Entity.h"
+#include "HitPoint/HitPointBarometer.h"
 
 
 /**
@@ -22,8 +23,9 @@ public:
      * The label above entities' head in-game.
      */
     sf::Text *label_ID = new sf::Text();
-    sf::Text *label_HP = new sf::Text();
 
+    /// Barometer pointers
+    HitPointBarometer *hitPointBarometer = nullptr;
 
 
     void createLabel(sf::Text *label, sf::Font *font, std::string text) {
@@ -104,7 +106,6 @@ private:
      * Clock used to determine if entity is allowed to move or not.
      */
     sf::Clock movementTriggerClock{};
-
 
 };
 
