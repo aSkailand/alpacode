@@ -27,6 +27,8 @@ private:
     /// Starting point
     float sunAngle = 0.f;
 
+    std::vector<std::array<sf::Vertex, 2>> debugLines;
+
 public:
 
     DayCycle (ConfigGame *configGame);
