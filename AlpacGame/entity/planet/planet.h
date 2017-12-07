@@ -23,7 +23,11 @@ public:
 
     bool deadCheck() override;
 
+    void setTexture(sf::Texture *texture);
+
 private:
+
+    ConfigGame *configGame = nullptr;
 
     /**
      * Adjust SFML shape accordingly to the Box2D body, then draw it.

@@ -1,19 +1,41 @@
 
-
 #ifndef ALPACGAME_DAYCYCLE_H
 #define ALPACGAME_DAYCYCLE_H
 
-#include <iostream>
-#include <Box2D/Box2D.h>
-#include <chrono>
+#include <vector>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include "SFML/Chronometer.hpp"
 
-#include "../Scenery.h"
-#include "../../Resources/ConfigGame.h"
-
+/*
+ * Forward declarations. Used here to avoid deep recursions of includes,
+ * more specific from ConfigGame and its contents.
+ */
 class ConfigGame;
-class DayCycle : public Scenery{
+class Planet;
+class Sun;
+class Sky;
+
+
+class DayCycle{
+
+public:
+
+    explicit DayCycle (ConfigGame *configGame);
+
+    void proceed();
 
 private:
+
+    ConfigGame *configGame = nullptr;
+    Planet *planet = nullptr;
+    Sky *sky = nullptr;
+    Sun *sun = nullptr;
+
+    std::vector<sf::Texture> planetTextures;
+    std::vector<sf::Texture> skyTextures;
+    sf::Texture sunTexture;
+    sf::Texture moonTexture;
 
 
     /// Time for each background transition
@@ -21,32 +43,14 @@ private:
 
     /// Distance of the sun from the planets surface.
     float sunDistance = 350.0f;
-    /// Radius for the Sun
-    float sunRadius = 250.f;
+
+    // Distance from planet center to sun center
+    float planetToSunDistance;
 
     /// Starting point
     float sunAngle = 0.f;
 
-    std::vector<std::array<sf::Vertex, 2>> debugLines;
-
-public:
-
-    DayCycle (ConfigGame *configGame);
-
-    sf::CircleShape *background = nullptr;
-    sf::CircleShape *earth = nullptr;
-
-    sf::CircleShape *sun = nullptr;
-
-private:
-
-    void render(sf::RenderWindow *window) override;
-    void update() override;
-
-    void loopDayCycle();
-
-    ConfigGame *configGame = nullptr;
-    sftools::Chronometer cycleChrono;
+    sftools::Chronometer dayCycleTime;
 
     /// Overall movement including the sun and clouds.
     void updateSunMovement();
@@ -54,10 +58,7 @@ private:
     /// The change in angle for the sun at each tick.
     float sunTick;
 
-    unsigned int counterBackground = 0;
-
-    std::vector<sf::Texture *> bgCycle;
-    std::vector<sf::Texture *> earthCycle;
+    unsigned int cycleTick = 0;
 
 
 

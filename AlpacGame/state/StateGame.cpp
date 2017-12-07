@@ -19,7 +19,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         entities = configGame->entities;
         planet = configGame->planet;
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
-        dayCycle = dynamic_cast<DayCycle *>(configGame->dayCycle);
+        dayCycle = configGame->dayCycle;
 
         configGame->newGame = false;
     }
@@ -91,16 +91,19 @@ void StateGame::goNext(StateMachine &stateMachine) {
             bodyIter->ApplyAngularImpulse(impulse, false);
         }
 
+
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
+
+        dayCycle->proceed();
 
         /// Render Phase
         window->clear();
 
+
         /// Draw Background;
         for( Scenery *s : *configGame->sceneries){
             s->render(window);
-            s->update();
         }
 
 

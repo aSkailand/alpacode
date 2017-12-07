@@ -4,6 +4,8 @@
 #include "ConfigGame.h"
 #include "../entity/CollisionListener.h"
 #include "../entity/planet/planet.h"
+#include "../scenery/Sun/Sun.h"
+#include "../scenery/Sky/Sky.h"
 
 void ConfigGame::run(sf::RenderWindow &window) {
 
@@ -68,37 +70,102 @@ void ConfigGame::loadAllTextures() {
     planetTexture.loadFromFile("entity/planet/planet.png");
 
     // Background
-    morning_1.loadFromFile("scenery/DayCycle/Background/1_Morning.png");
-    morning_2.loadFromFile("scenery/DayCycle/Background/2_Morning.png");
-    morning_3.loadFromFile("scenery/DayCycle/Background/3_Morning.png");
-    afternoon_4.loadFromFile("scenery/DayCycle/Background/4_Afternoon.png");
-    afternoon_5.loadFromFile("scenery/DayCycle/Background/5_Afternoon.png");
-    afternoon_6.loadFromFile("scenery/DayCycle/Background/6_Afternoon.png");
-    evening_7.loadFromFile("scenery/DayCycle/Background/7_Evening.png");
-    evening_8.loadFromFile("scenery/DayCycle/Background/8_Evening.png");
-    evening_9.loadFromFile("scenery/DayCycle/Background/9_Evening.png");
-    night_10.loadFromFile("scenery/DayCycle/Background/10_Night.png");
-    night_11.loadFromFile("scenery/DayCycle/Background/11_Night.png");
-    night_12.loadFromFile("scenery/DayCycle/Background/12_Night.png");
+    sf::Texture morning_1;
+    sf::Texture morning_2;
+    sf::Texture morning_3;
+    sf::Texture afternoon_4;
+    sf::Texture afternoon_5;
+    sf::Texture afternoon_6;
+    sf::Texture evening_7;
+    sf::Texture evening_8;
+    sf::Texture evening_9;
+    sf::Texture night_10;
+    sf::Texture night_11;
+    sf::Texture night_12;
 
-    earth_1.loadFromFile("scenery/DayCycle/Earth/Earth_1.png");
-    earth_2.loadFromFile("scenery/DayCycle/Earth/Earth_2.png");
-    earth_3.loadFromFile("scenery/DayCycle/Earth/Earth_3.png");
-    earth_4.loadFromFile("scenery/DayCycle/Earth/Earth_4.png");
-    earth_5.loadFromFile("scenery/DayCycle/Earth/Earth_5.png");
-    earth_6.loadFromFile("scenery/DayCycle/Earth/Earth_6.png");
-    earth_7.loadFromFile("scenery/DayCycle/Earth/Earth_7.png");
-    earth_8.loadFromFile("scenery/DayCycle/Earth/Earth_8.png");
-    earth_9.loadFromFile("scenery/DayCycle/Earth/Earth_9.png");
+    morning_1.loadFromFile(  "scenery/Background/1_Morning.png");
+    morning_2.loadFromFile(  "scenery/Background/2_Morning.png");
+    morning_3.loadFromFile(  "scenery/Background/3_Morning.png");
+    afternoon_4.loadFromFile("scenery/Background/4_Afternoon.png");
+    afternoon_5.loadFromFile("scenery/Background/5_Afternoon.png");
+    afternoon_6.loadFromFile("scenery/Background/6_Afternoon.png");
+    evening_7.loadFromFile(  "scenery/Background/7_Evening.png");
+    evening_8.loadFromFile(  "scenery/Background/8_Evening.png");
+    evening_9.loadFromFile(  "scenery/Background/9_Evening.png");
+    night_10.loadFromFile(   "scenery/Background/10_Night.png");
+    night_11.loadFromFile(   "scenery/Background/11_Night.png");
+    night_12.loadFromFile(   "scenery/Background/12_Night.png");
+
+    skyTextures.push_back(morning_1);
+    skyTextures.push_back(morning_2);
+    skyTextures.push_back(morning_3);
+    skyTextures.push_back(afternoon_4);
+    skyTextures.push_back(afternoon_5);
+    skyTextures.push_back(afternoon_6);
+    skyTextures.push_back(evening_7);
+    skyTextures.push_back(evening_8);
+    skyTextures.push_back(evening_9);
+    skyTextures.push_back(night_10);
+    skyTextures.push_back(night_11);
+    skyTextures.push_back(night_12);
+
+    sf::Texture earth_1;
+    sf::Texture earth_2;
+    sf::Texture earth_3;
+    sf::Texture earth_4;
+    sf::Texture earth_5;
+    sf::Texture earth_6;
+    sf::Texture earth_7;
+    sf::Texture earth_8;
+    sf::Texture earth_9;
+    sf::Texture earth_10;
+    sf::Texture earth_11;
+    sf::Texture earth_12;
+
+    earth_1.loadFromFile( "scenery/DayCycle/Earth/Earth_1.png");
+    earth_2.loadFromFile( "scenery/DayCycle/Earth/Earth_2.png");
+    earth_3.loadFromFile( "scenery/DayCycle/Earth/Earth_3.png");
+    earth_4.loadFromFile( "scenery/DayCycle/Earth/Earth_4.png");
+    earth_5.loadFromFile( "scenery/DayCycle/Earth/Earth_5.png");
+    earth_6.loadFromFile( "scenery/DayCycle/Earth/Earth_6.png");
+    earth_7.loadFromFile( "scenery/DayCycle/Earth/Earth_7.png");
+    earth_8.loadFromFile( "scenery/DayCycle/Earth/Earth_8.png");
+    earth_9.loadFromFile( "scenery/DayCycle/Earth/Earth_9.png");
     earth_10.loadFromFile("scenery/DayCycle/Earth/Earth_10.png");
     earth_11.loadFromFile("scenery/DayCycle/Earth/Earth_11.png");
     earth_12.loadFromFile("scenery/DayCycle/Earth/Earth_12.png");
 
+    planetTextures.push_back(earth_1);
+    planetTextures.push_back(earth_2);
+    planetTextures.push_back(earth_3);
+    planetTextures.push_back(earth_4);
+    planetTextures.push_back(earth_5);
+    planetTextures.push_back(earth_6);
+    planetTextures.push_back(earth_7);
+    planetTextures.push_back(earth_8);
+    planetTextures.push_back(earth_9);
+    planetTextures.push_back(earth_10);
+    planetTextures.push_back(earth_11);
+    planetTextures.push_back(earth_12);
+
     // Background frames
 
-    sun_1.loadFromFile("scenery/DayCycle/Sun/Sun_1.png");
-    sun_2.loadFromFile("scenery/DayCycle/Sun/Sun_2.png");
-    moon_1.loadFromFile("scenery/DayCycle/Sun/Moon_1.png");
+
+    /// Sun/Moon Textures
+    sf::Texture sun_1;
+    sf::Texture sun_2;
+    sf::Texture moon_1;
+
+    sun_1.loadFromFile( "scenery/Sun/Sun_1.png");
+    sun_2.loadFromFile( "scenery/Sun/Sun_2.png");
+    moon_1.loadFromFile("scenery/Sun/Moon_1.png");
+
+    sunTextures.push_back(sun_1);
+    sunTextures.push_back(sun_2);
+    sunTextures.push_back(moon_1);
+
+
+
     // Shotgun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
     shotgunDropTexture.loadFromFile("entity/shotgun/shotgunDrop.png");
@@ -168,30 +235,32 @@ void ConfigGame::reset() {
     world = new b2World(b2Vec2(0, 0));
     world->SetContactListener(new CollisionListener());
 
-
-
     /// Instantiating initial entities
     delete planet;
     planet = new Planet(world, this, planetRadius, planetCenter.x, planetCenter.y);
-    planetBody = planet->getBody();
 
     delete farmer;
     farmer = new Farmer(this, 30, 100, 100, calcX(0), calcY(0));
 
     delete entities;
     entities = new std::vector<Entity *>;
-    entities->push_back(farmer);
     entities->push_back(planet);
+    entities->push_back(farmer);
 
     /// Background Initialization
     /// Initialize Day Cycle
     delete sceneries;
     sceneries = new std::vector<Scenery *>;
 
+    sky = new Sky(this, 4000.f, planetCenter.x, planetCenter.y);
+    sceneries->push_back(sky);
+
+    sun = new Sun(this, sunRadius, calcX(0.f, sunRadius), calcY(0.f, sunRadius), 0.f);
+    sceneries->push_back(sun);
+
+
     delete dayCycle;
     dayCycle = new DayCycle(this);
-    sceneries->push_back(dayCycle);
-
 
     Wolf::nextId = 0;
     Alpaca::nextId = 0;

@@ -20,8 +20,14 @@ class ConfigGame {
 public:
 
     /// Day / Night Cycle
+    DayCycle *dayCycle = nullptr;
     enum class Cycle{DAY, NIGHT};
     Cycle getCurrentCycle() const;
+    float sunRadius = 250.f;
+
+    std::vector<sf::Texture> sunTextures;
+    std::vector<sf::Texture> planetTextures;
+    std::vector<sf::Texture> skyTextures;
 
     void setCurrentCycle(Cycle currentCycle);
 
@@ -30,14 +36,17 @@ public:
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius = 700;
+    float planetRadius = 700.f;
+
+    // todo: Necessary?
+    Scenery* sun = nullptr;
+    Scenery* sky = nullptr;
 
     bool newGame = true;
 
     b2World* world = nullptr;
     Entity* planet = nullptr;
     Entity* farmer = nullptr;
-    b2Body* planetBody = nullptr;
 
     void reset();
 
@@ -46,9 +55,6 @@ public:
     std::vector<Entity*> *entities = nullptr;
 
     std::vector<Scenery*> *sceneries = nullptr;
-
-    Scenery *dayCycle = nullptr;
-
 
     /**
      * Show in-game labels or not.
@@ -116,35 +122,9 @@ public:
     /// Textures
     sf::Texture planetTexture;
 
-    sf::Texture morning_1;
-    sf::Texture morning_2;
-    sf::Texture morning_3;
-    sf::Texture afternoon_4;
-    sf::Texture afternoon_5;
-    sf::Texture afternoon_6;
-    sf::Texture evening_7;
-    sf::Texture evening_8;
-    sf::Texture evening_9;
-    sf::Texture night_10;
-    sf::Texture night_11;
-    sf::Texture night_12;
 
-    sf::Texture earth_1;
-    sf::Texture earth_2;
-    sf::Texture earth_3;
-    sf::Texture earth_4;
-    sf::Texture earth_5;
-    sf::Texture earth_6;
-    sf::Texture earth_7;
-    sf::Texture earth_8;
-    sf::Texture earth_9;
-    sf::Texture earth_10;
-    sf::Texture earth_11;
-    sf::Texture earth_12;
 
-    sf::Texture sun_1;
-    sf::Texture sun_2;
-    sf::Texture moon_1;
+
 
 
     sf::Texture shotgunHeldTexture;

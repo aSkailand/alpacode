@@ -1,162 +1,79 @@
-#include <vector>
 
 #include "DayCycle.h"
-
-
-// TODO: IMPORTANT Fix Background Size and Origin with different PlanetSize. :(
-
+#include "../../Resources/ConfigGame.h"
+#include "../../entity/planet/planet.h"
+#include "../Sky/Sky.h"
+#include "../Sun/Sun.h"
 
 DayCycle::DayCycle(ConfigGame *configGame) {
 
+    // Assign pointers
     this->configGame = configGame;
+    this->planet = dynamic_cast<Planet *>(configGame->planet);
+    this->sun = dynamic_cast<Sun *>(configGame->sun);
+    this->sky = dynamic_cast<Sky *>(configGame->sky);
 
+    // Assign texture containers
+    sunTexture = configGame->sunTextures[0];
+    moonTexture = configGame->sunTextures[2];
+    this->planetTextures = configGame->planetTextures;
+    this->skyTextures = configGame->skyTextures;
+
+    // Set initial cycle
     configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
 
-    float world_x = configGame->planetBody->GetWorldCenter().x * SCALE;
-    float world_y = configGame->planetBody->GetWorldCenter().y * SCALE;
+    // Calculate sun's distance
+    planetToSunDistance = configGame->planetRadius + sunDistance;
 
-    /// Initialize Background
-    background = new sf::CircleShape(3000);
-    background->setOrigin(background->getRadius(), background->getRadius());
-    background->setPosition(world_x, world_y);
-    background->setTexture(&configGame->morning_1);
-
-    earth = new sf::CircleShape(configGame->planetRadius + 70);
-    earth->setOrigin(earth->getRadius(), earth->getRadius());
-    earth->setPosition(world_x, world_y);
-    earth->setTexture(&configGame->earth_1);
-
-    /// Initialize Sun
-    sun = new sf::CircleShape(sunRadius);
-    sun->setOrigin(sun->getRadius(), sun->getRadius());
-    sun->setTexture(&configGame->sun_1);
-    sun->setOutlineThickness(2);
-
-    /// Iterate amove the picture
-
-
-
-
-
-
-    /** Calculation for the suns movement
-     *  1.f / 23.f is for the sun to circulate the world in 1 second
-     *  multipy by the amount of seconds in the cycle.
-     *  divide be 2 for the equal amount of sun and night
-     */
-
-
-    bgCycle.push_back(&configGame->morning_1);
-    bgCycle.push_back(&configGame->morning_2);
-    bgCycle.push_back(&configGame->morning_3);
-    bgCycle.push_back(&configGame->afternoon_4);
-    bgCycle.push_back(&configGame->afternoon_5);
-    bgCycle.push_back(&configGame->afternoon_6);
-    bgCycle.push_back(&configGame->evening_7);
-    bgCycle.push_back(&configGame->evening_8);
-    bgCycle.push_back(&configGame->evening_9);
-    bgCycle.push_back(&configGame->night_10);
-    bgCycle.push_back(&configGame->night_11);
-    bgCycle.push_back(&configGame->night_12);
-
-    earthCycle.push_back(&configGame->earth_1);
-    earthCycle.push_back(&configGame->earth_2);
-    earthCycle.push_back(&configGame->earth_3);
-    earthCycle.push_back(&configGame->earth_4);
-    earthCycle.push_back(&configGame->earth_5);
-    earthCycle.push_back(&configGame->earth_6);
-    earthCycle.push_back(&configGame->earth_7);
-    earthCycle.push_back(&configGame->earth_8);
-    earthCycle.push_back(&configGame->earth_9);
-    earthCycle.push_back(&configGame->earth_10);
-    earthCycle.push_back(&configGame->earth_11);
-    earthCycle.push_back(&configGame->earth_12);
-
-    float period = 30.f;
-    sunTick = period / 360.f;
-    printf("sunTick: %f\n",sunTick);
+    // Calculate new sun tick
+    float revolution = cycleTime * 6;
+    sunTick = revolution / 360.f;
 
     //Reset timer right away
-    cycleChrono.reset(true);
+    dayCycleTime.reset(true);
+
     std::cout << "DayCycle Initialized" << std::endl;
 
 }
 
-void DayCycle::update() {
+void DayCycle::proceed() {
 
-//    if(cycleChrono.getElapsedTime().asSeconds() >= 5.0f){
-//        printf("sunAngleAAA: %f\n", sunAngle);
-//    }
+    // Check if it is time to proceed one tick
+    if (dayCycleTime.getElapsedTime().asSeconds() >= cycleTime) {
 
-//    if (sunAngle >= 60.f) {
-//        printf("Time: %f\n", cycleChrono.getElapsedTime().asSeconds());
-//        printf("sunAngleAAA: %f\n", sunAngle);
-//    }
+        // Proceed one tick
+        cycleTick = cycleTick == 12 ? 0 : cycleTick++;
 
-
-//    if(sunAngle >= 60.f*counterBackground){
-    if (cycleChrono.getElapsedTime().asSeconds() >= cycleTime) {
-
-        printf("\tSun Angle: %f\n", sunAngle);
-
-        counterBackground++;
-        if (counterBackground == 12) counterBackground = 0;
-
-        // Day
-        if (counterBackground == 0) {
+        // Determine current cycle
+        if (cycleTick == 0) {
             configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
-            sun->setTexture(&configGame->sun_1);
-        } else if (counterBackground == 5) {
+            sun->setTexture(&sunTexture);
+        } else if (cycleTick == 5) {
             configGame->setCurrentCycle(ConfigGame::Cycle::NIGHT);
-            sun->setTexture(&configGame->moon_1);
+            sun->setTexture(&moonTexture);
         }
 
-        earth->setTexture(earthCycle.at(counterBackground));
-        background->setTexture(bgCycle.at(counterBackground));
-        cycleChrono.reset(true);
+        // Switch textures
+        planet->setTexture(&planetTextures[cycleTick]);
+        sky->setTexture(&skyTextures[cycleTick]);
+
+        // Reset cycle countdown time
+        dayCycleTime.reset(true);
     }
 
+    // Move sun
     updateSunMovement();
-
-
-    /// Change Picture
 
 }
 
 void DayCycle::updateSunMovement() {
 
-//    float x = configGame->planetBody->GetWorldCenter().x * SCALE + cos(sunAngle) * (configGame->planetRadius + sunDistance);
-//    float y = configGame->planetBody->GetWorldCenter().y * SCALE + sin(sunAngle) * (configGame->planetRadius + sunDistance);
+    float x = configGame->calcX(sunAngle, planetToSunDistance);
+    float y = configGame->calcY(sunAngle, planetToSunDistance);
 
-//    printf("Seconds: %f\n", cycleChrono.getElapsedTime().asSeconds());
+    sun->setPlacement(x, y, sunAngle);
 
-//    if(sunAngle >= 60.f){
-//        printf("sunAngleAAA: %f\n", sunAngle);
-//    }
-
-
-    float x = configGame->calcX(sunAngle, configGame->planetRadius + sunDistance);
-    float y = configGame->calcY(sunAngle, configGame->planetRadius + sunDistance);
-
-    sun->setPosition(x, y);
     sunAngle += sunTick;
-}
-
-void DayCycle::render(sf::RenderWindow *window) {
-
-    window->draw(*background);
-    window->draw(*earth);
-    window->draw(*sun);
-
-    for (int i = 0; i < 6; ++i) {
-        sf::Vertex line[2] =
-                {
-                        sf::Vertex(sf::Vector2f(configGame->planetCenter), sf::Color::Black),
-                        sf::Vertex(sf::Vector2f(configGame->calcX(60.f * i, 1500.f), configGame->calcY(60.f * i, 1500.f)))
-                };
-        window->draw(line,2,sf::Lines);
-    }
-
 }
 
 
