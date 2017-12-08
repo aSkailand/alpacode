@@ -4,6 +4,7 @@
 
 #include "State.h"
 #include "../Resources/ConfigGame.h"
+#include <TGUI/TGUI.hpp>
 
 /**
  * The state that handles pausing of the game.
@@ -18,6 +19,7 @@ public:
      */
     void goNext(StateMachine &stateMachine) override;
 
+
 private:
 
     /**
@@ -26,10 +28,13 @@ private:
      */
     bool pollGame();
 
+
+
     /// Pointers
     StateMachine *stateMachine = nullptr;
     ConfigGame *configGame = nullptr;
     sf::RenderWindow *window = nullptr;
+    tgui::Gui *menuGUI;
 };
 
 
