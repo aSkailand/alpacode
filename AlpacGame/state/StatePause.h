@@ -29,7 +29,6 @@ private:
     bool pollGame();
 
 
-
     /// Pointers
     StateMachine *stateMachine = nullptr;
     ConfigGame *configGame = nullptr;

@@ -8,7 +8,6 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     pauseBool = true;
 
-
     theme = tgui::Theme::create("Resources/BabyBlue.txt");
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
@@ -270,15 +269,15 @@ void ConfigMenu::pauseMenuLayout() {
     tgui::Button::Ptr resumeButton = tgui::Button::copy(masterButton);
     resumeButton->setText("Resume Game");
     resumeButton->connect("pressed", [&] {
-
         machine->configWindow.getMenuGUI()->removeAllWidgets();
+        pauseBool = false;
+        // Resumes all entities
         machine->configGame.isPaused = false;
         for (auto &e : *machine->configGame.entities) {
             e->resume();
         }
-        pauseBool = false;
-        machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
 
+        machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
     });
 
     // Options button, enters the option state
@@ -286,7 +285,6 @@ void ConfigMenu::pauseMenuLayout() {
     optionButton->setText("Settings");
     optionButton->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
-
         pauseBool = false;
         machine->setCurrentState(StateMachine::stateID::OPTION);
     });

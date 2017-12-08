@@ -16,7 +16,9 @@ void StatePause::goNext(StateMachine &stateMachine) {
         e->pause();
     }
 
-    //stateMachine.configWindow.getWindow().setMouseCursorVisible(true);
+    /// Set the mouse coursor visible
+    stateMachine.configWindow.getWindow().setMouseCursorVisible(true);
+
     /// View
     sf::View view = sf::View(window->getDefaultView());
 
