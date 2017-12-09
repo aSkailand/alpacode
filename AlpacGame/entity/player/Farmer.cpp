@@ -1,5 +1,5 @@
 #include "Farmer.h"
-#include "../alpaca/alpaca.h"
+#include "../alpaca/Alpaca.h"
 
 Farmer::Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x, float y) {
 

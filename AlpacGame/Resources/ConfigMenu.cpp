@@ -56,7 +56,12 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  });
 
     createButton(buttonID::CONTROLS, "Controls", "pressed",
-                 [&] {});
+                 [&] {
+                     machine->configWindow.getMenuGUI()->removeAllWidgets();
+                     machine->configWindow.getMenuGUI()->add(getPictureMenu());
+                     machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
+                     machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::CONTROLS]);
+                 });
 
     createButton(buttonID::SOUND, "Sound", "pressed",
                  [&] {
@@ -101,7 +106,6 @@ void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &typeActivation,
                               const std::function<void()> &func) {
     tgui::Button::Ptr tempButton = tgui::Button::copy(masterButton);
-    // tempButton->setSize(200, 40);
     tempButton->setText(buttonName);
     tempButton->setTextSize(20);
     tempButton->connect(typeActivation, func);
@@ -172,6 +176,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     mapLayouts.emplace(layouts::SETTINGS, optionsVerticalLayout);
 
     videoSettingsLayout();
+    controlSettingsLayout();
     soundSettingsLayout();
     defeatScreenLayout();
     highscoreLayout();
@@ -302,6 +307,95 @@ void ConfigMenu::videoSettingsLayout() {
     videoSettingsLayout->addSpace(5);
 
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
+}
+
+void ConfigMenu::controlSettingsLayout() {
+
+    tgui::VerticalLayout::Ptr controlSettingsLayout = tgui::VerticalLayout::create();
+    controlSettingsLayout->setSize(windowWidth * 0.55, windowHeight * 0.8);
+    controlSettingsLayout->setPosition(windowWidth / 2.7, windowHeight / 12);
+
+    tgui::HorizontalLayout::Ptr horizontal = tgui::HorizontalLayout::create();
+
+    tgui::VerticalLayout::Ptr labelLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr buttonLayout = tgui::VerticalLayout::create();
+
+    //Master label
+    tgui::Label::Ptr masterLabel = tgui::Label::create();
+    masterLabel->setTextSize(25);
+    masterLabel->setTextColor(sf::Color::White);
+
+    //Character function-name labels
+    tgui::Label::Ptr shootLabel = tgui::Label::copy(masterLabel);
+    shootLabel->setText("Shoot");
+    tgui::Label::Ptr moveLeftLabel = tgui::Label::copy(masterLabel);
+    moveLeftLabel->setText("Move Left");
+    tgui::Label::Ptr moveRightLabel = tgui::Label::copy(masterLabel);
+    moveRightLabel->setText("Move Right");
+    tgui::Label::Ptr jumpLabel = tgui::Label::copy(masterLabel);
+    jumpLabel->setText("Jump");
+    tgui::Label::Ptr grabThrowLabel = tgui::Label::copy(masterLabel);
+    grabThrowLabel->setText("Grab/Throw");
+
+    //Default key button settings
+    tgui::Button::Ptr defaultKey = tgui::Button::copy(masterButton);
+    defaultKey->setTextSize(20);
+
+    //Bind new key buttons
+    shootKey = tgui::Button::copy(defaultKey);
+    shootKey->setOpacity(0.5);
+    shootKey->disable();
+    shootKey->setText("LMB");
+    moveLeftKey = tgui::Button::copy(defaultKey);
+    moveLeftKey->setText("A");
+    moveRightKey = tgui::Button::copy(defaultKey);
+    moveRightKey->setText("D");
+    jumpKey = tgui::Button::copy(defaultKey);
+    jumpKey->setText("W");
+    grabThrowKey = tgui::Button::copy(defaultKey);
+    grabThrowKey->setText("E");
+
+    //TODO connect buttons to functions
+    //What happens when a button is pressed
+
+    void ConfigMenu::doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control) {
+        StateOption->currentAssigning = button;
+        StateOption->ControlToAssign = control;
+    }
+
+    moveLeftKey->connect("pressed", doKeyAssigning(moveLeftKey, LEFT));
+    moveRightKey->connect("pressed", doKeyAssigning(moveRightKey, RIGHT));
+    jumpKey->connect("pressed", doKeyAssigning(jumpKey, JUMP));
+    grabThrowKey->connect("pressed", doKeyAssigning(grabThrowKey, PICKUP));
+
+
+    //Adds layout, labels, and buttons to the GUI
+    controlSettingsLayout->add(horizontal);
+    horizontal->add(labelLayout);
+    horizontal->addSpace(0.5);
+    horizontal->add(buttonLayout);
+    horizontal->addSpace(0.4);
+
+    labelLayout->addSpace(0.05);
+    labelLayout->add(shootLabel);
+    labelLayout->add(moveLeftLabel);
+    labelLayout->add(moveRightLabel);
+    labelLayout->add(jumpLabel);
+    labelLayout->add(grabThrowLabel);
+    labelLayout->addSpace(0.4);
+
+    buttonLayout->add(shootKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(moveLeftKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(moveRightKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(jumpKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(grabThrowKey);
+    buttonLayout->addSpace(2);
+
+    mapLayouts.emplace(layouts::CONTROLS, controlSettingsLayout);
 }
 
 

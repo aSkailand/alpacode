@@ -97,6 +97,19 @@ private:
     tgui::TextBox::Ptr textBoxHighscore;
 
 
+    /// KEYMAPPING //TODO FIX
+    tgui::Button::Ptr shootKey;
+    tgui::Button::Ptr moveLeftKey;
+    tgui::Button::Ptr moveRightKey;
+    tgui::Button::Ptr jumpKey;
+    tgui::Button::Ptr grabThrowKey;
+
+    void doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control);
+
+    // todo Move this to stateOption
+    tgui::Button::Ptr currentAssigning = nullptr;
+
+
     /// CheckBox
     bool checkBoxMuteChecked = false;
 
@@ -127,6 +140,10 @@ private:
      */
     void videoSettingsLayout();
 
+    /**
+     * Creates the control settings layout
+     */
+    void controlSettingsLayout();
     /**
      * Creates the sound settings layout
      */
