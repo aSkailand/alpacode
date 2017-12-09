@@ -56,7 +56,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  });
 
     createButton(buttonID::CONTROLS, "Controls", "pressed",
-                 [&] {});
+                 [&] {
+
+                 });
 
     createButton(buttonID::SOUND, "Sound", "pressed",
                  [&] {
@@ -101,7 +103,6 @@ void ConfigMenu::createButton(buttonID buttonID,
                               const std::string &typeActivation,
                               const std::function<void()> &func) {
     tgui::Button::Ptr tempButton = tgui::Button::copy(masterButton);
-    // tempButton->setSize(200, 40);
     tempButton->setText(buttonName);
     tempButton->setTextSize(20);
     tempButton->connect(typeActivation, func);
@@ -172,6 +173,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     mapLayouts.emplace(layouts::SETTINGS, optionsVerticalLayout);
 
     videoSettingsLayout();
+    controlSettingsLayout();
     soundSettingsLayout();
     defeatScreenLayout();
     highscoreLayout();
@@ -304,9 +306,30 @@ void ConfigMenu::videoSettingsLayout() {
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
 
+void ConfigMenu::controlSettingsLayout() {
+
+    tgui::VerticalLayout::Ptr controlSettingsLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr buttonControlVertLayout = tgui::VerticalLayout::create();
+    controlSettingsLayout->setSize(windowWidth/2, windowHeight);
+    controlSettingsLayout->setPosition(windowWidth/2, windowHeight/6);
+
+    buttonControlVertLayout->setSize(windowWidth/4, windowHeight);
+    buttonControlVertLayout->setPosition(windowWidth/4,windowHeight/6 );
+
+    // Movement Button settings
+    tgui::Button::Ptr moveLeftKey = tgui::Button::copy(masterButton);
+    moveLeftKey->setText("A");
+
+
+
+    controlSettingsLayout->add(buttonControlVertLayout);
+
+
+
+}
+
 
 void ConfigMenu::soundSettingsLayout() {
-
 
     // Layout setup
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();

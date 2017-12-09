@@ -128,6 +128,12 @@ private:
     void videoSettingsLayout();
 
     /**
+     * Creates the control settings layout
+     */
+
+    void controlSettingsLayout();
+
+    /**
      * Creates the sound settings layout
      */
     void soundSettingsLayout();
