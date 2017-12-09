@@ -22,6 +22,9 @@ public:
 
     void setTexture(sf::Texture *texture);
 
+private:
+
+    ConfigGame *configGame;
 };
 
 

@@ -16,21 +16,26 @@ DayCycle::DayCycle(ConfigGame *configGame) {
     // Assign texture containers
     sunTexture = configGame->sunTextures[0];
     moonTexture = configGame->sunTextures[2];
-    this->planetTextures = configGame->planetTextures;
-    this->skyTextures = configGame->skyTextures;
 
     // Set initial cycle
     configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
+
+    /// Calculations
+
+    // Set current cycleFrame;
+    cycleFrame = 0;
 
     // Calculate sun's distance
     planetToSunDistance = configGame->planetRadius + sunDistance;
 
     // Calculate new sun tick
-    float revolution = cycleTime * 6;
-    sunTick = revolution / 360.f;
+    sunTick = (360.f / revolution) / 144.f;
 
-    //Reset timer right away
-    dayCycleTime.reset(true);
+    // Calculate time for one cycle
+    cycleTime = revolution / 6.f;
+
+    // Reset timer
+    dayCycleTime.reset(false);
 
     std::cout << "DayCycle Initialized" << std::endl;
 
@@ -38,31 +43,32 @@ DayCycle::DayCycle(ConfigGame *configGame) {
 
 void DayCycle::proceed() {
 
+    // Move sun
+    updateSunMovement();
+
     // Check if it is time to proceed one tick
     if (dayCycleTime.getElapsedTime().asSeconds() >= cycleTime) {
 
-        // Proceed one tick
-        cycleTick = cycleTick == 12 ? 0 : cycleTick++;
+        // Proceed one frame
+        cycleFrame++;
+        if (cycleFrame == 12) cycleFrame = 0;
 
-        // Determine current cycle
-        if (cycleTick == 0) {
+        // Determine current cycle frame
+        if (cycleFrame == 0) {
             configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
             sun->setTexture(&sunTexture);
-        } else if (cycleTick == 5) {
+        } else if (cycleFrame == 6) {
             configGame->setCurrentCycle(ConfigGame::Cycle::NIGHT);
             sun->setTexture(&moonTexture);
         }
 
         // Switch textures
-        planet->setTexture(&planetTextures[cycleTick]);
-        sky->setTexture(&skyTextures[cycleTick]);
+        planet->setTexture(cycleFrame);
+        sky->setTexture(cycleFrame);
 
         // Reset cycle countdown time
         dayCycleTime.reset(true);
     }
-
-    // Move sun
-    updateSunMovement();
 
 }
 
@@ -74,6 +80,7 @@ void DayCycle::updateSunMovement() {
     sun->setPlacement(x, y, sunAngle);
 
     sunAngle += sunTick;
+    if(sunAngle > 360.f) sunAngle = 0;
 }
 
 

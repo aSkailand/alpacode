@@ -12,13 +12,20 @@
 class Sky : public Scenery{
 public:
 
+    sf::CircleShape shapeForeground;
+    sf::CircleShape shapeBackground;
+
     Sky(ConfigGame *configGame, float radius, float x, float y);
 
     void render(sf::RenderWindow *window) override;
 
     void update() override;
 
-    void setTexture(sf::Texture *texture);
+    void setTexture(unsigned int cycleFrame);
+
+private:
+
+    ConfigGame *configGame = nullptr;
 };
 
 

@@ -64,12 +64,7 @@ void ConfigGame::loadTexture(std::string filename,
 
 void ConfigGame::loadAllTextures() {
 
-    /// Mapping sprites for entities
-
-    // Planet
-    planetTexture.loadFromFile("entity/planet/planet.png");
-
-    // Background
+    // Sky
     sf::Texture morning_1;
     sf::Texture morning_2;
     sf::Texture morning_3;
@@ -109,6 +104,7 @@ void ConfigGame::loadAllTextures() {
     skyTextures.push_back(night_11);
     skyTextures.push_back(night_12);
 
+    // Planet
     sf::Texture earth_1;
     sf::Texture earth_2;
     sf::Texture earth_3;
@@ -148,10 +144,7 @@ void ConfigGame::loadAllTextures() {
     planetTextures.push_back(earth_11);
     planetTextures.push_back(earth_12);
 
-    // Background frames
-
-
-    /// Sun/Moon Textures
+    // Sun/Moon
     sf::Texture sun_1;
     sf::Texture sun_2;
     sf::Texture moon_1;
@@ -163,8 +156,6 @@ void ConfigGame::loadAllTextures() {
     sunTextures.push_back(sun_1);
     sunTextures.push_back(sun_2);
     sunTextures.push_back(moon_1);
-
-
 
     // Shotgun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
@@ -229,15 +220,14 @@ void ConfigGame::loadAllTextures() {
 
 void ConfigGame::reset() {
 
-
-    /// Initiating World (With no innate gravitation)
+    // Initiating World (With no innate gravitation)
     delete world;
     world = new b2World(b2Vec2(0, 0));
     world->SetContactListener(new CollisionListener());
 
-    /// Instantiating initial entities
+    // Instantiating initial entities
     delete planet;
-    planet = new Planet(world, this, planetRadius, planetCenter.x, planetCenter.y);
+    planet = new Planet(this, planetRadius, planetCenter.x, planetCenter.y);
 
     delete farmer;
     farmer = new Farmer(this, 30, 100, 100, calcX(0), calcY(0));
@@ -247,21 +237,21 @@ void ConfigGame::reset() {
     entities->push_back(planet);
     entities->push_back(farmer);
 
-    /// Background Initialization
-    /// Initialize Day Cycle
+    // Instantiating initial scenery
     delete sceneries;
     sceneries = new std::vector<Scenery *>;
 
-    sky = new Sky(this, 4000.f, planetCenter.x, planetCenter.y);
+    sky = new Sky(this, 4500.f, planetCenter.x, planetCenter.y);
     sceneries->push_back(sky);
 
     sun = new Sun(this, sunRadius, calcX(0.f, sunRadius), calcY(0.f, sunRadius), 0.f);
     sceneries->push_back(sun);
 
-
+    // Initiate dayCycle
     delete dayCycle;
     dayCycle = new DayCycle(this);
 
+    // Set ID
     Wolf::nextId = 0;
     Alpaca::nextId = 0;
 

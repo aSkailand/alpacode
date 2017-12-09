@@ -6,15 +6,20 @@
 #include "../../Resources/ConfigGame.h"
 
 Sun::Sun(ConfigGame *configGame, float radius, float x, float y, float angle) {
+
+    this->configGame = configGame;
+
     sf_Shape = new sf::CircleShape(radius);
     sf_Shape->setOrigin(radius, radius);
     sf_Shape->setTexture(&configGame->sunTextures[0]);
-    sf_Shape->setOutlineThickness(2);
 
     setPlacement(x,y,angle);
 }
 
 void Sun::render(sf::RenderWindow *window) {
+
+    if(configGame->showLabels) sf_Shape->setOutlineThickness(2);
+    else sf_Shape->setOutlineThickness(0);
     window->draw(*sf_Shape);
 }
 

@@ -20,6 +20,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         planet = configGame->planet;
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
         dayCycle = configGame->dayCycle;
+        dayCycle->initiateClock();
 
         configGame->newGame = false;
     }
@@ -36,8 +37,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setFillColor(sf::Color::Red);
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
-
-
 
     /// Poll game
     while (pollGame()) {

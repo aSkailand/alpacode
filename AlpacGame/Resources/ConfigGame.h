@@ -20,22 +20,15 @@ class ConfigGame {
 public:
 
     /// Day / Night Cycle
-    DayCycle *dayCycle = nullptr;
     enum class Cycle{DAY, NIGHT};
     Cycle getCurrentCycle() const;
-    float sunRadius = 250.f;
-
-    std::vector<sf::Texture> sunTextures;
-    std::vector<sf::Texture> planetTextures;
-    std::vector<sf::Texture> skyTextures;
-
     void setCurrentCycle(Cycle currentCycle);
+    DayCycle *dayCycle = nullptr;
+
 
 
     /// Customizable Properties
-    /**
-     * The radius of the planet.
-     */
+    float sunRadius = 300.f;
     float planetRadius = 700.f;
 
     // todo: Necessary?
@@ -120,30 +113,26 @@ public:
     sf::Font fontID;
 
     /// Textures
-    sf::Texture planetTexture;
 
-
-
-
-
-
+    // Single Textures
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
-    /// Map of every entities sprites.
+    // Texture Vectors
+    std::vector<sf::Texture> sunTextures;
+    std::vector<sf::Texture> planetTextures;
+    std::vector<sf::Texture> skyTextures;
+
+    // Texture Maps
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithoutHands;
     std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithHands;
-    //std::map<DayCycle::BackgroundCycle , sf::Texture> backgroundTextures;
-
 
 private:
+
     Cycle currentCycle = Cycle::DAY;
 
-
-
-private:
     /**
     * Load all necessary font used during the game.
     */

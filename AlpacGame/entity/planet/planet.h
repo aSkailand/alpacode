@@ -19,15 +19,17 @@ public:
      * @param x the x-position of the origin of the planet, in pixels.
      * @param y the y-position of the origin of the planet, in pixels.
      */
-    Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y);
+    Planet(ConfigGame *configGame, float radius, float x, float y);
 
     bool deadCheck() override;
 
-    void setTexture(sf::Texture *texture);
+    void setTexture(unsigned int cycleFrame);
 
 private:
 
     ConfigGame *configGame = nullptr;
+
+    sf::CircleShape shapeBackground;
 
     /**
      * Adjust SFML shape accordingly to the Box2D body, then draw it.

@@ -1,7 +1,7 @@
 
 #include "planet.h"
 
-Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
+Planet::Planet(ConfigGame *configGame, float radius, float x, float y) {
 
     this->configGame = configGame;
 
@@ -9,7 +9,7 @@ Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, fl
     bodyDef.position = b2Vec2(x / SCALE, y / SCALE);
     bodyDef.type = b2_staticBody;
 
-    body = world->CreateBody(&bodyDef);
+    body = configGame->world->CreateBody(&bodyDef);
 
     // Create b2Shape
     b2CircleShape b2Shape;
@@ -32,31 +32,49 @@ Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, fl
     body->SetUserData((void *) this);
 
     // Create SFML Shape
-    sfShape = new sf::CircleShape(radius + 70);
-    sfShape->setOrigin(radius + 70, radius + 70);
+    int offset = 80;
+    sfShape = new sf::CircleShape(radius + offset);
+    sfShape->setOrigin(radius + offset, radius + offset);
     sfShape->setTexture(&configGame->planetTextures[0]);
-    sfShape->setOutlineThickness(3);
     sfShape->setOutlineColor(sf::Color::Black);
+
+    shapeBackground = sf::CircleShape(radius + offset);
+    shapeBackground.setOrigin(radius + offset, radius + offset);
+    shapeBackground.setTexture(&configGame->planetTextures[1]);
+
+    // Set fixed position
+    float shape_x = getBody()->GetPosition().x * SCALE;
+    float shape_y = getBody()->GetPosition().y * SCALE;
+    sfShape->setPosition(shape_x, shape_y);
+    shapeBackground.setPosition(shape_x, shape_y);
 
 }
 
 void Planet::render(sf::RenderWindow *window) {
 
-    float shape_x = getBody()->GetPosition().x * SCALE;
-    float shape_y = getBody()->GetPosition().y * SCALE;
+    // Change opacity by delta
+    sfShape->setFillColor(sfShape->getFillColor() - sf::Color(0,0,0,2));
+    shapeBackground.setFillColor(shapeBackground.getFillColor() + sf::Color(0,0,0,2));
 
-    sfShape->setPosition(shape_x, shape_y);
-    window->draw(*sfShape);
+    if (configGame->showLabels) {
 
-    for (int i = 0; i < 6; ++i) {
-        sf::Vertex line[2] =
-                {
-                        sf::Vertex(sf::Vector2f(configGame->planetCenter), sf::Color::Black),
-                        sf::Vertex(
-                                sf::Vector2f(configGame->calcX(60.f * i, 1500.f), configGame->calcY(60.f * i, 1500.f)))
-                };
-        window->draw(line, 2, sf::Lines);
+        sfShape->setOutlineThickness(2);
+
+        // Draw debug vertices to split planet in six slices
+        for (int i = 0; i < 6; ++i) {
+            sf::Vertex line[2];
+            line[0] = sf::Vertex(sf::Vector2f(configGame->planetCenter), sf::Color::Black);
+            line[1] = sf::Vertex(sf::Vector2f(configGame->calcX(60.f * i, 1500.f), configGame->calcY(60.f * i, 1500.f)));
+
+            window->draw(line, 2 , sf::Lines);
+        }
+
+    } else {
+        sfShape->setOutlineThickness(0);
     }
+
+    window->draw(shapeBackground);
+    window->draw(*sfShape);
 
 
 }
@@ -73,7 +91,15 @@ bool Planet::deadCheck() {
     return false;
 }
 
-void Planet::setTexture(sf::Texture *texture) {
-    sfShape->setTexture(texture);
+void Planet::setTexture(unsigned int cycleFrame) {
+
+    // Change opacity of foreground/background
+    sfShape->setFillColor(sfShape->getFillColor() + sf::Color(0,0,0,255));
+    shapeBackground.setFillColor(shapeBackground.getFillColor() - sf::Color(0,0,0,150));
+
+    // Switch textures accordingly to cycle frame
+    sfShape->setTexture(&configGame->planetTextures[cycleFrame]);
+    shapeBackground.setTexture(&configGame->planetTextures[(cycleFrame == 11) ? 0 : ++cycleFrame]);
+
 }
 
