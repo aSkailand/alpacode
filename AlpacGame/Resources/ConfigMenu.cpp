@@ -58,6 +58,11 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createButton(buttonID::CONTROLS, "Controls", "pressed",
                  [&] {
 
+                     machine->configWindow.getMenuGUI()->removeAllWidgets();
+                     machine->configWindow.getMenuGUI()->add(getPictureMenu());
+                     machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
+                     machine->configWindow.getMenuGUI()->add(mapLayouts[ConfigMenu::layouts::CONTROLS]);
+
                  });
 
     createButton(buttonID::SOUND, "Sound", "pressed",
@@ -309,22 +314,37 @@ void ConfigMenu::videoSettingsLayout() {
 void ConfigMenu::controlSettingsLayout() {
 
     tgui::VerticalLayout::Ptr controlSettingsLayout = tgui::VerticalLayout::create();
-    tgui::VerticalLayout::Ptr buttonControlVertLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr buttonControlVerticalLayout = tgui::VerticalLayout::create();
+    tgui::HorizontalLayout::Ptr tempHorisontalLayout = tgui::HorizontalLayout::create();
     controlSettingsLayout->setSize(windowWidth/2, windowHeight);
     controlSettingsLayout->setPosition(windowWidth/2, windowHeight/6);
 
-    buttonControlVertLayout->setSize(windowWidth/4, windowHeight);
-    buttonControlVertLayout->setPosition(windowWidth/4,windowHeight/6 );
+    buttonControlVerticalLayout->setSize(windowWidth/4, windowHeight/12);
+    buttonControlVerticalLayout->setPosition(windowWidth/4,windowHeight/6 );
 
     // Movement Button settings
-    tgui::Button::Ptr moveLeftKey = tgui::Button::copy(masterButton);
+    moveLeftKey = tgui::Button::copy(masterButton);
     moveLeftKey->setText("A");
+    moveLeftKey->connect("pressed", [&]{
+        moveLeftKey->setText("...");
+        machine->configGame.ControlToAssign = ConfigGame::ControlName::LEFT;
+        //machine->configWindow.getMenuGUI()->removeAllWidgets();
+        //machine->configWindow.getMenuGUI()->add(getPictureMenu());
+        //machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
+        //machine->configWindow.getMenuGUI()->add(mapLayouts[ConfigMenu::layouts::CONTROLS]);
 
+    });
 
+    tempHorisontalLayout->add(moveLeftKey);
+    tempHorisontalLayout->addSpace(0.2f);
 
-    controlSettingsLayout->add(buttonControlVertLayout);
+    buttonControlVerticalLayout->addSpace();
+    buttonControlVerticalLayout->add(tempHorisontalLayout);
+    buttonControlVerticalLayout->addSpace(5.f);
 
+    controlSettingsLayout->add(buttonControlVerticalLayout);
 
+    mapLayouts.emplace(layouts::CONTROLS, controlSettingsLayout);
 
 }
 

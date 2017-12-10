@@ -47,6 +47,9 @@ public:
         EFFECT_SLIDER
     };
 
+    /// Button pointers
+    tgui::Button::Ptr moveLeftKey;
+
 
     /// Public Functions
     /**
