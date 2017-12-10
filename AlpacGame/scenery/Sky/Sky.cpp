@@ -8,12 +8,12 @@ Sky::Sky(ConfigGame *configGame, float radius, float x, float y) {
     shapeForeground = sf::CircleShape(radius);
     shapeForeground.setOrigin(shapeForeground.getRadius(), shapeForeground.getRadius());
     shapeForeground.setPosition(x,y);
-    shapeForeground.setTexture(&configGame->skyTextures[0]);
+    shapeForeground.setTexture(&this->configGame->skyTextures[0]);
 
     shapeBackground = sf::CircleShape(radius);
     shapeBackground.setOrigin(shapeBackground.getRadius(), shapeBackground.getRadius());
     shapeBackground.setPosition(x,y);
-    shapeBackground.setTexture(&configGame->skyTextures[1]);
+    shapeBackground.setTexture(&this->configGame->skyTextures[1]);
 
 }
 

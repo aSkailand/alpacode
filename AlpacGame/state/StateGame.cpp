@@ -97,7 +97,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         dayCycle->proceed();
 
         /// Render Phase
-        window->clear();
+        window->clear(sf::Color::Blue);
 
         /// Draw Background;
         for( Scenery *s : *configGame->sceneries){
@@ -140,8 +140,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
-        /// Render Phase
-        window->clear(sf::Color::Blue);
+
 
         /// Draw aim
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);

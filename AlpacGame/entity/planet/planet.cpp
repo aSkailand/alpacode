@@ -35,12 +35,12 @@ Planet::Planet(ConfigGame *configGame, float radius, float x, float y) {
     int offset = 80;
     sf_ShapeEntity = new sf::CircleShape(radius + offset);
     sf_ShapeEntity->setOrigin(radius + offset, radius + offset);
-    sf_ShapeEntity->setTexture(&configGame->planetTextures[0]);
+    sf_ShapeEntity->setTexture(&this->configGame->planetTextures[0]);
     sf_ShapeEntity->setOutlineColor(sf::Color::Black);
 
     shapeBackground = sf::CircleShape(radius + offset);
     shapeBackground.setOrigin(radius + offset, radius + offset);
-    shapeBackground.setTexture(&configGame->planetTextures[1]);
+    shapeBackground.setTexture(&this->configGame->planetTextures[1]);
 
     // Set fixed position
     float shape_x = getBody()->GetPosition().x * SCALE;
