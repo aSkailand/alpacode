@@ -103,8 +103,9 @@ private:
     tgui::Button::Ptr moveRightKey;
     tgui::Button::Ptr jumpKey;
     tgui::Button::Ptr grabThrowKey;
+    tgui::Button::Ptr zoomKey;
 
-    void doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control);
+    //void doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control);
 
     // todo Move this to stateOption
     tgui::Button::Ptr currentAssigning = nullptr;

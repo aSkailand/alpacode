@@ -336,6 +336,8 @@ void ConfigMenu::controlSettingsLayout() {
     jumpLabel->setText("Jump");
     tgui::Label::Ptr grabThrowLabel = tgui::Label::copy(masterLabel);
     grabThrowLabel->setText("Grab/Throw");
+    tgui::Label::Ptr zoomLabel = tgui::Label::copy(masterLabel);
+    zoomLabel->setText("Zoom");
 
     //Default key button settings
     tgui::Button::Ptr defaultKey = tgui::Button::copy(masterButton);
@@ -354,11 +356,13 @@ void ConfigMenu::controlSettingsLayout() {
     jumpKey->setText("W");
     grabThrowKey = tgui::Button::copy(defaultKey);
     grabThrowKey->setText("E");
+    zoomKey = tgui::Button::copy(defaultKey);
+    zoomKey->setText("Z");
 
     //TODO connect buttons to functions
     //What happens when a button is pressed
 
-    void ConfigMenu::doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control) {
+   /* void ConfigMenu::doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control) {
         StateOption->currentAssigning = button;
         StateOption->ControlToAssign = control;
     }
@@ -367,7 +371,7 @@ void ConfigMenu::controlSettingsLayout() {
     moveRightKey->connect("pressed", doKeyAssigning(moveRightKey, RIGHT));
     jumpKey->connect("pressed", doKeyAssigning(jumpKey, JUMP));
     grabThrowKey->connect("pressed", doKeyAssigning(grabThrowKey, PICKUP));
-
+    */
 
     //Adds layout, labels, and buttons to the GUI
     controlSettingsLayout->add(horizontal);
@@ -382,7 +386,9 @@ void ConfigMenu::controlSettingsLayout() {
     labelLayout->add(moveRightLabel);
     labelLayout->add(jumpLabel);
     labelLayout->add(grabThrowLabel);
+    labelLayout->add(zoomLabel);
     labelLayout->addSpace(0.4);
+
 
     buttonLayout->add(shootKey);
     buttonLayout->addSpace();
@@ -393,6 +399,8 @@ void ConfigMenu::controlSettingsLayout() {
     buttonLayout->add(jumpKey);
     buttonLayout->addSpace();
     buttonLayout->add(grabThrowKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(zoomKey);
     buttonLayout->addSpace(2);
 
     mapLayouts.emplace(layouts::CONTROLS, controlSettingsLayout);
