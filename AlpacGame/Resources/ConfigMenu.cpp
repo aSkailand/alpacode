@@ -350,30 +350,26 @@ void ConfigMenu::controlSettingsLayout() {
     shootKey->setOpacity(0.5);
     shootKey->disable();
     shootKey->setText("LMB");
+
     moveLeftKey = tgui::Button::copy(defaultKey);
     moveLeftKey->setText("A");
+    moveLeftKey->connect("pressed", [&] { moveLeftKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::LEFT; machine->configGame.buttonToAssign = moveLeftKey; });
+
     moveRightKey = tgui::Button::copy(defaultKey);
     moveRightKey->setText("D");
+    moveRightKey->connect("pressed", [&] { moveRightKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::RIGHT; machine->configGame.buttonToAssign = moveRightKey; });
+
     jumpKey = tgui::Button::copy(defaultKey);
     jumpKey->setText("W");
+    jumpKey->connect("pressed", [&] { jumpKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::JUMP; machine->configGame.buttonToAssign = jumpKey; });
+
     grabThrowKey = tgui::Button::copy(defaultKey);
     grabThrowKey->setText("E");
+    grabThrowKey->connect("pressed", [&] { grabThrowKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::GRASP; machine->configGame.buttonToAssign = grabThrowKey; });
+
     zoomKey = tgui::Button::copy(defaultKey);
     zoomKey->setText("Z");
-
-    //TODO connect buttons to functions
-    //What happens when a button is pressed
-
-   /* void ConfigMenu::doKeyAssigning(tgui::Button::Ptr button, ConfigGame::ControlName control) {
-        StateOption->currentAssigning = button;
-        StateOption->ControlToAssign = control;
-    }
-
-    moveLeftKey->connect("pressed", doKeyAssigning(moveLeftKey, LEFT));
-    moveRightKey->connect("pressed", doKeyAssigning(moveRightKey, RIGHT));
-    jumpKey->connect("pressed", doKeyAssigning(jumpKey, JUMP));
-    grabThrowKey->connect("pressed", doKeyAssigning(grabThrowKey, PICKUP));
-    */
+    zoomKey->connect("pressed", [&] { zoomKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::ZOOM; machine->configGame.buttonToAssign = zoomKey; });
 
     //Adds layout, labels, and buttons to the GUI
     controlSettingsLayout->add(horizontal);
@@ -406,6 +402,11 @@ void ConfigMenu::controlSettingsLayout() {
     buttonLayout->addSpace(2);
 
     mapLayouts.emplace(layouts::CONTROLS, controlSettingsLayout);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::LEFT, moveLeftKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::RIGHT, moveRightKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::JUMP, jumpKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::GRASP, grabThrowKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::ZOOM, zoomKey);
 }
 
 

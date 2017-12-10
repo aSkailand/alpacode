@@ -213,6 +213,7 @@ bool StateGame::pollGame() {
 
 
 void StateGame::keyPressedHandler(sf::Event event) {
+
     switch (event.key.code) {
         case sf::Keyboard::I: {
             configGame->showLabels = !configGame->showLabels;
@@ -244,19 +245,17 @@ void StateGame::keyPressedHandler(sf::Event event) {
                     new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
-        case sf::Keyboard::Z: {
-            if (zoomed) {
-                zoomed = false;
-                view = sf::View(window->getDefaultView());
-                view.zoom(viewNonZoomed);
-            } else {
-                zoomed = true;
-                view = sf::View(window->getDefaultView());
-                view.zoom(viewZoomed);
-            }
-            break;
-        }
         default: {
+            if(event.key.code == configGame->MapControlKeys[ConfigGame::ControlName::ZOOM]){
+                if (zoomed) {
+                    zoomed = false;
+                    view = sf::View(window->getDefaultView());
+                    view.zoom(viewNonZoomed);
+                } else {
+                    zoomed = true;
+                    view = sf::View(window->getDefaultView());
+                    view.zoom(viewZoomed);
+                }}
             break;
         }
     }

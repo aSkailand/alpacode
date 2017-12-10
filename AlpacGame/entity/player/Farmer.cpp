@@ -155,7 +155,7 @@ void Farmer::switchAction() {
             currentAction = Action::JUMP;
             break;
         }
-        case ConfigGame::ControlName::GRAPS:{
+        case ConfigGame::ControlName::GRASP:{
             if (isCooldownTriggered(&graspClock, graspCooldown)) {
                 if (currentGrasp == Grasp::EMPTY) {
                     if (!currentlyTouchingEntities.empty()) {
