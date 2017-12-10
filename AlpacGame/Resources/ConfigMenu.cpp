@@ -61,6 +61,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::CONTROLS]);
+
                  });
 
     createButton(buttonID::SOUND, "Sound", "pressed",
@@ -311,6 +312,7 @@ void ConfigMenu::videoSettingsLayout() {
 
 void ConfigMenu::controlSettingsLayout() {
 
+
     tgui::VerticalLayout::Ptr controlSettingsLayout = tgui::VerticalLayout::create();
     controlSettingsLayout->setSize(windowWidth * 0.55, windowHeight * 0.8);
     controlSettingsLayout->setPosition(windowWidth / 2.7, windowHeight / 12);
@@ -407,8 +409,8 @@ void ConfigMenu::controlSettingsLayout() {
 }
 
 
-void ConfigMenu::soundSettingsLayout() {
 
+void ConfigMenu::soundSettingsLayout() {
 
     // Layout setup
     tgui::VerticalLayout::Ptr layout = tgui::VerticalLayout::create();

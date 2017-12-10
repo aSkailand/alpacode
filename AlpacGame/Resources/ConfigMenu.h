@@ -47,6 +47,9 @@ public:
         EFFECT_SLIDER
     };
 
+    /// Button pointers
+    tgui::Button::Ptr moveLeftKey;
+
 
     /// Public Functions
     /**
@@ -145,6 +148,7 @@ private:
      * Creates the control settings layout
      */
     void controlSettingsLayout();
+
     /**
      * Creates the sound settings layout
      */

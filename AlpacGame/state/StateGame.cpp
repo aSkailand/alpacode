@@ -59,18 +59,27 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
 
         /// Save current input
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            configGame->currentInput = sf::Keyboard::W;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            configGame->currentInput = sf::Keyboard::A;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            configGame->currentInput = sf::Keyboard::D;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            configGame->currentInput = sf::Keyboard::E;
-        } else {
-            configGame->currentInput = sf::Keyboard::Unknown;
+        configGame->currentCommand = ConfigGame::ControlName::NOTHING;
+        for (auto &MapControlKey : configGame->MapControlKeys) {
+            if(sf::Keyboard::isKeyPressed(MapControlKey.second)){
+                configGame->currentCommand = MapControlKey.first;
+                break;
+            }
         }
 
+        /*
+        if (sf::Keyboard::isKeyPressed(configGame->MapControlKeys[ConfigGame::ControlName::JUMP])) {
+            configGame->currentInput = configGame->MapControlKeys[ConfigGame::ControlName::JUMP];
+        } else if (sf::Keyboard::isKeyPressed(configGame->MapControlKeys[ConfigGame::ControlName::LEFT])) {
+            configGame->currentInput = configGame->MapControlKeys[ConfigGame::ControlName::LEFT];
+        } else if (sf::Keyboard::isKeyPressed(configGame->MapControlKeys[ConfigGame::ControlName::RIGHT])) {
+            configGame->currentInput = configGame->MapControlKeys[ConfigGame::ControlName::RIGHT];
+        } else if (sf::Keyboard::isKeyPressed(configGame->MapControlKeys[ConfigGame::ControlName::GRAPS])) {
+            configGame->currentInput = configGame->MapControlKeys[ConfigGame::ControlName::GRAPS];
+        } else {
+            configGame->currentInput = configGame->MapControlKeys[ConfigGame::ControlName::NOTHING];
+        }
+        */
 
         /// Box2D Physics Calculations
         // Iterating through all existing bodies

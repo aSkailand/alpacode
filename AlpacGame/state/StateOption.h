@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "State.h"
 #include "StateMachine.h"
-
+#include "../Resources/ConfigGame.h"
 
 /**
  * The StateOption class contains four different menus, the main option menu
@@ -20,6 +20,8 @@ private:
     StateMachine *machine;
     sf::RenderWindow *window;
     tgui::Gui *menuGUI;
+    ConfigGame *configGame;
+
 
     //Option Functions
     /**
@@ -31,6 +33,14 @@ private:
      * Draw option menu with all possible option choices.
      */
     void drawOption();
+
+    /**
+     * Key binding a new key and edit text to buttons.
+     */
+    void KeyBinding(sf::Keyboard::Key newKey, std::string keyString);
+
+    void checkIfAnyControlAssigningKeyIsPressed(sf::Event event);
+
 };
 
 #endif //ALPACGAME_STATEOPTION_H
