@@ -214,11 +214,11 @@ bool StateGame::pollGame() {
 
 void StateGame::keyPressedHandler(sf::Event event) {
     switch (event.key.code) {
-        case sf::Keyboard::I: {
+        case sf::Keyboard::F9: {
             configGame->showLabels = !configGame->showLabels;
             break;
         }
-        case sf::Keyboard::R: {
+        case sf::Keyboard::F8: {
             configGame->newGame = true;
 
             break;
@@ -231,15 +231,15 @@ void StateGame::keyPressedHandler(sf::Event event) {
             testDefeat = !testDefeat;
             break;
         }
-        case sf::Keyboard::Num1: {
+        case sf::Keyboard::F1: {
             entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
-        case sf::Keyboard::Num2: {
+        case sf::Keyboard::F2: {
             entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
-        case sf::Keyboard::Num3: {
+        case sf::Keyboard::F3: {
             entities->emplace_back(
                     new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;

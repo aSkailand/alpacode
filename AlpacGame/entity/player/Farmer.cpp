@@ -169,40 +169,6 @@ void Farmer::switchAction() {
         }
 
     }
-/*
-    switch (configGame->currentInput) {
-        case sf::Keyboard::W: {
-            currentAction = Action::JUMP;
-            break;
-        }
-        case sf::Keyboard::D: {
-            currentAction = Action::WALKING;
-            currentDirection = Direction::RIGHT;
-            break;
-        }
-        case sf::Keyboard::A: {
-            currentAction = Action::WALKING;
-            currentDirection = Direction::LEFT;
-            break;
-        }
-        case sf::Keyboard::E: {
-            if (isCooldownTriggered(&graspClock, graspCooldown)) {
-                if (currentGrasp == Grasp::EMPTY) {
-                    if (!currentlyTouchingEntities.empty()) {
-                        currentGrasp = Grasp::HOLDING;
-                    }
-                } else if (currentGrasp == Grasp::HOLDING) {
-                    currentGrasp = Grasp::THROWING;
-                }
-            }
-            break;
-        }
-        default: {
-            currentAction = Action::IDLE;
-            break;
-        }
-    }
-    */
 
     // Flip accordingly to mouse placement
     sfShape->setScale(configGame->mouseInLeftSide ? -1.f : 1.f, 1.f);

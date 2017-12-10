@@ -39,6 +39,7 @@ public:
         VIDEO,
         SOUND,
         CONTROLS,
+        LEFT,
         BACK_HIGHSCORE,
         BACK_TO_MAIN,
         APPLY_SETTINGS,

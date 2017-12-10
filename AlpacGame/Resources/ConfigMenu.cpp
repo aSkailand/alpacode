@@ -323,19 +323,12 @@ void ConfigMenu::controlSettingsLayout() {
     buttonControlVerticalLayout->setPosition(windowWidth/4,windowHeight/6 );
 
     // Movement Button settings
-    moveLeftKey = tgui::Button::copy(masterButton);
-    moveLeftKey->setText("A");
-    moveLeftKey->connect("pressed", [&]{
-        moveLeftKey->setText("...");
+    createButton(buttonID::LEFT,"A","pressed",[&]{
+        mapButtons[buttonID::LEFT]->setText("...");
         machine->configGame.ControlToAssign = ConfigGame::ControlName::LEFT;
-        //machine->configWindow.getMenuGUI()->removeAllWidgets();
-        //machine->configWindow.getMenuGUI()->add(getPictureMenu());
-        //machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
-        //machine->configWindow.getMenuGUI()->add(mapLayouts[ConfigMenu::layouts::CONTROLS]);
-
     });
 
-    tempHorisontalLayout->add(moveLeftKey);
+    tempHorisontalLayout->add(mapButtons[buttonID::LEFT]);
     tempHorisontalLayout->addSpace(0.2f);
 
     buttonControlVerticalLayout->addSpace();

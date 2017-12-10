@@ -49,6 +49,14 @@ void StateOption::KeyBinding(sf::Keyboard::Key newKey, std::string keyString) {
 
     for (auto &MapControlKey : configGame->MapControlKeys) {
         if (newKey == MapControlKey.second) {
+
+            sf::Keyboard::Key KeyExchange =  configGame->MapControlKeys[configGame->ControlToAssign];
+            ConfigGame::ControlName currentSameKey = MapControlKey.first;
+            std::string changeString = machine->configMenu->moveLeftKey->getText();
+            machine->configMenu->moveLeftKey->setText(changeString);
+            configGame->MapControlKeys[currentSameKey] = KeyExchange;
+
+
             break;
         }
     }
