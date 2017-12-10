@@ -14,7 +14,8 @@ public:
     enum class Resolution {
         RES800x600 = 0,
         RES1280x720 = 1,
-        RES1920x1080 = 2
+        RES1920x1080 = 2,
+        RES2160x1440 = 3
     };
 
     /**

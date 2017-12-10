@@ -17,7 +17,6 @@ int main()
     while (stateMachine.isRunning){
         std::cout << "Machine is Proceeding:" << std::endl;
         stateMachine.proceed();
-
     }
 
     return 0;

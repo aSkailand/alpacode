@@ -18,6 +18,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
         entities = configGame->entities;
         planet = configGame->planet;
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
+        dayCycle = configGame->dayCycle;
+        dayCycle->initiateClock();
 
         configGame->newGame = false;
 
@@ -88,8 +90,19 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         }
 
+
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
+
+        dayCycle->proceed();
+
+        /// Render Phase
+        window->clear();
+
+        /// Draw Background;
+        for( Scenery *s : *configGame->sceneries){
+            s->render(window);
+        }
 
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
@@ -130,7 +143,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Render Phase
         window->clear(sf::Color::Blue);
 
-        /// Draw crosshair
+        /// Draw aim
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
 

@@ -12,6 +12,8 @@
 #include "StateMachine.h"
 #include "../Resources/ConfigWindow.h"
 #include "../Resources/ConfigGame.h"
+#include "../scenery/DayCycle/DayCycle.h"
+#include "../scenery/Scenery.h"
 #include "../entity/CollisionListener.h"
 
 #include "../entity/planet/planet.h"
@@ -29,16 +31,15 @@ public:
     void goNext(StateMachine &stateMachine) override;
 
     std::vector<Entity*> *entities;
+    //Scenery* DayCycle;
 
     Entity* planet;
     Farmer* farmer;
 
-
-
+    // Accessing DayCycle variables
+    DayCycle *dayCycle;
 
 private:
-
-    sf::CircleShape *background;
 
     /// Pointers
     StateMachine *machine;
@@ -55,7 +56,7 @@ private:
     /// View
     sf::View view;
     float viewNonZoomed = 1.5f;  // How much to zoom in
-    float viewZoomed = 4.0f;
+    float viewZoomed = 3.0f;
     bool zoomed = false;
 
     // Game State Functions

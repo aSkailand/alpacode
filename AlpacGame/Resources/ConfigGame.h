@@ -9,6 +9,9 @@
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
 #include "../Resources/SpriteInfo.h"
+#include "../scenery/Scenery.h"
+#include "../scenery/DayCycle/DayCycle.h"
+
 
 /**
  * Common resources accessible by all game entities.
@@ -18,13 +21,18 @@ public:
 
     /// Day / Night Cycle
     enum class Cycle{DAY, NIGHT};
-    Cycle currentCycle;
+    Cycle getCurrentCycle() const;
+    void setCurrentCycle(Cycle currentCycle);
+    DayCycle *dayCycle = nullptr;
+
 
     /// Customizable Properties
-    /**
-     * The radius of the planet.
-     */
-    unsigned int planetRadius = 600;
+    float sunRadius = 300.f;
+    float planetRadius = 700.f;
+
+    // todo: Necessary?
+    Scenery* sun = nullptr;
+    Scenery* sky = nullptr;
 
     bool newGame = true;
     bool isPaused = false;
@@ -32,7 +40,6 @@ public:
     b2World* world = nullptr;
     Entity* planet = nullptr;
     Entity* farmer = nullptr;
-    b2Body* planetBody = nullptr;
 
     void reset();
 
@@ -41,7 +48,7 @@ public:
     std::vector<Entity*> *entities = nullptr;
 
     sf::CircleShape mouseArrow;
-
+    std::vector<Scenery*> *sceneries = nullptr;
 
     /**
      * Show in-game labels or not.
@@ -107,36 +114,28 @@ public:
     sf::Font fontID;
 
     /// Textures
-    sf::Texture planetTexture;
 
-    sf::Texture morning_1;
-    sf::Texture morning_2;
-    sf::Texture morning_3;
-    sf::Texture afternoon_4;
-    sf::Texture afternoon_5;
-    sf::Texture afternoon_6;
-    sf::Texture evening_7;
-    sf::Texture evening_8;
-    sf::Texture evening_9;
-    sf::Texture night_10;
-    sf::Texture night_11;
-    sf::Texture night_12;
-
+    // Single Textures
     sf::Texture trapOpenTexture;
     sf::Texture trapClosedTexture;
 
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
-    std::vector<sf::Texture*> cooldownTextures;
+    // Texture Vectors
+    std::vector<sf::Texture> sunTextures;
+    std::vector<sf::Texture> planetTextures;
+    std::vector<sf::Texture> skyTextures;
+    std::vector<sf::Texture*> cooldownTextures; // todo switch to non pointer
 
-    /// Map of every entities sprites.
+    // Texture Maps
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
-
 private:
+
+    Cycle currentCycle = Cycle::DAY;
 
     /**
     * Load all necessary font used during the game.

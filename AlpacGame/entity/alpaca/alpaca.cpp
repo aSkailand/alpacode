@@ -124,6 +124,7 @@ void Alpaca::switchAction() {
                             }
                             case Direction::RIGHT: {
                                 sf_ShapeEntity->setScale(1.f, 1.f);
+
                                 break;
                             }
                         }

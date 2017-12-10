@@ -6,6 +6,7 @@ void ConfigWindow::run() {
     mapResolutionString[Resolution::RES800x600] = "800x600";
     mapResolutionString[Resolution::RES1280x720] = "1280x720";
     mapResolutionString[Resolution::RES1920x1080] = "1920x1080";
+    mapResolutionString[Resolution::RES2160x1440] = "2160x1440";
 
     // Map resolutions to sf::VideoMode
     fillMapResolutionVideoMode();
