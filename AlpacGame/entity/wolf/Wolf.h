@@ -50,11 +50,6 @@ private:
     float attackForce = 8.f;
     float attackAngle = 25.f;
 
-
-    /// Pointers
-    ConfigGame *configGame = nullptr;
-
-
     /// Behavior
     enum class Behavior{NORMAL, HUNTING, AFRAID};
     Behavior currentBehavior;

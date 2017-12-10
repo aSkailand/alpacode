@@ -18,7 +18,7 @@ public:
 
     /// Day / Night Cycle
     enum class Cycle{DAY, NIGHT};
-    Cycle currentCycle;
+    Cycle currentCycle = Cycle::DAY;
 
 
     /// Customizable Properties
@@ -102,14 +102,16 @@ public:
     float calcY(float degree, float radius);
 
     //Create label
-    void createLabel(sf::Text &label, sf::Font *font, std::string text) {
-        label.setString("HP: "+text);
+    sf::Text createLabel(sf::Font *font, unsigned int fontSize, const std::string &text) {
+        sf::Text label;
         label.setFont(*font);
-        label.setCharacterSize(20);
+        label.setCharacterSize(fontSize);
         label.setFillColor(sf::Color::White);
         label.setOutlineColor(sf::Color::Black);
         label.setOutlineThickness(3);
+        label.setString(text);
         label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
+        return label;
     };
 
     /// Fonts

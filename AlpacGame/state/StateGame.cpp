@@ -68,7 +68,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         // Iterating through all existing bodies
         for (b2Body *bodyIter = world->GetBodyList(); bodyIter != nullptr; bodyIter = bodyIter->GetNext()) {
 
-            if(!bodyIter->IsAwake())
+            if (!bodyIter->IsAwake())
                 continue;
 
             // Calculate Radial Gravitation on all bodies
@@ -118,9 +118,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
             if (warm_e != nullptr) {
+
+                // Update Warm Entity Action
                 warm_e->switchAction();
                 warm_e->performAction();
 
+                // Check if mouse pointer is hovering over the entity
+                warm_e->currentlyMousedOver = warm_e->get_sfShape()->getGlobalBounds().contains(
+                        window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
             }
 
             // Adjust SFML shape to Box2D body's position and rotation, then draw it.

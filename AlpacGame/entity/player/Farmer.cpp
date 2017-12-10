@@ -65,14 +65,11 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     HP = 10;
 
     // Create HitPoint barometer
-    hitPointBarometer = new HitPointBarometer(
-            this->configGame,
-            this->configGame->healthTexture,
-            std::to_string(HP),
-            25.f, 25.f);
+    hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);
 
     // Create ID
-    createLabel(label_ID, &this->configGame->fontID, "P1");
+    label_ID = configGame->createLabel(&configGame->fontID, 20, "Farmer");
+
 
 }
 
@@ -124,10 +121,10 @@ void Farmer::render(sf::RenderWindow *window) {
 
         // Draw label_ID
         float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+        label_ID.setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                               body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(sfShape->getRotation());
-        window->draw(*label_ID);
+        label_ID.setRotation(sfShape->getRotation());
+        window->draw(label_ID);
 
         // Draw hitSensor debug
         sf_HitSensor->setOutlineThickness(2);
@@ -139,11 +136,12 @@ void Farmer::render(sf::RenderWindow *window) {
         sfShape->setOutlineThickness(0);
     }
     // Draw HitPoint barometer
-    hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
-                                    getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
-                                    sfShape->getRotation());
-    hitPointBarometer->render(window, std::to_string(HP));
-
+//    if(currentlyMousedOver) {
+        hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+                                        getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE,
+                                        sfShape->getRotation());
+        hitPointBarometer->render(window);
+//    }
 }
 
 void Farmer::switchAction() {

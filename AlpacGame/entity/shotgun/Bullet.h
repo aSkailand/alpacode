@@ -14,8 +14,6 @@ public:
 
     ~Bullet() override;
 
-    ConfigGame *configGame;
-
     b2Filter filter;
 
     bool hit = false;

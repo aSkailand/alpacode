@@ -79,9 +79,6 @@ private:
      */
     void switchAction() override;
 
-    /// Pointers
-    ConfigGame *configGame;
-
     /// Animation
     bool spriteSwitch = false;
 

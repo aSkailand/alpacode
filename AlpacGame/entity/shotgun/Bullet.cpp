@@ -5,7 +5,7 @@
 #include "Bullet.h"
 #include "../EntityWarm.h"
 
-Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 position) {
+Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 position){
 
     this->configGame = configGame;
 

@@ -74,16 +74,10 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     HP = 10;
 
     // Create HitPoint barometer
-    hitPointBarometer = new HitPointBarometer(
-            this->configGame,
-            this->configGame->healthTexture,
-            std::to_string(HP),
-            25.f,25.f);
-
+    hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);
 
     // Create ID text
-    createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
-
+    label_ID = configGame->createLabel(&this->configGame->fontID, 20, std::to_string(id));
 
 
     /// Initialize behavior
@@ -216,10 +210,9 @@ void Alpaca::render(sf::RenderWindow *window) {
 
         // Draw label_ID
         float offset = fixture_body->GetShape()->m_radius;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        //label_ID->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
-        label_ID->setRotation(body->GetAngle() * DEGtoRAD);
-        window->draw(*label_ID);
+        label_ID.setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label_ID.setRotation(body->GetAngle() * DEGtoRAD);
+        window->draw(label_ID);
 
 
 
@@ -239,10 +232,12 @@ void Alpaca::render(sf::RenderWindow *window) {
         sf_HitSensor->setOutlineThickness(0);
     }
     // Draw HitPoint barometer
-    hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
-                                    getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
-                                    sfShape->getRotation());
-    hitPointBarometer->render(window, std::to_string(HP));
+    if(currentlyMousedOver){
+        hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
+                                        getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
+                                        sfShape->getRotation());
+        hitPointBarometer->render(window);
+    }
 
 }
 

@@ -20,7 +20,7 @@ protected:
      * that is used to determine if the AI can switch to next action.
      * @param seeder additional seed to spice up the generator's seed.
      */
-    explicit Mob(int seeder) {
+    explicit Mob(int seeder){
         // Creating Random Number Generator
         long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + seeder;
         generator = std::default_random_engine(seed);

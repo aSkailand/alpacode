@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "HitPoint/HitPointBarometer.h"
 
+class ConfigGame;
 
 /**
  * This class is a derived class of the class Entity.
@@ -17,26 +18,21 @@ class EntityWarm : public Entity
 
 public:
 
-    int HP = 0;
+    /// Visual Entity Info
+    sf::Shape* get_sfShape() const {
+        return sfShape;
+    }
+
+    bool currentlyMousedOver = false;
 
     /**
      * The label above entities' head in-game.
      */
-    sf::Text *label_ID = new sf::Text();
+    sf::Text label_ID{};
 
-    /// Barometer pointers
-    HitPointBarometer *hitPointBarometer = nullptr;
+    int HP = 0;
 
-
-    void createLabel(sf::Text *label, sf::Font *font, std::string text) {
-        label->setString(text);
-        label->setFont(*font);
-        label->setCharacterSize(40);
-        label->setFillColor(sf::Color::White);
-        label->setOutlineColor(sf::Color::Black);
-        label->setOutlineThickness(3);
-        label->setOrigin(label->getLocalBounds().width / 2.f, label->getLocalBounds().height / 2.f);
-    };
+    HitPointBarometer *hitPointBarometer = nullptr;;
 
     /// Action Functions
 
@@ -68,7 +64,7 @@ public:
 
 protected:
 
-    sftools::Chronometer behaviorClock;
+    sftools::Chronometer behaviorClock{};
 
 
 

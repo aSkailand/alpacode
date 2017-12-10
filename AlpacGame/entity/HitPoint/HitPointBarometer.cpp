@@ -2,21 +2,17 @@
 #include "../../Resources/ConfigGame.h"
 
 
-HitPointBarometer::HitPointBarometer(ConfigGame *configGame,sf::Texture texture, std::string startHP, float width, float height)
-{
+HitPointBarometer::HitPointBarometer(ConfigGame *configGame, int &HP, float width, float height) {
     this->configGame = configGame;
 
-    this->Texture = texture;
-    this->HP = startHP;
-
-
+    this->Texture = configGame->healthTexture;
+    this->HP = &HP;
 
     sfShape.setSize(sf::Vector2f(width,height));
     sfShape.setOrigin(sfShape.getSize().x/2, sfShape.getSize().y/2);
     sfShape.setTexture(&Texture);
 
-
-    this->configGame->createLabel(this->label_HP, &this->configGame->fontID, HP);
+    label_HP = configGame->createLabel(&configGame->fontID, 20, "HP: " + std::to_string(HP));
 
 }
 
@@ -30,9 +26,8 @@ void HitPointBarometer::setPlacement(float x, float y, float angle) {
     sfShape.setRotation(angle);
 }
 
-void HitPointBarometer::render(sf::RenderWindow *window, std::string HP) {
-
-    label_HP.setString("HP: " + HP);
+void HitPointBarometer::render(sf::RenderWindow *window) {
+    label_HP.setString("HP: " + std::to_string(*HP));
     window->draw(label_HP);
     window->draw(sfShape);
 }

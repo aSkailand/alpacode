@@ -1,7 +1,7 @@
 
 #include "planet.h"
 
-Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y) {
+Planet::Planet(b2World *world, ConfigGame *configGame, float radius, float x, float y){
 
     b2BodyDef bodyDef;
     bodyDef.position = b2Vec2(x / SCALE, y / SCALE);

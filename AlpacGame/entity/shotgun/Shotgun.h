@@ -14,13 +14,7 @@
 class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
 
-//    bool farmerTouch = false;
-
-//    bool isHeld = false;
-
     float length;
-
-    ConfigGame *configGame;
 
     b2World *world;
 

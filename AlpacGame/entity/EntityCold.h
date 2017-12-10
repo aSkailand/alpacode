@@ -11,7 +11,6 @@
  *  2. Can't move by own will.
  */
 class EntityCold : public Entity{
-
 };
 
 #endif //ALPACGAME_ENTITYCOLD_H

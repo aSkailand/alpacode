@@ -1,12 +1,11 @@
 #ifndef ALPACGAME_HEARTBAROMETER_H
 #define ALPACGAME_HEARTBAROMETER_H
 
-
+#include <iostream>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
-
 
 class ConfigGame;
 
@@ -14,11 +13,11 @@ class HitPointBarometer
 {
 public:
 
-    HitPointBarometer(ConfigGame *configGame,sf::Texture texture, std::string startHP, float width, float height);
+    HitPointBarometer(ConfigGame *configGame, int &HP, float width, float height);
 
     void setPlacement(float x, float y, float angle);
 
-    void render(sf::RenderWindow *window, std::string HP);
+    void render(sf::RenderWindow *window);
 
 private:
 
@@ -27,7 +26,7 @@ private:
 
     sf::Text label_HP;
 
-    std::string HP;
+    int *HP = nullptr;
 
     sf::RectangleShape sfShape;
     sf::Texture Texture;

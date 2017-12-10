@@ -9,6 +9,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Chronometer.hpp>
 
+class ConfigGame;
+
 /**
  * The abstract, base class for all entities.
  * Definition of an entity is:
@@ -42,9 +44,9 @@ public:
     };
 
     /// Fixture pointers
-    b2Fixture *fixture_body;
-    b2Fixture *fixture_hit;
-    b2Fixture *fixture_detection;
+    b2Fixture *fixture_body = nullptr;
+    b2Fixture *fixture_hit = nullptr;
+    b2Fixture *fixture_detection = nullptr;
 
     sf::CircleShape *sf_HitSensor = nullptr;
 
@@ -77,13 +79,6 @@ public:
         return body;
     };
 
-    /**
-     * Setter for body pointer.
-     */
-    void setBody(b2Body *body) {
-        Entity::body = body;
-    }
-
     /// For Detection
     void* convertToVoidPtr(int enumValue){
         return reinterpret_cast<void *>(enumValue);
@@ -97,11 +92,6 @@ public:
     virtual void startContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) = 0;
     virtual void endContact(CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) = 0;
 
-    //virtual void startDetect(Entity *contactEntity) = 0;
-    //virtual void endDetect(Entity *contactEntity) = 0;
-
-
-
     /// Death
     virtual bool deadCheck() = 0;
 
@@ -110,6 +100,8 @@ public:
 protected:
 
     /// Important Entity Properties
+
+    ConfigGame *configGame = nullptr;
 
     ID id = ID::VOID;
 
@@ -151,6 +143,7 @@ protected:
     }
 
 private:
+
 
     /// Unit Vector Storage
 

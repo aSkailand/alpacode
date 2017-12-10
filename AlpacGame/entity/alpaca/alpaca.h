@@ -15,8 +15,6 @@
 class Alpaca : public Mob, public Holdable {
 public:
 
-//    bool isHeld = true;
-
     ~Alpaca() override;
 
     /**
@@ -101,9 +99,6 @@ public:
     bool deadCheck() override;
 
 private:
-
-    /// Pointers
-    ConfigGame *configGame;
 
     /// Animation tool
     std::map<EntityWarm::Action , SpriteInfo> alpacaMapPtr;
