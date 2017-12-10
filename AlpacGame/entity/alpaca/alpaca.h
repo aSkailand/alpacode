@@ -15,7 +15,6 @@
 class Alpaca : public Mob, public Holdable {
 public:
 
-
     void pause() override;
 
     void resume() override;
@@ -119,12 +118,6 @@ public:
 
 private:
 
-    /// Pointers
-    ConfigGame *configGame;
-
-    /// Animation tool
-    bool spriteSwitch = false;
-
     std::map<EntityWarm::Action, SpriteInfo> alpacaMapPtr;
 
 public:
@@ -147,7 +140,6 @@ public:
     void endContact_body(CollisionID otherCollision, Entity *contactEntity);
 
     void endContact_detection(CollisionID otherCollision, Entity *contactEntity);
-
 
 };
 

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="AlpacGame"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="AlpacGame">
+				<Option output="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/AlpacGame.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/Trong/gitter/alpacode/AlpacGame/plog/include"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include/c++"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include/c++/backward"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include-fixed"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 AlpacGame"/>
+					<CompileFile command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="AlpacGame/fast">
+				<Option output="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/AlpacGame.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/Trong/gitter/alpacode/AlpacGame/plog/include"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include/c++"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include/c++/backward"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/include-fixed"/>
+					<Add directory="C:/dev/compiler/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/6.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 AlpacGame/fast"/>
+					<CompileFile command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/dev/compiler/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigGame.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigGame.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigMenu.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigMenu.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigSound.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigSound.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigWindow.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/ConfigWindow.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/Resources/SpriteInfo.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/CollisionListener.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/CollisionListener.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/Entity.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/EntityCold.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/EntityWarm.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/Holdable.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/Mob.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/Usable.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/alpaca/alpaca.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/alpaca/alpaca.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/planet/planet.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/planet/planet.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/player/Farmer.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/player/Farmer.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/shotgun/Bullet.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/shotgun/Bullet.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/shotgun/Shotgun.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/shotgun/Shotgun.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/wolf/Wolf.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/entity/wolf/Wolf.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/main.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/scenery/DayCycle/DayCycle.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/scenery/DayCycle/DayCycle.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/scenery/Scenery.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/State.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateExit.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateExit.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateGame.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateGame.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateInitial.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateInitial.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateMachine.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateMachine.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateMenu.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateMenu.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateOption.cpp">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/state/StateOption.h">
+			<Option target="AlpacGame"/>
+		</Unit>
+		<Unit filename="C:/Users/Trong/gitter/alpacode/AlpacGame/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

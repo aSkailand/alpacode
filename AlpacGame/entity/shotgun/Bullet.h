@@ -18,10 +18,7 @@ public:
 
     void resume() override;
 
-
     ~Bullet() override;
-
-    ConfigGame *configGame;
 
     bool hit = false;
 

@@ -2,7 +2,7 @@
 #include "Shotgun.h"
 #include "Bullet.h"
 
-Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, float y) {
+Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, float y){
 
     // Assign pointers
     this->configGame = configGame;

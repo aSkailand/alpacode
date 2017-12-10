@@ -5,7 +5,7 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
 
     // Assign Pointers
     this->configGame = configGame;
-    alpacaMapPtr = configGame->alpacaSprites;
+    alpacaMapPtr = this->configGame->alpacaSprites;
 
     // Convert angle and store unit vectors
     convertAngleToVectors((int) Action::WALKING, walkAngle);
@@ -78,10 +78,11 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     // Set HP
     HP = 1;
 
+    // Create HitPoint barometer
+    hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);
 
     // Create ID text
-    createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
-    createLabel(label_HP, &this->configGame->fontID, std::to_string(HP));
+    label_ID = configGame->createLabel(&this->configGame->fontID, 20, std::to_string(id));
 
 
     /// Initialize behavior
@@ -176,7 +177,6 @@ void Alpaca::switchAction() {
 
 void Alpaca::render(sf::RenderWindow *window) {
 
-
     switchCurrentTexture();
 
     calcShapeEntityPlacement();
@@ -188,8 +188,15 @@ void Alpaca::render(sf::RenderWindow *window) {
 
     window->draw(*sf_ShapeEntity);
 
-    renderDebugMode();
+    // Draw HitPoint barometer
+    if(currentHealth == Health::ALIVE && currentlyMousedOver){
+        hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
+                                        getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
+                                        sf_ShapeEntity->getRotation());
+        hitPointBarometer->render(window);
+    }
 
+    renderDebugMode();
 
 }
 
@@ -433,20 +440,6 @@ void Alpaca::renderDebugMode() {
         sf_DebugHit->setRotation(body->GetAngle() * DEGtoRAD);
         configGame->window->draw(*sf_DebugHit);
 
-        // Draw label_ID
-        float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
-                              body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(body->GetAngle() * DEGtoRAD);
-        configGame->window->draw(*label_ID);
-
-        // Draw label_HP
-        label_HP->setString(std::to_string(HP));
-
-        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE, getBody()->GetWorldCenter().y * SCALE);
-        label_HP->setRotation(sf_ShapeEntity->getRotation());
-        configGame->window->draw(*label_HP);
-
         switch (currentStatus) {
             case Status::GROUNDED: {
                 sf_DebugHit->setOutlineColor(sf::Color::White);
@@ -457,6 +450,13 @@ void Alpaca::renderDebugMode() {
                 break;
             }
         }
+
+        // Draw label_ID
+        float offset = fixture_body->GetShape()->m_radius;
+        label_ID.setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE, body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+        label_ID.setRotation(body->GetAngle() * DEGtoRAD);
+        configGame->window->draw(label_ID);
+
 
     } else {
         sf_ShapeEntity->setOutlineThickness(0);

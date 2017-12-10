@@ -182,6 +182,9 @@ void ConfigGame::loadAllTextures() {
         cooldownTextures.push_back(tempTexture);
     }
 
+    // HitPoint
+    healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
+
     // Farmer
     std::string farmerSpriteSheet = "entity/player/farmer-sprite.png";
 

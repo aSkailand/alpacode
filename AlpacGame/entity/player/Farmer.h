@@ -26,7 +26,7 @@ public:
      */
     Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
-    virtual ~Farmer();
+    ~Farmer() override;
 
     void switchCurrentTexture() override;
 
@@ -89,9 +89,6 @@ private:
      */
     void switchAction() override;
 
-    /// Pointers
-    ConfigGame *configGame = nullptr;
-
     /// Animation
     bool spriteSwitch = false;
 
@@ -103,7 +100,6 @@ public:
     bool checkIfTouching(Entity *entity);
 
     void startContact( CollisionID selfCollision, CollisionID otherCollision, Entity *contactEntity) override;
-
     void startContact_body(CollisionID otherCollision, Entity *contactEntity);
     void startContact_hit(CollisionID otherCollision, Entity *contactEntity);
 

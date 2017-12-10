@@ -31,7 +31,6 @@ public:
     void goNext(StateMachine &stateMachine) override;
 
     std::vector<Entity*> *entities;
-    //Scenery* DayCycle;
 
     Entity* planet;
     Farmer* farmer;

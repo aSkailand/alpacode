@@ -3,7 +3,9 @@
 #define ALPACGAME_ENTITYWARM_H
 
 #include "Entity.h"
+#include "HitPoint/HitPointBarometer.h"
 
+class ConfigGame;
 
 /**
  * This class is a derived class of the class Entity.
@@ -59,6 +61,14 @@ public:
 
     // Health points
     int HP = 0;
+
+    /// Visual Entity Info
+    sf::Shape* get_sf_ShapeEntity() const {
+        return sf_ShapeEntity;
+    }
+
+    bool currentlyMousedOver = false;
+
 
     /**
      * How much damage to substract from entity's HP.
@@ -134,18 +144,9 @@ public:
     /**
      * The label above entities' head in-game.
      */
-    sf::Text *label_ID = new sf::Text();
-    sf::Text *label_HP = new sf::Text();
+    sf::Text label_ID{};
 
-    void createLabel(sf::Text *label, sf::Font *font, std::string text) {
-        label->setString(text);
-        label->setFont(*font);
-        label->setCharacterSize(40);
-        label->setFillColor(sf::Color::White);
-        label->setOutlineColor(sf::Color::Black);
-        label->setOutlineThickness(3);
-        label->setOrigin(label->getLocalBounds().width / 2.f, label->getLocalBounds().height / 2.f);
-    };
+    HitPointBarometer *hitPointBarometer = nullptr;;
 
     /// Action Functions
 
@@ -238,14 +239,12 @@ protected:
         return triggered;
     }
 
-
 protected:
 
     /**
      * Clock used to determine if entity is allowed to move or not.
      */
     sftools::Chronometer movementTriggerClock{};
-
 
 };
 

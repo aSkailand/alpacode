@@ -19,7 +19,7 @@ public:
 
     void resume() override;
 
-    virtual ~Wolf();
+    ~Wolf() override;
 
     /**
      * CONSTRUCTOR: Creates a wolf and adds it to the world.
@@ -57,13 +57,10 @@ private:
     float attackAngle = 25.f;
 
 public:
+
     void renderDebugMode() override;
 
 private:
-
-
-    /// Pointers
-    ConfigGame *configGame = nullptr;
 
     /// Behavior
     enum class Behavior{NORMAL, HUNTING, AFRAID};

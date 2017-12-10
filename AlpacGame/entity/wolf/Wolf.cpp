@@ -1,7 +1,7 @@
 #include "Wolf.h"
 
 Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y)
-        : id(nextId++), Mob(id) {
+        : id(nextId++), Mob(id){
 
     /// Assign Pointers
     this->configGame = configGame;
@@ -89,11 +89,11 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     sf_DebugDetection->setOrigin(sf_DebugDetection->getRadius(), sf_DebugDetection->getRadius());
     sf_DebugDetection->setFillColor(sf::Color::Transparent);
 
-    // Debug text: ID
-    createLabel(label_ID, &this->configGame->fontID, std::to_string(id));
+    // Create HitPoint barometer
+    hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);
 
-    // Debug text: HP
-    createLabel(label_HP, &this->configGame->fontID, std::to_string(HP));
+    // Create ID text
+    label_ID = configGame->createLabel(&this->configGame->fontID, 20, std::to_string(id));
 
     // todo: Determine where to put this chunk of code
     /// Initialize behavior
@@ -218,6 +218,14 @@ void Wolf::render(sf::RenderWindow *window) {
 
     // Draw entity shape
     window->draw(*sf_ShapeEntity);
+
+    // Draw Hit Point Barometer
+    if(currentHealth == Health::ALIVE && currentlyMousedOver) {
+        hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+                                        getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE,
+                                        sf_ShapeEntity->getRotation());
+        hitPointBarometer->render(window);
+    }
 
     // Render debug if activated
     renderDebugMode();
@@ -499,17 +507,10 @@ void Wolf::renderDebugMode() {
 
         // Draw debug: Label ID
         float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(getBody()->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+        label_ID.setPosition(getBody()->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                               getBody()->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(sf_ShapeEntity->getRotation());
-        configGame->window->draw(*label_ID);
-
-        // Draw debug: Label HP
-        label_HP->setString(std::to_string(HP));
-        label_HP->setPosition(getBody()->GetWorldCenter().x * SCALE,
-                              getBody()->GetWorldCenter().y * SCALE);
-        label_HP->setRotation(sf_ShapeEntity->getRotation());
-        configGame->window->draw(*label_HP);
+        label_ID.setRotation(sf_ShapeEntity->getRotation());
+        configGame->window->draw(label_ID);
 
         // todo: Fix this
         // Draw debug: Base

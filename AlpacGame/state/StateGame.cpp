@@ -126,9 +126,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
             if (warm_e != nullptr) {
+
+                // Update Warm Entity Action
                 warm_e->switchAction();
                 warm_e->performAction();
 
+                // Check if mouse pointer is hovering over the entity
+                warm_e->currentlyMousedOver = warm_e->get_sf_ShapeEntity()->getGlobalBounds().contains(
+                        window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
             }
         }
 

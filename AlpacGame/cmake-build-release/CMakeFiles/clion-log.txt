@@ -1,0 +1,18 @@
+C:\Users\Trong\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\173.3727.114\bin\cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CXX_FLAGS=-IC:/dev/libs/SFML/include -IC:/dev/libs/TGUI/include -IC:/dev/libs/Box2D/include" "-DCMAKE_EXE_LINKER_FLAGS=-LC:/dev/libs/SFML/lib -LC:/dev/libs/TGUI/lib -LC:/dev/libs/Box2D/lib" -G "CodeBlocks - MinGW Makefiles" C:\Users\Trong\gitter\alpacode\AlpacGame
+-- The C compiler identification is GNU 6.1.0
+-- The CXX compiler identification is GNU 6.1.0
+-- Check for working C compiler: C:/dev/compiler/mingw64/bin/gcc.exe
+-- Check for working C compiler: C:/dev/compiler/mingw64/bin/gcc.exe -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: C:/dev/compiler/mingw64/bin/g++.exe
+-- Check for working CXX compiler: C:/dev/compiler/mingw64/bin/g++.exe -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/Trong/gitter/alpacode/AlpacGame/cmake-build-release
