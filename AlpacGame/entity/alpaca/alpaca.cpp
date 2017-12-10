@@ -7,6 +7,9 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     this->configGame = configGame;
     alpacaMapPtr = this->configGame->alpacaSprites;
 
+    // Add Alpaca count
+    configGame->numOfAliveAlpacas += 1;
+
     // Convert angle and store unit vectors
     convertAngleToVectors((int) Action::WALKING, walkAngle);
 
@@ -104,7 +107,7 @@ int Alpaca::nextId = 0;
 void Alpaca::switchAction() {
 
     // Check current health and update according to current health
-    handleHealth();
+    handleHealth(&configGame->numOfAliveAlpacas);
 
     // Cancel if not alive
     if (currentHealth != Health::ALIVE)

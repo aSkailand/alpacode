@@ -121,6 +121,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        // todo: Make the defeat check here
+        unsigned int numAliveAlpacas = 0;
+
         /// Activate all warm entities
         for (Entity *e : *entities) {
             // Check if current entity is an warm entity
@@ -134,8 +137,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
                 // Check if mouse pointer is hovering over the entity
                 warm_e->currentlyMousedOver = warm_e->get_sf_ShapeEntity()->getGlobalBounds().contains(
                         window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
+
+                if(warm_e->getEntity_ID() == Entity::ID::ALPACA && warm_e->currentHealth == EntityWarm::Health::ALIVE){
+                    numAliveAlpacas++;
+                }
             }
         }
+
+        // todo: Do a defeat check here
 
         /// Update all cold entities
         for (Entity *e : *entities) {
@@ -224,6 +233,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
     switch (event.key.code) {
         case sf::Keyboard::I: {
             configGame->showDebugMode = !configGame->showDebugMode;
+            std::cout << "Number of alive alpacas: " << configGame->numOfAliveAlpacas << std::endl;
             break;
         }
         case sf::Keyboard::R: {
@@ -238,13 +248,11 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace(entities->begin(),
-                              new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num3: {
-            entities->emplace_back(
-                    new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num4: {

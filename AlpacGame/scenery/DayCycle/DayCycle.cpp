@@ -51,7 +51,11 @@ void DayCycle::proceed() {
 
         // Proceed one frame
         cycleFrame++;
-        if (cycleFrame == 12) cycleFrame = 0;
+        if (cycleFrame == 12) {
+            cycleFrame = 0;
+            configGame->numOfDay++;
+            std::cout << "DAY: " << configGame->numOfDay << std::endl;
+        }
 
         // Determine current cycle frame
         if (cycleFrame == 0) {
@@ -80,7 +84,7 @@ void DayCycle::updateSunMovement() {
     sun->setPlacement(x, y, sunAngle);
 
     sunAngle += sunTick;
-    if(sunAngle > 360.f) sunAngle = 0;
+    if (sunAngle > 360.f) sunAngle = 0;
 }
 
 

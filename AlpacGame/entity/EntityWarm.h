@@ -5,7 +5,6 @@
 #include "Entity.h"
 #include "HitPoint/HitPointBarometer.h"
 
-class ConfigGame;
 
 /**
  * This class is a derived class of the class Entity.
@@ -78,6 +77,8 @@ public:
         HP -= damage;
     }
 
+#include "../Resources/ConfigGame.h"
+
     /**
      * Handles the health state logic.
      * In short, it handles when to transition through the health states.
@@ -86,7 +87,7 @@ public:
      *      Dead:   Check if it is time to change to ghost state.
      *      Ghost:  Check if it is time to stop death clock.
      */
-    void handleHealth() {
+    void handleHealth(unsigned int* numOfAlpacas = nullptr) {
 
         switch (currentHealth) {
 
@@ -103,6 +104,10 @@ public:
                     fixture_body->SetFilterData(deadFilter);
                     fixture_hit->SetFilterData(deadFilter);
                     if (fixture_detection) fixture_detection->SetFilterData(deadFilter);
+
+                    if(entity_ID == ID::ALPACA){
+                        *numOfAlpacas -= 1;
+                    }
 
                     // Proceed state
                     currentHealth = Health::DEAD;

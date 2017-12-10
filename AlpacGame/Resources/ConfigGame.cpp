@@ -261,9 +261,11 @@ void ConfigGame::reset() {
     delete sceneries;
     sceneries = new std::vector<Scenery *>;
 
+    delete sky;
     sky = new Sky(this, 4500.f, planetCenter.x, planetCenter.y);
     sceneries->push_back(sky);
 
+    delete sun;
     sun = new Sun(this, sunRadius, calcX(0.f, sunRadius), calcY(0.f, sunRadius), 0.f);
     sceneries->push_back(sun);
 
@@ -275,6 +277,9 @@ void ConfigGame::reset() {
     Wolf::nextId = 0;
     Alpaca::nextId = 0;
 
+    // Reset Game Stats
+    numOfDay = 1;
+
 }
 
 ConfigGame::Cycle ConfigGame::getCurrentCycle() const {
@@ -283,4 +288,16 @@ ConfigGame::Cycle ConfigGame::getCurrentCycle() const {
 
 void ConfigGame::setCurrentCycle(ConfigGame::Cycle currentCycle) {
     ConfigGame::currentCycle = currentCycle;
+}
+
+sf::Text ConfigGame::createLabel(sf::Font *font, unsigned int fontSize, const std::string &text) {
+    sf::Text label;
+    label.setFont(*font);
+    label.setCharacterSize(fontSize);
+    label.setFillColor(sf::Color::White);
+    label.setOutlineColor(sf::Color::Black);
+    label.setOutlineThickness(3);
+    label.setString(text);
+    label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
+    return label;
 }

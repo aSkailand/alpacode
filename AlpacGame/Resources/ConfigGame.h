@@ -24,6 +24,9 @@ public:
     Cycle getCurrentCycle() const;
     void setCurrentCycle(Cycle currentCycle);
     DayCycle *dayCycle = nullptr;
+    unsigned int numOfDay = 1;
+
+    unsigned int numOfAliveAlpacas = 0;
 
     /// Customizable Properties
     float sunRadius = 300.f;
@@ -110,17 +113,7 @@ public:
     float calcY(float degree, float radius);
 
     //Create label
-    sf::Text createLabel(sf::Font *font, unsigned int fontSize, const std::string &text) {
-        sf::Text label;
-        label.setFont(*font);
-        label.setCharacterSize(fontSize);
-        label.setFillColor(sf::Color::White);
-        label.setOutlineColor(sf::Color::Black);
-        label.setOutlineThickness(3);
-        label.setString(text);
-        label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
-        return label;
-    };
+    sf::Text createLabel(sf::Font *font, unsigned int fontSize, const std::string &text);;
 
     /// Fonts
     sf::Font fontID;
