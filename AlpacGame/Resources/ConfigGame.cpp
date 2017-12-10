@@ -146,7 +146,9 @@ void ConfigGame::addDefaultKeysToMap() {
     MapControlKeys[ControlName::LEFT] = sf::Keyboard::A;
     MapControlKeys[ControlName::RIGHT] = sf::Keyboard::D;
     MapControlKeys[ControlName::JUMP] = sf::Keyboard::W;
-    MapControlKeys[ControlName::GRAPS] = sf::Keyboard::E;
+    MapControlKeys[ControlName::GRASP] = sf::Keyboard::E;
+    MapControlKeys[ControlName::ZOOM] = sf::Keyboard::Z;
+
 }
 
 void ConfigGame::reset() {

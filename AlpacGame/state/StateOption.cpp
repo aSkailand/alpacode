@@ -60,14 +60,15 @@ void StateOption::KeyBinding(sf::Keyboard::Key newKey, std::string keyString) {
             break;
         }
     }
-    machine->configMenu->moveLeftKey->setText(keyString);
-    configGame->MapControlKeys[configGame->ControlToAssign] = newKey;
-    configGame->ControlToAssign = ConfigGame::ControlName::NOTHING;
+    configGame->buttonToAssign->setText(keyString);
+    configGame->MapControlKeys[configGame->controlToAssign] = newKey;
+    configGame->controlToAssign = ConfigGame::ControlName::NOTHING;
+    configGame->buttonToAssign = nullptr;
 
 }
 
 void StateOption::checkIfAnyControlAssigningKeyIsPressed(sf::Event event) {
-    if (configGame->ControlToAssign != ConfigGame::ControlName::NOTHING && event.type == sf::Event::KeyPressed) {
+    if (configGame->controlToAssign != ConfigGame::ControlName::NOTHING && event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
 
             case sf::Keyboard::Escape:

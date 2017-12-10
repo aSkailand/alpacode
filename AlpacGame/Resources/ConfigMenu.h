@@ -48,10 +48,6 @@ public:
         EFFECT_SLIDER
     };
 
-    /// Button pointers
-    tgui::Button::Ptr moveLeftKey;
-
-
     /// Public Functions
     /**
      * Defines the GUI of menu and create all needed buttons, then bind it to the common window.
@@ -73,6 +69,15 @@ public:
     std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
     std::map<std::string, int> mapHighscore;
+
+    /// KEYMAPPING
+    tgui::Button::Ptr shootKey;
+    tgui::Button::Ptr moveLeftKey;
+    tgui::Button::Ptr moveRightKey;
+    tgui::Button::Ptr jumpKey;
+    tgui::Button::Ptr grabThrowKey;
+    tgui::Button::Ptr zoomKey;
+
 
 
 private:
@@ -99,7 +104,6 @@ private:
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
     tgui::TextBox::Ptr textBoxHighscore;
-
 
     /// CheckBox
     bool checkBoxMuteChecked = false;
@@ -134,7 +138,6 @@ private:
     /**
      * Creates the control settings layout
      */
-
     void controlSettingsLayout();
 
     /**

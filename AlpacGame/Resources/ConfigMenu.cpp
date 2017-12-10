@@ -57,11 +57,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     createButton(buttonID::CONTROLS, "Controls", "pressed",
                  [&] {
-
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
-                     machine->configWindow.getMenuGUI()->add(mapLayouts[ConfigMenu::layouts::CONTROLS]);
+                     machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::CONTROLS]);
 
                  });
 
@@ -314,32 +313,102 @@ void ConfigMenu::videoSettingsLayout() {
 void ConfigMenu::controlSettingsLayout() {
 
     tgui::VerticalLayout::Ptr controlSettingsLayout = tgui::VerticalLayout::create();
-    tgui::VerticalLayout::Ptr buttonControlVerticalLayout = tgui::VerticalLayout::create();
-    tgui::HorizontalLayout::Ptr tempHorisontalLayout = tgui::HorizontalLayout::create();
-    controlSettingsLayout->setSize(windowWidth/2, windowHeight);
-    controlSettingsLayout->setPosition(windowWidth/2, windowHeight/6);
+    controlSettingsLayout->setSize(windowWidth * 0.55, windowHeight * 0.8);
+    controlSettingsLayout->setPosition(windowWidth / 2.7, windowHeight / 12);
 
-    buttonControlVerticalLayout->setSize(windowWidth/4, windowHeight/12);
-    buttonControlVerticalLayout->setPosition(windowWidth/4,windowHeight/6 );
+    tgui::HorizontalLayout::Ptr horizontal = tgui::HorizontalLayout::create();
 
-    // Movement Button settings
-    createButton(buttonID::LEFT,"A","pressed",[&]{
-        mapButtons[buttonID::LEFT]->setText("...");
-        machine->configGame.ControlToAssign = ConfigGame::ControlName::LEFT;
-    });
+    tgui::VerticalLayout::Ptr labelLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr buttonLayout = tgui::VerticalLayout::create();
 
-    tempHorisontalLayout->add(mapButtons[buttonID::LEFT]);
-    tempHorisontalLayout->addSpace(0.2f);
 
-    buttonControlVerticalLayout->addSpace();
-    buttonControlVerticalLayout->add(tempHorisontalLayout);
-    buttonControlVerticalLayout->addSpace(5.f);
+    //Master label
+    tgui::Label::Ptr masterLabel = tgui::Label::create();
+    masterLabel->setTextSize(25);
+    masterLabel->setTextColor(sf::Color::White);
 
-    controlSettingsLayout->add(buttonControlVerticalLayout);
+    //Character function-name labels
+    tgui::Label::Ptr shootLabel = tgui::Label::copy(masterLabel);
+    shootLabel->setText("Shoot");
+    tgui::Label::Ptr moveLeftLabel = tgui::Label::copy(masterLabel);
+    moveLeftLabel->setText("Move Left");
+    tgui::Label::Ptr moveRightLabel = tgui::Label::copy(masterLabel);
+    moveRightLabel->setText("Move Right");
+    tgui::Label::Ptr jumpLabel = tgui::Label::copy(masterLabel);
+    jumpLabel->setText("Jump");
+    tgui::Label::Ptr grabThrowLabel = tgui::Label::copy(masterLabel);
+    grabThrowLabel->setText("Grab/Throw");
+    tgui::Label::Ptr zoomLabel = tgui::Label::copy(masterLabel);
+    zoomLabel->setText("Zoom");
+
+    //Default key button settings
+    tgui::Button::Ptr defaultKey = tgui::Button::copy(masterButton);
+    defaultKey->setTextSize(20);
+
+    //Bind new key buttons
+    shootKey = tgui::Button::copy(defaultKey);
+    shootKey->setOpacity(0.5);
+    shootKey->disable();
+    shootKey->setText("LMB");
+
+    moveLeftKey = tgui::Button::copy(defaultKey);
+    moveLeftKey->setText("A");
+    moveLeftKey->connect("pressed", [&] { moveLeftKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::LEFT; machine->configGame.buttonToAssign = moveLeftKey; });
+
+    moveRightKey = tgui::Button::copy(defaultKey);
+    moveRightKey->setText("D");
+    moveRightKey->connect("pressed", [&] { moveRightKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::RIGHT; machine->configGame.buttonToAssign = moveRightKey; });
+
+    jumpKey = tgui::Button::copy(defaultKey);
+    jumpKey->setText("W");
+    jumpKey->connect("pressed", [&] { jumpKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::JUMP; machine->configGame.buttonToAssign = jumpKey; });
+
+    grabThrowKey = tgui::Button::copy(defaultKey);
+    grabThrowKey->setText("E");
+    grabThrowKey->connect("pressed", [&] { grabThrowKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::GRASP; machine->configGame.buttonToAssign = grabThrowKey; });
+
+    zoomKey = tgui::Button::copy(defaultKey);
+    zoomKey->setText("Z");
+    zoomKey->connect("pressed", [&] { zoomKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::ZOOM; machine->configGame.buttonToAssign = zoomKey; });
+
+    //Adds layout, labels, and buttons to the GUI
+    controlSettingsLayout->add(horizontal);
+    horizontal->add(labelLayout);
+    horizontal->addSpace(0.5);
+    horizontal->add(buttonLayout);
+    horizontal->addSpace(0.4);
+
+    labelLayout->addSpace(0.05);
+    labelLayout->add(shootLabel);
+    labelLayout->add(moveLeftLabel);
+    labelLayout->add(moveRightLabel);
+    labelLayout->add(jumpLabel);
+    labelLayout->add(grabThrowLabel);
+    labelLayout->add(zoomLabel);
+    labelLayout->addSpace(0.4);
+
+
+    buttonLayout->add(shootKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(moveLeftKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(moveRightKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(jumpKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(grabThrowKey);
+    buttonLayout->addSpace();
+    buttonLayout->add(zoomKey);
+    buttonLayout->addSpace(2);
 
     mapLayouts.emplace(layouts::CONTROLS, controlSettingsLayout);
-
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::LEFT, moveLeftKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::RIGHT, moveRightKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::JUMP, jumpKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::GRASP, grabThrowKey);
+    machine->configGame.mapKeyBinding.emplace(ConfigGame::ControlName::ZOOM, zoomKey);
 }
+
 
 
 void ConfigMenu::soundSettingsLayout() {

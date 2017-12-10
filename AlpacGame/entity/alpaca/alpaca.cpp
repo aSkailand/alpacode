@@ -1,4 +1,4 @@
-#include "alpaca.h"
+#include "Alpaca.h"
 
 Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y)
         : id(nextId++), Mob(id) {

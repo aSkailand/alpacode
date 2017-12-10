@@ -27,11 +27,12 @@ public:
         LEFT,
         RIGHT,
         JUMP,
-        GRAPS,
-
+        GRASP,
+        ZOOM,
     };
 
-    ControlName ControlToAssign = ControlName::NOTHING;
+    ControlName controlToAssign = ControlName::NOTHING;
+    tgui::Button::Ptr buttonToAssign = nullptr;
 
     /// Customizable Properties
     /**
@@ -148,6 +149,8 @@ public:
 
     /// Map of control keys.
     std::map<ConfigGame::ControlName, sf::Keyboard::Key > MapControlKeys;
+    std::map<ConfigGame::ControlName, tgui::Button::Ptr> mapKeyBinding;
+
 
 
 
