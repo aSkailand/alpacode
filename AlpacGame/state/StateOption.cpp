@@ -27,7 +27,6 @@ bool StateOption::PollOption() {
         menuGUI->handleEvent(event);
 
         if (event.type == sf::Event::Closed) {
-            std::cout << "Apple" << std::endl;
             machine->setCurrentState(StateMachine::stateID::EXIT);
         }
 
@@ -46,33 +45,36 @@ void StateOption::drawOption() {
 
 void StateOption::KeyBinding(sf::Keyboard::Key newKey, std::string keyString) {
 
-
     for (auto &MapControlKey : configGame->MapControlKeys) {
         if (newKey == MapControlKey.second) {
 
-            sf::Keyboard::Key KeyExchange =  configGame->MapControlKeys[configGame->ControlToAssign];
+            sf::Keyboard::Key KeyExchange =  configGame->MapControlKeys[configGame->controlToAssign];
             ConfigGame::ControlName currentSameKey = MapControlKey.first;
-            std::string changeString = machine->configMenu->moveLeftKey->getText();
-            machine->configMenu->moveLeftKey->setText(changeString);
+            machine->configGame.mapKeyBinding[currentSameKey]->setText(configGame->lastString);
             configGame->MapControlKeys[currentSameKey] = KeyExchange;
-
+            configGame->lastString = "";
 
             break;
         }
     }
-    configGame->buttonToAssign->setText(keyString);
+    configGame->mapKeyBinding[configGame->controlToAssign]->setText(keyString);
     configGame->MapControlKeys[configGame->controlToAssign] = newKey;
     configGame->controlToAssign = ConfigGame::ControlName::NOTHING;
-    configGame->buttonToAssign = nullptr;
+
 
 }
+
 
 void StateOption::checkIfAnyControlAssigningKeyIsPressed(sf::Event event) {
     if (configGame->controlToAssign != ConfigGame::ControlName::NOTHING && event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
 
-            case sf::Keyboard::Escape:
+            case sf::Keyboard::Escape:{
+                configGame->mapKeyBinding[configGame->controlToAssign]->setText(configGame->lastString);
+                configGame->controlToAssign = ConfigGame::ControlName ::NOTHING;
+                configGame->lastString = "";
                 break;
+            }
             case sf::Keyboard::A: {
                 KeyBinding(sf::Keyboard::A, "A");
                 break;
@@ -281,6 +283,7 @@ void StateOption::checkIfAnyControlAssigningKeyIsPressed(sf::Event event) {
                 KeyBinding(sf::Keyboard::Down, "DOWN");
                 break;
             }
+
             default: break;
         }
 

@@ -31,8 +31,7 @@ public:
         ZOOM,
     };
 
-    ControlName controlToAssign = ControlName::NOTHING;
-    tgui::Button::Ptr buttonToAssign = nullptr;
+
 
     /// Customizable Properties
     /**
@@ -151,6 +150,10 @@ public:
     std::map<ConfigGame::ControlName, sf::Keyboard::Key > MapControlKeys;
     std::map<ConfigGame::ControlName, tgui::Button::Ptr> mapKeyBinding;
 
+    /// Key mapping assigns.
+    ControlName controlToAssign = ControlName::NOTHING;
+    std::string lastString = "";
+
 
 
 
@@ -184,8 +187,8 @@ private:
     /**
      * Creating and adding all default control key into map.
      */
-
     void addDefaultKeysToMap();
+
 };
 
 

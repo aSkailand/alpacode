@@ -117,6 +117,12 @@ private:
 
     bool changesMadeControls = false;
 
+    bool insideVideoSetting = true;
+
+    bool insideControlSetting = false;
+
+    bool insideSoundSettings = false;
+
     /// Current fullscreen
     bool isFullScreen = false;
 
@@ -197,6 +203,14 @@ private:
     void setCurrentResolution(ConfigWindow::Resolution currentResolution);
 
     void applyChanges();
+
+    /**
+     * Creating a function to reset all button text exept the chosen one.
+     */
+    void controlButtonTextReset();
+
+    void optionInsideSwitcher();
+
 };
 
 

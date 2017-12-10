@@ -25,13 +25,23 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  });
 
     createButton(buttonID::SETTINGS, "Settings", "pressed",
-                 [&] { machine->setCurrentState(StateMachine::stateID::OPTION); });
+                 [&] {
+                     optionInsideSwitcher();
+                     machine->setCurrentState(StateMachine::stateID::OPTION); });
 
     createButton(buttonID::QUIT, "Quit", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
 
     createButton(buttonID::BACK_TO_MAIN, "Back", "pressed",
                  [&] {
+                     insideVideoSetting = true;
+                     insideControlSetting = false;
+                     insideSoundSettings = false;
+                     if(machine->configGame.controlToAssign != ConfigGame::ControlName::NOTHING){
+                         machine->configGame.mapKeyBinding[machine->configGame.controlToAssign]->setText(machine->configGame.lastString);
+                         machine->configGame.controlToAssign = ConfigGame::ControlName ::NOTHING;
+                         machine->configGame.lastString = "";
+                     }
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->setCurrentState(StateMachine::stateID::MENU);
                  });
@@ -45,10 +55,14 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  });
     createButton(buttonID::VIDEO, "Video", "pressed",
                  [&] {
+                     insideVideoSetting = true;
+                     optionInsideSwitcher();
+
                      if (!changesMadeVideo) {
                          mapButtons[buttonID::APPLY_SETTINGS]->disable();
                          mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
                      }
+                     controlButtonTextReset();
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
@@ -57,6 +71,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     createButton(buttonID::CONTROLS, "Controls", "pressed",
                  [&] {
+                     insideControlSetting = true;
+                     optionInsideSwitcher();
+
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
@@ -66,12 +83,14 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     createButton(buttonID::SOUND, "Sound", "pressed",
                  [&] {
+                     insideSoundSettings = true;
+                     optionInsideSwitcher();
+
+                     controlButtonTextReset();
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SOUND]);
-
-
                      mapButtons[buttonID::APPLY_SETTINGS]->enable();
                      mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
                  });
@@ -123,6 +142,7 @@ void ConfigMenu::createSlider(buttonID sliderType) {
 }
 
 void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
+
     // Creates the different layouts
 
     // Main menu layout
@@ -184,7 +204,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 }
 
 void ConfigMenu::videoSettingsLayout() {
-
+    
     tgui::VerticalLayout::Ptr videoSettingsLayout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr hori = tgui::HorizontalLayout::create();
     videoSettingsLayout->setSize(windowWidth / 4, windowHeight / 2);
@@ -353,23 +373,48 @@ void ConfigMenu::controlSettingsLayout() {
 
     moveLeftKey = tgui::Button::copy(defaultKey);
     moveLeftKey->setText("A");
-    moveLeftKey->connect("pressed", [&] { moveLeftKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::LEFT; machine->configGame.buttonToAssign = moveLeftKey; });
+    moveLeftKey->connect("pressed", [&] {
+        controlButtonTextReset();
+        machine->configGame.controlToAssign = ConfigGame::ControlName::LEFT;
+        machine->configGame.lastString = moveLeftKey->getText();
+        moveLeftKey->setText("...");
+    });
 
     moveRightKey = tgui::Button::copy(defaultKey);
     moveRightKey->setText("D");
-    moveRightKey->connect("pressed", [&] { moveRightKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::RIGHT; machine->configGame.buttonToAssign = moveRightKey; });
+    moveRightKey->connect("pressed", [&] {
+        controlButtonTextReset();
+        machine->configGame.controlToAssign = ConfigGame::ControlName::RIGHT;
+        machine->configGame.lastString = moveRightKey->getText();
+        moveRightKey->setText("...");
+    });
 
     jumpKey = tgui::Button::copy(defaultKey);
     jumpKey->setText("W");
-    jumpKey->connect("pressed", [&] { jumpKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::JUMP; machine->configGame.buttonToAssign = jumpKey; });
+    jumpKey->connect("pressed", [&] {
+        controlButtonTextReset();
+        machine->configGame.controlToAssign = ConfigGame::ControlName::JUMP;
+        machine->configGame.lastString = jumpKey->getText();
+        jumpKey->setText("...");
+    });
 
     grabThrowKey = tgui::Button::copy(defaultKey);
     grabThrowKey->setText("E");
-    grabThrowKey->connect("pressed", [&] { grabThrowKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::GRASP; machine->configGame.buttonToAssign = grabThrowKey; });
+    grabThrowKey->connect("pressed", [&] {
+        controlButtonTextReset();
+        machine->configGame.controlToAssign = ConfigGame::ControlName::GRASP;
+        machine->configGame.lastString = grabThrowKey->getText();
+        grabThrowKey->setText("...");
+    });
 
     zoomKey = tgui::Button::copy(defaultKey);
     zoomKey->setText("Z");
-    zoomKey->connect("pressed", [&] { zoomKey->setText("..."); machine->configGame.controlToAssign = ConfigGame::ControlName::ZOOM; machine->configGame.buttonToAssign = zoomKey; });
+    zoomKey->connect("pressed", [&] {
+        controlButtonTextReset();
+        machine->configGame.controlToAssign = ConfigGame::ControlName::ZOOM;
+        machine->configGame.lastString = zoomKey->getText();
+        zoomKey->setText("...");
+    });
 
     //Adds layout, labels, and buttons to the GUI
     controlSettingsLayout->add(horizontal);
@@ -713,4 +758,46 @@ void ConfigMenu::applyChanges() {
 
     changesMadeVideo = false;
     changesMadeSound = true;
+}
+
+void ConfigMenu::controlButtonTextReset() {
+    for( auto &MapKeybinding: machine->configGame.mapKeyBinding){
+        if(MapKeybinding.second->getText() == "..."){
+            ConfigGame::ControlName currentKey = MapKeybinding.first;
+            machine->configGame.mapKeyBinding[currentKey]->setText(machine->configGame.lastString);
+        }
+    }
+}
+
+void ConfigMenu::optionInsideSwitcher() {
+
+    if(insideVideoSetting){
+        mapButtons[buttonID::VIDEO]->disable();
+        mapButtons[buttonID::VIDEO]->setOpacity(0.5f);
+        mapButtons[buttonID::CONTROLS]->enable();
+        mapButtons[buttonID::CONTROLS]->setOpacity(1.f);
+        mapButtons[buttonID::SOUND]->enable();
+        mapButtons[buttonID::SOUND]->setOpacity(1.f);
+        insideVideoSetting = false;
+    }
+    else if(insideControlSetting){
+        mapButtons[buttonID::CONTROLS]->disable();
+        mapButtons[buttonID::CONTROLS]->setOpacity(0.5f);
+        mapButtons[buttonID::VIDEO]->enable();
+        mapButtons[buttonID::VIDEO]->setOpacity(1.f);
+        mapButtons[buttonID::SOUND]->enable();
+        mapButtons[buttonID::SOUND]->setOpacity(1.f);
+        insideControlSetting = false;
+    }
+    else if (insideSoundSettings){
+        mapButtons[buttonID::SOUND]->disable();
+        mapButtons[buttonID::SOUND]->setOpacity(0.5f);
+        mapButtons[buttonID::VIDEO]->enable();
+        mapButtons[buttonID::VIDEO]->setOpacity(1.f);
+        mapButtons[buttonID::CONTROLS]->enable();
+        mapButtons[buttonID::CONTROLS]->setOpacity(1.f);
+        insideSoundSettings = false;
+    }
+
+
 }
