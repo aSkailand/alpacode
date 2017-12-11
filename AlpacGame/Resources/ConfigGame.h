@@ -24,7 +24,7 @@ public:
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius = 800;
+    unsigned int planetRadius = 600;
 
     bool newGame = true;
     bool isPaused = false;

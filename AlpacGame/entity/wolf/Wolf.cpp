@@ -97,16 +97,18 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
 
     // todo: Determine where to put this chunk of code
     /// WolfBase
-    // wolfDen is set on the center of planetbody + plus 20.0f
-    wolfDenVec2 = configGame->planetBody->GetWorldCenter() + b2Vec2(0.0f, 20.0f);
-
+    // Wolf Den is placed on an angle with planets radius.
+    // 180 degrees because farmer position is at 0 degrees.
     wolfDen_Debug = new sf::CircleShape(10);
     wolfDen_Debug->setFillColor(sf::Color::Transparent);
     wolfDen_Debug->setOrigin(10, 10);
-    wolfDen_Debug->setPosition(wolfDenVec2.x * SCALE,
-                               wolfDenVec2.y * SCALE);
+    float tmp_X = configGame->calcX(180.f, configGame->planetRadius);
+    float tmp_Y = configGame->calcY(180.f, configGame->planetRadius);
 
-    currentBehavior = Behavior::NORMAL;
+    wolfDen_Debug->setPosition( tmp_X, tmp_Y);
+    wolfDenVec2 = b2Vec2(tmp_X / SCALE, tmp_Y / SCALE);
+
+    currentBehavior = Behavior::HUNTING;
     randomActionClock.reset(true);
     movementTriggerClock.reset(true);
 
@@ -115,7 +117,6 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
 int Wolf::nextId = 0;
 
 void Wolf::switchAction() {
-
     // Handle the health logic
     handleHealth();
 
@@ -143,11 +144,11 @@ void Wolf::switchAction() {
 
     // TODO: Wolves runs home when night is over. Temporarily set to input "N"
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-        currentBehavior = Behavior::HOMERUN;
+        currentBehavior = Behavior::RUNHOME;
     }
 
     // Changes to the direction, nearest to WolfDen
-    if (currentBehavior == Behavior::HOMERUN) {
+    if (currentBehavior == Behavior::RUNHOME) {
         currentAction = Action::WALKING;
         b2Vec2 test = getBody()->GetLocalPoint(wolfDenVec2);
 
@@ -164,10 +165,6 @@ void Wolf::switchAction() {
 }
 
 void Wolf::performAction() {
-
-    float tmp1 = wolfDenVec2.x;
-    float tmp2 = wolfDenVec2.y;
-    printf("X: %f - Y: %f\n", tmp1, tmp2);
 
     // Cancel Early if entity is not alive or stunned
     if (currentHealth != Health::ALIVE || isStunned)
@@ -189,12 +186,17 @@ void Wolf::performAction() {
 
     // Wolves go back to Den, then disappears when Length() is a small number
     // TODO: When arrives at den, make them idle. then fades away.
-    if(currentBehavior == Behavior::HOMERUN){
+    // Temporary makes them disappear.
+    if(currentBehavior == Behavior::RUNHOME){
         b2Vec2 delta = body->GetLocalPoint(wolfDenVec2);
         float tmp = delta.Length();
 
-        if(tmp < 3.0f){
-            currentHealth = Health::DEAD;
+        if(tmp < 3.0f && currentBehavior == Behavior::RUNHOME){
+            removeEntity();
+            currentAction = Action ::IDLE;
+            currentBehavior = Behavior ::ENTERHOME;
+            behaviorClock.reset(true);
+
         }
 
     }
@@ -219,8 +221,8 @@ void Wolf::performAction() {
             for (auto &detectedEntity : currentlyDetectedEntities) {
 
                 b2Vec2 currentVector = body->GetLocalPoint(detectedEntity->getBody()->GetWorldCenter());
-                float length_1 = currentVector.Length();
-                float length_2 = tmp.Length();
+                float length_1 = currentVector.LengthSquared();
+                float length_2 = tmp.LengthSquared();
 
                 if(length_1 < length_2){
                     tmp = currentVector;
@@ -237,6 +239,11 @@ void Wolf::performAction() {
 
         }
     }
+
+    if(currentBehavior == Behavior::ENTERHOME && behaviorClock.getElapsedTime().asSeconds() >  1.0f){
+        currentHealth = Health ::GHOST;
+        deathClock.reset(false);
+    }
 }
 
 void Wolf::render(sf::RenderWindow *window) {
@@ -251,6 +258,9 @@ void Wolf::render(sf::RenderWindow *window) {
     if (currentHealth == Health::GHOST){
         renderDeath();
         window->draw(*sf_ShapeGhost);
+    }
+    if(currentBehavior == Behavior::ENTERHOME){
+        renderFadeOut();
     }
 
     // Draw entity shape
@@ -530,9 +540,9 @@ void Wolf::renderDebugMode() {
         // Draw debug: Detection
         sf_DebugDetection->setOutlineThickness(2);
         sf_DebugDetection->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        if (currentBehavior == Behavior::NORMAL) sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
+        if (currentBehavior == Behavior::ENTERHOME) sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
         else if (currentBehavior == Behavior::HUNTING) sf_DebugDetection->setOutlineColor(sf::Color::Red);
-        else if (currentBehavior == Behavior::HOMERUN) sf_DebugDetection->setOutlineColor(sf::Color::Green);
+        else if (currentBehavior == Behavior::RUNHOME) sf_DebugDetection->setOutlineColor(sf::Color::Green);
         configGame->window->draw(*sf_DebugDetection);
 
         // Draw debug: Label ID

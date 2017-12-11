@@ -76,6 +76,20 @@ public:
      *      Dead:   Check if it is time to change to ghost state.
      *      Ghost:  Check if it is time to stop death clock.
      */
+    void removeEntity(){
+
+        // Create filter of dead entity
+        b2Filter deadFilter;
+        deadFilter.categoryBits = (uint16) getEntity_ID();
+        deadFilter.maskBits = (uint16) ID::PLANET;
+
+        // Set filter
+        fixture_body->SetFilterData(deadFilter);
+        fixture_hit->SetFilterData(deadFilter);
+        if (fixture_detection) fixture_detection->SetFilterData(deadFilter);
+
+    }
+
     void handleHealth() {
 
         switch (currentHealth) {
@@ -131,6 +145,7 @@ public:
         }
     }
 
+
     /**
      * The label above entities' head in-game.
      */
@@ -182,13 +197,21 @@ public:
 
         // Fade Entity Shape when decay begins
         if (deathClock.getElapsedTime().asSeconds() >= decayTick) {
-            sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
+            renderFadeOut();
         }
 
         // Move Ghost upwards
         b2Vec2 ghostMovementVector = getBody()->GetWorldVector(b2Vec2(0.f, -0.01f));
         sf_ShapeGhost->move(sf::Vector2f(ghostMovementVector.x * SCALE, ghostMovementVector.y * SCALE));
 
+    }
+
+    void renderFadeOut(){
+        sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0, 0, 0, 1));
+    }
+
+    void renderFadeIn(){
+        sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() + sf::Color(0, 0, 0, 1));
     }
 
 
@@ -201,17 +224,12 @@ public:
         IDLE = 0, WALKING = 1, JUMP = 2
     };
 
-
     Direction currentDirection = Direction::RIGHT;
     Action currentAction = Action::IDLE;
     Status currentStatus = Status::AIRBORNE;
 
 
 protected:
-
-    // todo move to Mob
-    sftools::Chronometer behaviorClock;
-
 
     /**
      * Wrapper for isCoolDownTriggered(), used to throttle movement using a clock.

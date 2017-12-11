@@ -37,6 +37,8 @@ protected:
         return isCooldownTriggered(&randomActionClock, randomActionTick);
     }
 
+
+
     /**
     * Generates a random number from the generator in the range of given lower and upper.
     * @param lower the left number in the range.
@@ -52,6 +54,9 @@ protected:
      * The clock used to check if the AI is ready to switch action.
      */
     sftools::Chronometer randomActionClock{};
+
+    // todo move to Mob
+    sftools::Chronometer behaviorClock;
 
 private:
 

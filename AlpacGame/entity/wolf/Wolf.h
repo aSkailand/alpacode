@@ -67,7 +67,7 @@ private:
     ConfigGame *configGame = nullptr;
 
     /// Behavior
-    enum class Behavior{NORMAL, HUNTING, HOMERUN};
+    enum class Behavior{HUNTING, ENTERHOME, RUNHOME};
     Behavior currentBehavior;
 
     /// Wolf Base
