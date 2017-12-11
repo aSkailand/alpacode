@@ -14,6 +14,7 @@ CooldownBarometer::CooldownBarometer(std::vector<sf::Texture *> &textureVector, 
     sfShape.setSize(sf::Vector2f(width, height));
     sfShape.setOrigin(sfShape.getSize().x / 2, sfShape.getSize().y / 2);
     sfShape.setTexture(textures.at(0));
+//    sfShape.setOutlineThickness(2);
 
 }
 

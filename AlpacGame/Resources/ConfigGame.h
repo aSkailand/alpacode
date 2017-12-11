@@ -134,6 +134,7 @@ public:
     sf::Texture shotgunDropTexture;
 
     // Texture Vectors
+    std::vector<sf::Texture> bulletIndicatorTextures;
     std::vector<sf::Texture> sunTextures;
     std::vector<sf::Texture> planetTextures;
     std::vector<sf::Texture> skyTextures;

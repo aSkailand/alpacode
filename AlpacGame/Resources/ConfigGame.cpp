@@ -182,6 +182,16 @@ void ConfigGame::loadAllTextures() {
         cooldownTextures.push_back(tempTexture);
     }
 
+    // Shotgun Bullets Indicator
+    int indicatorWidth = 280;
+    int indicatorHeight = 280;
+    for (int i = 0; i < 3; ++i) {
+        auto tempTexture = sf::Texture();
+        tempTexture.loadFromFile("entity/Shotgun/shotgun-bullet.png",
+                                  sf::IntRect(i * indicatorWidth, 0, indicatorWidth, indicatorHeight));
+        bulletIndicatorTextures.push_back(tempTexture);
+    }
+
     // HitPoint
     healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
 

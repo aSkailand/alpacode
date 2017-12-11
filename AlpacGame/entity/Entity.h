@@ -119,6 +119,10 @@ public:
         return body;
     };
 
+    sf::Shape *getSf_ShapeEntity() const {
+        return sf_ShapeEntity;
+    }
+
     /// For Detection
     void *convertToVoidPtr(int enumValue) {
         return reinterpret_cast<void *>(enumValue);
@@ -149,6 +153,9 @@ protected:
     b2Body *body = nullptr;
 
     sf::Shape *sf_ShapeEntity = nullptr;
+
+
+protected:
 
     /// Unit Vector + Force functions
 
