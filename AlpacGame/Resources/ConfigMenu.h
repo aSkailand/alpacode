@@ -161,7 +161,7 @@ private:
     void defeatScreenLayout();
 
     /**
-     * Creates the score labela
+     * Creates the score label
      */
     void scoreLabel();
 
