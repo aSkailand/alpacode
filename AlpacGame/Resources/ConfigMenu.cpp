@@ -113,7 +113,7 @@ void ConfigMenu::createButton(buttonID buttonID,
 void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
-    tempSlider->setValue(10);
+
     mapSliders.emplace(sliderType, tempSlider);
 }
 
@@ -593,6 +593,7 @@ void ConfigMenu::applyChanges() {
 
     }
     if (changesMadeSound) {
+
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
         machine->configSound.setSoundEffects(mapSliders[buttonID::EFFECT_SLIDER]->getValue());
@@ -608,10 +609,10 @@ void ConfigMenu::applyChanges() {
 
     changesMadeVideo = false;
     changesMadeSound = true;
+    changesMadeSound = true;
 }
 
 void ConfigMenu::scoreLabel() {
-
     labelScoreHUD = theme->load("Label");
     labelScoreHUD->setText("Score: ");
     labelScoreHUD->setTextSize(42);

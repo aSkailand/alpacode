@@ -42,28 +42,40 @@ void ConfigSound::playGameMusic(bool playMusic) {
     } else {
         std::cout << "Playing game music" << std::endl;
     }
-
     isGameMusicPlaying = playMusic;
     gameMusic.setLoop(true);
     gameMusic.play();
 }
 
 void ConfigSound::setMasterVolume(int masterVolume) {
-    ConfigSound::masterVolume = masterVolume;
+    ConfigSound::masterVolume = 10 / (masterVolume + 1);
+    if (masterVolume == 0) {
+        ConfigSound::masterVolume = 100;
+    }
 }
 
 void ConfigSound::setMusicVolume(int musicVolume) {
     ConfigSound::musicVolume = musicVolume;
-    menuMusic.setVolume(musicVolume * 10);
-    gameMusic.setVolume(musicVolume * 10);
+    if (masterVolume == 0) {
+        menuMusic.setVolume((musicVolume * 10));
+        gameMusic.setVolume((musicVolume * 10));
+    } else {
+        menuMusic.setVolume((musicVolume * 10) / masterVolume);
+        gameMusic.setVolume((musicVolume * 10) / masterVolume);
+    }
 }
 
 void ConfigSound::setSoundEffects(int soundEffects) {
     ConfigSound::soundEffects = soundEffects;
-    mapSounds[ConfigSound::soundsID::JUMP].setVolume(soundEffects * 10);
-    mapSounds[ConfigSound::soundsID::STEPPING].setVolume(soundEffects * 10);
-    mapSounds[ConfigSound::soundsID::SHOTGUN].setVolume(soundEffects * 10);
-
+    if (masterVolume == 0) {
+        mapSounds[ConfigSound::soundsID::JUMP].setVolume((soundEffects * 10));
+        mapSounds[ConfigSound::soundsID::STEPPING].setVolume((soundEffects * 10));
+        mapSounds[ConfigSound::soundsID::SHOTGUN].setVolume((soundEffects * 10));
+    } else {
+        mapSounds[ConfigSound::soundsID::JUMP].setVolume((soundEffects * 10) / masterVolume);
+        mapSounds[ConfigSound::soundsID::STEPPING].setVolume((soundEffects * 10) / masterVolume);
+        mapSounds[ConfigSound::soundsID::SHOTGUN].setVolume((soundEffects * 10) / masterVolume);
+    }
 }
 
 void ConfigSound::loadSounds() {
