@@ -155,8 +155,6 @@ public:
     std::string lastString = "";
 
 
-
-
 private:
 
     /**

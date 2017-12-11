@@ -778,6 +778,8 @@ void ConfigMenu::optionInsideSwitcher() {
         mapButtons[buttonID::CONTROLS]->setOpacity(1.f);
         mapButtons[buttonID::SOUND]->enable();
         mapButtons[buttonID::SOUND]->setOpacity(1.f);
+        mapButtons[buttonID::APPLY_SETTINGS]->enable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
         insideVideoSetting = false;
     }
     else if(insideControlSetting){
@@ -787,6 +789,8 @@ void ConfigMenu::optionInsideSwitcher() {
         mapButtons[buttonID::VIDEO]->setOpacity(1.f);
         mapButtons[buttonID::SOUND]->enable();
         mapButtons[buttonID::SOUND]->setOpacity(1.f);
+        mapButtons[buttonID::APPLY_SETTINGS]->enable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.f);
         insideControlSetting = false;
     }
     else if (insideSoundSettings){
@@ -796,6 +800,8 @@ void ConfigMenu::optionInsideSwitcher() {
         mapButtons[buttonID::VIDEO]->setOpacity(1.f);
         mapButtons[buttonID::CONTROLS]->enable();
         mapButtons[buttonID::CONTROLS]->setOpacity(1.f);
+        mapButtons[buttonID::APPLY_SETTINGS]->enable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
         insideSoundSettings = false;
     }
 
