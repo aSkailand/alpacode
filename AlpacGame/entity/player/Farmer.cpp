@@ -1,7 +1,8 @@
 #include "Farmer.h"
-#include "../alpaca/alpaca.h"
+#include "../alpaca/Alpaca.h"
 
-Farmer::Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x, float y) {
+Farmer::Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x,
+               float y) {
 
     this->configGame = configGame;
     this->configSound = configSound;
@@ -135,22 +136,26 @@ void Farmer::render(sf::RenderWindow *window) {
 
 void Farmer::switchAction() {
 
-    switch (configGame->currentInput) {
-        case sf::Keyboard::W: {
-            currentAction = Action::JUMP;
+    switch (configGame->currentCommand) {
+        case ConfigGame::ControlName::NOTHING: {
+            currentAction = Action::IDLE;
             break;
         }
-        case sf::Keyboard::D: {
-            currentAction = Action::WALKING;
-            currentDirection = Direction::RIGHT;
-            break;
-        }
-        case sf::Keyboard::A: {
+        case ConfigGame::ControlName::LEFT: {
             currentAction = Action::WALKING;
             currentDirection = Direction::LEFT;
             break;
         }
-        case sf::Keyboard::E: {
+        case ConfigGame::ControlName::RIGHT: {
+            currentAction = Action::WALKING;
+            currentDirection = Direction::RIGHT;
+            break;
+        }
+        case ConfigGame::ControlName::JUMP:{
+            currentAction = Action::JUMP;
+            break;
+        }
+        case ConfigGame::ControlName::GRASP:{
             if (isCooldownTriggered(&graspClock, graspCooldown)) {
                 if (currentGrasp == Grasp::EMPTY) {
                     if (!currentlyTouchingEntities.empty()) {
@@ -162,10 +167,7 @@ void Farmer::switchAction() {
             }
             break;
         }
-        default: {
-            currentAction = Action::IDLE;
-            break;
-        }
+
     }
 
     // Flip accordingly to mouse placement
@@ -362,7 +364,7 @@ void Farmer::startContact_body(Entity::CollisionID otherCollision, Entity *conta
 void Farmer::startContact_hit(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getID()) {
         case ID::ALPACA: {
-            if(otherCollision == CollisionID::HIT && !checkIfTouching(contactEntity)) {
+            if (otherCollision == CollisionID::HIT && !checkIfTouching(contactEntity)) {
                 currentlyTouchingEntities.push_back(contactEntity);
                 dynamic_cast<Alpaca *> (contactEntity)->farmerTouch = true;
                 sfShape->setOutlineColor(sf::Color::Green);

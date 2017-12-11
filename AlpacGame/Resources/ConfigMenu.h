@@ -48,7 +48,6 @@ public:
         EFFECT_SLIDER
     };
 
-
     /// Public Functions
     /**
      * Defines the GUI of menu and create all needed buttons, then bind it to the common window.
@@ -83,6 +82,33 @@ public:
      */
     void setScore(std::string score);
 
+    /// KEYMAPPING
+    tgui::Button::Ptr shootKey;
+    tgui::Button::Ptr moveLeftKey;
+    tgui::Button::Ptr moveRightKey;
+    tgui::Button::Ptr jumpKey;
+    tgui::Button::Ptr grabThrowKey;
+    tgui::Button::Ptr zoomKey;
+
+    /// Changes made
+    bool changesMadeVideo = false;
+
+    bool changesMadeSound = true;
+
+    bool changesMadeControls = false;
+
+    bool insideVideoSetting = true;
+
+    bool insideControlSetting = false;
+
+    bool insideSoundSettings = false;
+
+    /**
+     * Checks if all the buttons got their default binds
+     * and if they do, disables the default button
+     */
+    void defaultKeysCheck();
+
 private:
 
     /// Variables for the loadHighscore function
@@ -114,13 +140,6 @@ private:
 
     bool checkBoxFullScreenChecked = false;
 
-    /// Changes made
-    bool changesMadeVideo = false;
-
-    bool changesMadeSound = true;
-
-    bool changesMadeControls = false;
-
     /// Current fullscreen
     bool isFullScreen = false;
 
@@ -138,6 +157,11 @@ private:
      * Creates the video settings layout
      */
     void videoSettingsLayout();
+
+    /**
+     * Creates the control settings layout
+     */
+    void controlSettingsLayout();
 
     /**
      * Creates the sound settings layout
@@ -201,6 +225,13 @@ private:
     void setCurrentResolution(ConfigWindow::Resolution currentResolution);
 
     void applyChanges();
+
+    /**
+     * Creating a function to reset all button text exept the chosen one.
+     */
+    void controlButtonTextReset();
+
+    void optionInsideSwitcher();
 };
 
 
