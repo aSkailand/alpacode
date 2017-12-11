@@ -12,6 +12,7 @@ void ConfigGame::run(sf::RenderWindow &window, ConfigSound &configSound) {
 
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
 
+    addDefaultKeysToMap();
     loadAllTextures();
     loadAllFonts();
 
@@ -139,6 +140,15 @@ void ConfigGame::loadAllTextures() {
     wolfSprites[EntityWarm::Action::WALKING].startFrame = 0;
     wolfSprites[EntityWarm::Action::WALKING].endFrame = 6;
     loadTexture(wolfSpriteSheet, wolfSprites, wolfWidth, wolfHeight, 95, EntityWarm::Action::WALKING);
+
+}
+
+void ConfigGame::addDefaultKeysToMap() {
+    MapControlKeys[ControlName::LEFT] = sf::Keyboard::A;
+    MapControlKeys[ControlName::RIGHT] = sf::Keyboard::D;
+    MapControlKeys[ControlName::JUMP] = sf::Keyboard::W;
+    MapControlKeys[ControlName::GRASP] = sf::Keyboard::E;
+    MapControlKeys[ControlName::ZOOM] = sf::Keyboard::Z;
 
 }
 

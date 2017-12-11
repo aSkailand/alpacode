@@ -21,6 +21,17 @@ public:
     enum class Cycle{DAY, NIGHT};
     Cycle currentCycle;
 
+    ///  Control
+    enum class ControlName{
+        NOTHING,
+        LEFT,
+        RIGHT,
+        JUMP,
+        GRASP,
+        ZOOM,
+    };
+
+
 
     /// Customizable Properties
     /**
@@ -61,6 +72,7 @@ public:
      * determine which direction the farmer walks towards.
      */
     sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
+    ControlName currentCommand = ControlName::NOTHING;
 
     /**
      * Mouse Coordinates.
@@ -134,6 +146,18 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithoutHands;
     std::map<EntityWarm::Action, SpriteInfo> farmerSpritesWithHands;
 
+    /// Map of control keys.
+    std::map<ConfigGame::ControlName, sf::Keyboard::Key > MapControlKeys;
+    std::map<ConfigGame::ControlName, tgui::Button::Ptr> mapKeyBinding;
+
+    /// Key mapping assigns.
+    ControlName controlToAssign = ControlName::NOTHING;
+    std::string lastString = "";
+
+    /**
+     * Creating and adding all default control key into map.
+     */
+    void addDefaultKeysToMap();
 
 private:
 
