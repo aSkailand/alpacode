@@ -204,7 +204,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 }
 
 void ConfigMenu::videoSettingsLayout() {
-    
+
     tgui::VerticalLayout::Ptr videoSettingsLayout = tgui::VerticalLayout::create();
     tgui::HorizontalLayout::Ptr hori = tgui::HorizontalLayout::create();
     videoSettingsLayout->setSize(windowWidth / 4, windowHeight / 2);
