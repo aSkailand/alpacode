@@ -27,7 +27,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createButton(buttonID::SETTINGS, "Settings", "pressed",
                  [&] {
                      optionInsideSwitcher();
-                     machine->setCurrentState(StateMachine::stateID::OPTION); });
+                     machine->setCurrentState(StateMachine::stateID::OPTION);
+                     mapButtons[buttonID::APPLY_SETTINGS]->setText("Apply Changes");
+
+                 });
 
     createButton(buttonID::QUIT, "Quit", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
@@ -44,8 +47,6 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      }
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->setCurrentState(StateMachine::stateID::MENU);
-
-                     changesMadeControls = false;
                  });
 
     createButton(buttonID::HIGHSCORE, "Highscore", "pressed",
@@ -399,6 +400,7 @@ void ConfigMenu::controlSettingsLayout() {
         machine->configGame.controlToAssign = ConfigGame::ControlName::LEFT;
         machine->configGame.lastString = moveLeftKey->getText();
         moveLeftKey->setText("...");
+
     });
 
     moveRightKey = tgui::Button::copy(defaultKey);
@@ -828,6 +830,4 @@ void ConfigMenu::optionInsideSwitcher() {
         mapButtons[buttonID::CONTROLS]->setOpacity(1.f);
         insideSoundSettings = false;
     }
-
-
 }

@@ -42,6 +42,12 @@ private:
 
     void checkIfAnyControlAssigningKeyIsPressed(sf::Event event);
 
+    /**
+     * Checks if all the buttons got their default binds
+     * and if they do, disables the default button
+     */
+    void DefaultKeysCheck();
+
 };
 
 #endif //ALPACGAME_STATEOPTION_H

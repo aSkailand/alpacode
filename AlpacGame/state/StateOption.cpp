@@ -64,6 +64,8 @@ void StateOption::KeyBinding(sf::Keyboard::Key newKey, std::string keyString) {
     machine->configMenu->changesMadeControls = true;
     machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->setOpacity(1);
     machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->enable();
+
+    DefaultKeysCheck();
 }
 
 
@@ -289,6 +291,19 @@ void StateOption::checkIfAnyControlAssigningKeyIsPressed(sf::Event event) {
             default: break;
         }
 
+    }
+}
+
+void StateOption::DefaultKeysCheck() {
+
+    if (    machine->configGame.MapControlKeys.find(ConfigGame::ControlName::LEFT)->second == sf::Keyboard::A &&
+            machine->configGame.MapControlKeys.find(ConfigGame::ControlName::RIGHT)->second == sf::Keyboard::D &&
+            machine->configGame.MapControlKeys.find(ConfigGame::ControlName::JUMP)->second == sf::Keyboard::W &&
+            machine->configGame.MapControlKeys.find(ConfigGame::ControlName::GRASP)->second == sf::Keyboard::E &&
+            machine->configGame.MapControlKeys.find(ConfigGame::ControlName::ZOOM)->second == sf::Keyboard::Z
+            ) {
+        machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->disable();
+        machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
     }
 }
 
