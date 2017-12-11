@@ -27,7 +27,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createButton(buttonID::SETTINGS, "Settings", "pressed",
                  [&] {
                      optionInsideSwitcher();
-                     machine->setCurrentState(StateMachine::stateID::OPTION); });
+                     machine->setCurrentState(StateMachine::stateID::OPTION);
+                     mapButtons[buttonID::APPLY_SETTINGS]->setText("Apply Changes");
+
+                 });
 
     createButton(buttonID::QUIT, "Quit", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
@@ -67,6 +70,10 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
                      machine->configWindow.getMenuGUI()->add(mapLayouts[ConfigMenu::layouts::VIDEO]);
+                     mapButtons[buttonID::APPLY_SETTINGS]->setText("Apply Changes");
+
+                     changesMadeControls = false;
+
                  });
 
     createButton(buttonID::CONTROLS, "Controls", "pressed",
@@ -74,11 +81,16 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      insideControlSetting = true;
                      optionInsideSwitcher();
 
+                     if (!changesMadeControls) {
+                         mapButtons[buttonID::APPLY_SETTINGS]->disable();
+                         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+                     }
+
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::CONTROLS]);
-
+                     mapButtons[buttonID::APPLY_SETTINGS]->setText("Default");
                  });
 
     createButton(buttonID::SOUND, "Sound", "pressed",
@@ -93,10 +105,20 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SOUND]);
                      mapButtons[buttonID::APPLY_SETTINGS]->enable();
                      mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
+                     mapButtons[buttonID::APPLY_SETTINGS]->setText("Apply Changes");
+
+                     changesMadeControls = false;
+
                  });
 
     createButton(buttonID::APPLY_SETTINGS, "Apply changes", "pressed", [&] {
         ConfigMenu::applyChanges();
+
+
+        mapButtons[buttonID::APPLY_SETTINGS]->disable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+        changesMadeControls = false;
+        changesMadeVideo = false;
     });
 
     createButton(buttonID::BACK_HIGHSCORE, "Back", "pressed", [&] {
@@ -378,6 +400,7 @@ void ConfigMenu::controlSettingsLayout() {
         machine->configGame.controlToAssign = ConfigGame::ControlName::LEFT;
         machine->configGame.lastString = moveLeftKey->getText();
         moveLeftKey->setText("...");
+
     });
 
     moveRightKey = tgui::Button::copy(defaultKey);
@@ -740,8 +763,17 @@ void ConfigMenu::applyChanges() {
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
     }
     if (changesMadeControls) {
+        moveLeftKey->setText("A");
+        moveRightKey->setText("D");
+        jumpKey->setText("W");
+        grabThrowKey->setText("E");
+        zoomKey->setText("Z");
+
+        machine->configGame.addDefaultKeysToMap();
+
 
     }
+
     if (changesMadeSound) {
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
@@ -804,6 +836,4 @@ void ConfigMenu::optionInsideSwitcher() {
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
         insideSoundSettings = false;
     }
-
-
 }

@@ -154,6 +154,10 @@ public:
     ControlName controlToAssign = ControlName::NOTHING;
     std::string lastString = "";
 
+    /**
+     * Creating and adding all default control key into map.
+     */
+    void addDefaultKeysToMap();
 
 private:
 
@@ -181,11 +185,6 @@ private:
      * Load all sprites and then map them in categorized fashion.
      */
     void loadAllTextures();
-
-    /**
-     * Creating and adding all default control key into map.
-     */
-    void addDefaultKeysToMap();
 
 };
 

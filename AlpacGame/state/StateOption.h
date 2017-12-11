@@ -21,6 +21,7 @@ private:
     sf::RenderWindow *window;
     tgui::Gui *menuGUI;
     ConfigGame *configGame;
+    ConfigMenu *configMenu;
 
 
     //Option Functions
@@ -40,6 +41,12 @@ private:
     void KeyBinding(sf::Keyboard::Key newKey, std::string keyString);
 
     void checkIfAnyControlAssigningKeyIsPressed(sf::Event event);
+
+    /**
+     * Checks if all the buttons got their default binds
+     * and if they do, disables the default button
+     */
+    void DefaultKeysCheck();
 
 };
 
