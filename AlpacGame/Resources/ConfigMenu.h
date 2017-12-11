@@ -27,7 +27,8 @@ public:
         VIDEO,
         SOUND,
         CONTROLS,
-        DEFEAT
+        DEFEAT,
+        HIGHSCORE_HUD
     };
 
     enum class buttonID {
@@ -70,6 +71,17 @@ public:
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
     std::map<std::string, int> mapHighscore;
 
+    /**
+     * The getter for the score label
+     * @return
+     */
+    tgui::Label::Ptr getScoreLabel();
+
+    /**
+     * Sets the score label text
+     * @param score, takes in a String that is the new score
+     */
+    void setScore(std::string score);
 
 private:
 
@@ -95,7 +107,7 @@ private:
     tgui::Layout windowWidth;
     tgui::Layout windowHeight;
     tgui::TextBox::Ptr textBoxHighscore;
-
+    tgui::Label::Ptr labelScoreHUD;
 
     /// CheckBox
     bool checkBoxMuteChecked = false;
@@ -147,6 +159,11 @@ private:
      * Creates the defeat screen layout
      */
     void defeatScreenLayout();
+
+    /**
+     * Creates the score label
+     */
+    void scoreLabel();
 
 
     /// Button Functions

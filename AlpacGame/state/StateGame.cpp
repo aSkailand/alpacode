@@ -10,6 +10,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
     menuGUI = machine->configWindow.getMenuGUI();
     menuGUI->removeAllWidgets();
+    // Adds the score label to the window
+    menuGUI->add(machine->configMenu->getScoreLabel());
+    //temp int score
+    int score = 0;
 
     /// Reset Game
     if (configGame->newGame) {
@@ -45,7 +49,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Poll game
     while (pollGame()) {
 
-
+        /// Temp score setter
+        machine->configMenu->setScore(std::to_string(score++));
 
         /// Save current mouse coordinates relatively to view
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
@@ -161,6 +166,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->setView(view);
 
         /// Update View
+        menuGUI->draw();
         window->display();
 
     }

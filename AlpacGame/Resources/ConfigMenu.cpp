@@ -171,10 +171,12 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     // Adds the settings layout to the map
     mapLayouts.emplace(layouts::SETTINGS, optionsVerticalLayout);
 
+    // Loads all the other layouts
     videoSettingsLayout();
     soundSettingsLayout();
     defeatScreenLayout();
     highscoreLayout();
+    scoreLabel();
 }
 
 void ConfigMenu::videoSettingsLayout() {
@@ -304,7 +306,6 @@ void ConfigMenu::videoSettingsLayout() {
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
 
-
 void ConfigMenu::soundSettingsLayout() {
 
 
@@ -370,7 +371,6 @@ void ConfigMenu::soundSettingsLayout() {
     // Emplaces the soundlayout to the layout map
     mapLayouts.emplace(layouts::SOUND, layout);
 }
-
 
 void ConfigMenu::highscoreLayout() {
 
@@ -608,4 +608,20 @@ void ConfigMenu::applyChanges() {
 
     changesMadeVideo = false;
     changesMadeSound = true;
+}
+
+void ConfigMenu::scoreLabel() {
+
+    labelScoreHUD = theme->load("Label");
+    labelScoreHUD->setText("Score: ");
+    labelScoreHUD->setTextSize(42);
+    labelScoreHUD->setPosition(10,10);
+}
+
+void ConfigMenu::setScore(std::string score) {
+    labelScoreHUD->setText("Score: " + score);
+}
+
+tgui::Label::Ptr ConfigMenu::getScoreLabel() {
+    return labelScoreHUD;
 }

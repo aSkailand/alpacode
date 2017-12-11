@@ -14,6 +14,7 @@ void ConfigGame::run(sf::RenderWindow &window, ConfigSound &configSound) {
 
     loadAllTextures();
     loadAllFonts();
+
 }
 
 float ConfigGame::calcX(float angle) {
@@ -165,3 +166,4 @@ void ConfigGame::reset() {
     Alpaca::nextId = 0;
 
 }
+
