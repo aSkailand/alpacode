@@ -37,6 +37,10 @@ void StatePause::goNext(StateMachine &stateMachine) {
         /// Render Phase
         window->clear(sf::Color::Blue);
 
+        for( Scenery *s : *configGame->sceneries){
+            s->render(window);
+        }
+
         /// Adjust SFML shape to Box2D body's position and rotation, then draw it.
         for (Entity *e : *configGame->entities) {
             e->render(configGame->window);

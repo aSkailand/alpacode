@@ -33,7 +33,7 @@ private:
     StateMachine *stateMachine = nullptr;
     ConfigGame *configGame = nullptr;
     sf::RenderWindow *window = nullptr;
-    tgui::Gui *menuGUI;
+    tgui::Gui *menuGUI = nullptr;
 };
 
 
