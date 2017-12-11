@@ -8,12 +8,16 @@ void StatePause::goNext(StateMachine &stateMachine) {
     this->stateMachine = &stateMachine;
     configGame = &stateMachine.configGame;
     window = &stateMachine.configWindow.getWindow();
+    menuGUI = stateMachine.configWindow.getMenuGUI();
 
     /// Pausing
     configGame->isPaused = true;
     for (auto &e : *configGame->entities) {
         e->pause();
     }
+
+    /// Set the mouse coursor visible
+    stateMachine.configWindow.getWindow().setMouseCursorVisible(true);
 
     /// View
     sf::View view = sf::View(window->getDefaultView());
@@ -25,6 +29,8 @@ void StatePause::goNext(StateMachine &stateMachine) {
     pauseFilter.setOrigin(sf::Vector2f(3000, 3000));
     pauseFilter.setPosition(window->mapPixelToCoords(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2)));
 
+    menuGUI->removeAllWidgets();
+    menuGUI->add(stateMachine.configMenu->mapLayouts[ConfigMenu::layouts::PAUSE]);
 
     while(pollGame()){
 
@@ -53,14 +59,15 @@ void StatePause::goNext(StateMachine &stateMachine) {
         configGame->window->draw(configGame->mouseArrow);
 
         /// Update View
+        menuGUI->draw();
         window->display();
-
     }
 }
 
 bool StatePause::pollGame() {
     sf::Event event{};
     while(window->pollEvent(event)){
+        menuGUI->handleEvent(event);
         switch(event.type){
             case sf::Event::Closed:{
                 stateMachine->setCurrentState(StateMachine::stateID::EXIT);
@@ -80,5 +87,6 @@ bool StatePause::pollGame() {
                 break;
         }
     }
-    return true;
+    return stateMachine->configMenu->pauseBool;
 }
+

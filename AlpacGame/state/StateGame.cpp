@@ -7,6 +7,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     machine = &stateMachine;
     configGame = &machine->configGame;
 
+    machine->configMenu->pauseBool = true;
+
     /// Reset Game
     if (configGame->newGame) {
 

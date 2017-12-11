@@ -12,6 +12,8 @@ void StateOption::goNext(StateMachine &stateMachine) {
     menuGUI->add(machine->configMenu->getPictureMenu());
     menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::SETTINGS]);
 
+    machine->configMenu->pauseBool = true;
+
     while (PollOption()) {
         drawOption();
     }
