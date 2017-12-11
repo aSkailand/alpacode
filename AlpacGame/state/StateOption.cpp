@@ -61,7 +61,9 @@ void StateOption::KeyBinding(sf::Keyboard::Key newKey, std::string keyString) {
     configGame->MapControlKeys[configGame->controlToAssign] = newKey;
     configGame->controlToAssign = ConfigGame::ControlName::NOTHING;
 
-
+    machine->configMenu->changesMadeControls = true;
+    machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->setOpacity(1);
+    machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->enable();
 }
 
 

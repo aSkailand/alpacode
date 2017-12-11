@@ -21,6 +21,7 @@ private:
     sf::RenderWindow *window;
     tgui::Gui *menuGUI;
     ConfigGame *configGame;
+    ConfigMenu *configMenu;
 
 
     //Option Functions

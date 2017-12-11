@@ -78,6 +78,18 @@ public:
     tgui::Button::Ptr grabThrowKey;
     tgui::Button::Ptr zoomKey;
 
+    /// Changes made
+    bool changesMadeVideo = false;
+
+    bool changesMadeSound = true;
+
+    bool changesMadeControls = false;
+
+    bool insideVideoSetting = true;
+
+    bool insideControlSetting = false;
+
+    bool insideSoundSettings = false;
 
 
 private:
@@ -109,19 +121,6 @@ private:
     bool checkBoxMuteChecked = false;
 
     bool checkBoxFullScreenChecked = false;
-
-    /// Changes made
-    bool changesMadeVideo = false;
-
-    bool changesMadeSound = true;
-
-    bool changesMadeControls = false;
-
-    bool insideVideoSetting = true;
-
-    bool insideControlSetting = false;
-
-    bool insideSoundSettings = false;
 
     /// Current fullscreen
     bool isFullScreen = false;
