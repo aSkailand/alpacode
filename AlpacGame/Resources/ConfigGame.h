@@ -24,7 +24,7 @@ public:
     /**
      * The radius of the planet.
      */
-    unsigned int planetRadius = 600;
+    unsigned int planetRadius = 800;
 
     bool newGame = true;
     bool isPaused = false;
@@ -52,6 +52,7 @@ public:
      * The position of the planet's center relatively to the game window.
      */
     sf::Vector2f planetCenter;
+
 
     /**
      * The current buffered input, used to

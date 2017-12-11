@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <list>
 
 #include "../../Resources/ConfigGame.h"
 
@@ -66,11 +67,15 @@ private:
     ConfigGame *configGame = nullptr;
 
     /// Behavior
-    enum class Behavior{NORMAL, HUNTING, AFRAID};
+    enum class Behavior{NORMAL, HUNTING, HOMERUN};
     Behavior currentBehavior;
 
     /// Wolf Base
-    sf::CircleShape *wolfBase = nullptr;
+    b2Vec2 wolfDenVec2;
+    sf::CircleShape *wolfDen_Debug = nullptr;
+
+    /// Wolf AttackVector
+    std::list<Entity *> currentlyDetectedEntities;
 
     /// Functions
     /**
