@@ -185,6 +185,8 @@ void ConfigGame::loadAllTextures() {
     // HitPoint
     healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
 
+    fertileHeartTexture.loadFromFile("entity/HitPoint/heart.png");
+
     // Farmer
     std::string farmerSpriteSheet = "entity/player/farmer-sprite.png";
 
@@ -256,6 +258,9 @@ void ConfigGame::reset() {
     entities = new std::vector<Entity *>;
     entities->push_back(planet);
     entities->push_back(farmer);
+
+    entities->push_back(new Alpaca(this, 100, calcX(10.f), calcY(10.f)));
+    entities->push_back(new Alpaca(this, 100, calcX(-10.f), calcY(-10.f)));
 
     // Instantiating initial scenery
     delete sceneries;

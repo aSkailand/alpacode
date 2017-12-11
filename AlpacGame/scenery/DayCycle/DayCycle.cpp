@@ -51,9 +51,23 @@ void DayCycle::proceed() {
 
         // Proceed one frame
         cycleFrame++;
+
+        // If one day is over
         if (cycleFrame == 12) {
             cycleFrame = 0;
+
+            // todo: Put in a function in configGame
             configGame->numOfDay++;
+            for(Entity* entity : *configGame->entities){
+                if(entity->getEntity_ID() == Entity::ID::ALPACA){
+                    auto *alpacaPtr =  dynamic_cast<Alpaca*>(entity);
+                    if(alpacaPtr->isAdult){
+                        alpacaPtr->isFertile = true;
+                    } else{
+                        alpacaPtr->adultify();
+                    }
+                }
+            }
             std::cout << "DAY: " << configGame->numOfDay << std::endl;
         }
 

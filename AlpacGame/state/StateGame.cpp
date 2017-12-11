@@ -121,6 +121,18 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        /// Spawn Alpacas
+        while (!configGame->queue.empty()){
+            b2Vec2 babySpawnPos = configGame->queue.front();
+            configGame->queue.pop();
+            auto* babyAlpaca = new Alpaca(configGame, false, babySpawnPos.x * SCALE, babySpawnPos.y * SCALE);
+            b2Vec2 delta = planet->getBody()->GetWorldCenter() - babyAlpaca->getBody()->GetWorldCenter();
+            delta.Normalize();
+            float mass = babyAlpaca->getBody()->GetMass();
+            babyAlpaca->getBody()->ApplyLinearImpulseToCenter(mass * 2.f * -delta, true);
+            entities->push_back(babyAlpaca);
+        }
+
         // todo: Make the defeat check here
         unsigned int numAliveAlpacas = 0;
 
@@ -153,6 +165,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
                 cold_e->update();
             }
         }
+
+
 
 
 
@@ -244,7 +258,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
         }
 
         case sf::Keyboard::Num1: {
-            entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Alpaca(configGame, true, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num2: {

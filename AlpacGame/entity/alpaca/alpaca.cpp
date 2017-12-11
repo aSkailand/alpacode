@@ -1,6 +1,6 @@
 #include "alpaca.h"
 
-Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y)
+Alpaca::Alpaca(ConfigGame *configGame, bool isAdult, float x, float y)
         : id(nextId++), Mob(id) {
 
     // Assign Pointers
@@ -39,7 +39,7 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     fixtureDef_hit.shape = &b2Shape_2;
     fixtureDef_hit.isSensor = true;
     fixtureDef_hit.filter.categoryBits = (uint16) ID::ALPACA;
-    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF;
+    fixtureDef_hit.filter.maskBits = (uint16) ID::FARMER | (uint16) ID::WOLF | (uint16) ID::ALPACA;
 
     // Detection sensor
     b2CircleShape b2Shape_3;
@@ -65,11 +65,22 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     fixture_detection->SetUserData(convertToVoidPtr((int) CollisionID::DETECTION));
 
     // Creating SFML shape
-    sf_ShapeEntity = new sf::RectangleShape(sf::Vector2f(width, height));
-    sf_ShapeEntity->setOrigin(width / 2, height / 2);
+    this->isAdult = isAdult;
+    if(isAdult){
+        sf_ShapeEntity = new sf::RectangleShape(sizeAdult);
+        sf_ShapeEntity->setOrigin(sizeAdult/2.f);
 
-    sf_ShapeGhost = new sf::RectangleShape(sf::Vector2f(width, height));
-    sf_ShapeGhost->setOrigin(width / 2, height / 2);
+        sf_ShapeGhost = new sf::RectangleShape(sizeAdult);
+        sf_ShapeGhost->setOrigin(sizeAdult/2.f);
+    }
+    else{
+        sf_ShapeEntity = new sf::RectangleShape(sizeKid);
+        sf_ShapeEntity->setOrigin(sizeKid/2.f);
+
+        sf_ShapeGhost = new sf::RectangleShape(sizeKid);
+        sf_ShapeGhost->setOrigin(sizeKid/2.f);
+    }
+
     sf_ShapeGhost->setTexture(alpacaMapPtr[Action::IDLE][0]);
     sf_ShapeGhost->setFillColor(sf::Color(200, 200, 200, 100));
 
@@ -87,6 +98,8 @@ Alpaca::Alpaca(ConfigGame *configGame, float radius, float width, float height, 
     // Create ID text
     label_ID = configGame->createLabel(&this->configGame->fontID, 20, std::to_string(id));
 
+    sf_fertileHeart = sf::RectangleShape(sf::Vector2f(25.f, 25.f));
+    sf_fertileHeart.setTexture(&configGame->fertileHeartTexture);
 
     /// Initialize behavior
     currentBehavior = Behavior::NORMAL;
@@ -190,6 +203,14 @@ void Alpaca::render(sf::RenderWindow *window) {
     }
 
     window->draw(*sf_ShapeEntity);
+
+    // Draw fertile heart
+    if(currentHealth == Health::ALIVE && isFertile){
+        sf_fertileHeart.setPosition(getBody()->GetWorldPoint(b2Vec2(0.f,-2.f)).x*SCALE,
+                                    getBody()->GetWorldPoint(b2Vec2(0.f,-2.f)).y*SCALE);
+        sf_fertileHeart.setRotation(sf_ShapeEntity->getRotation());
+        window->draw(sf_fertileHeart);
+    }
 
     // Draw HitPoint barometer
     if(currentHealth == Health::ALIVE && !configGame->isPaused && currentlyMousedOver){
@@ -301,6 +322,29 @@ void Alpaca::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
     switch (contactEntity->getEntity_ID()) {
         case ID::FARMER: {
             farmerTouch = true;
+            break;
+        }
+        case ID::ALPACA: {
+
+            // Breeding
+            if(isFertile){
+                auto contactAlpaca = dynamic_cast<Alpaca*>(contactEntity);
+                if(otherCollision == CollisionID::HIT && contactAlpaca->isFertile){
+
+                    isFertile = false;
+                    contactAlpaca->isFertile = false;
+
+                    this->getBody()->SetLinearVelocity(b2Vec2(0.f,0.f));
+                    contactAlpaca->getBody()->SetLinearVelocity(b2Vec2(0.f,0.f));
+
+                    forcePushBody((int) Action::WALKING, this->getBody(), 10.f, Direction ::LEFT);
+                    forcePushBody((int) Action::WALKING, contactAlpaca->getBody(), 10.f, Direction ::RIGHT);
+
+                    b2Vec2 babySpawnPos = getBody()->GetWorldCenter();
+                    configGame->queue.push(babySpawnPos);
+
+                }
+            }
             break;
         }
         default: {
@@ -485,5 +529,18 @@ void Alpaca::resume() {
     if(currentHealth != Health::ALIVE){
         deathClock.resume();
     }
+}
+
+void Alpaca::adultify() {
+
+    isAdult = true;
+
+    sf_ShapeEntity = new sf::RectangleShape(sizeAdult);
+    sf_ShapeEntity->setOrigin(sizeAdult/2.f);
+
+    sf_ShapeGhost = new sf::RectangleShape(sizeAdult);
+    sf_ShapeGhost->setOrigin(sizeAdult/2.f);
+    sf_ShapeGhost->setTexture(alpacaMapPtr[Action::IDLE][0]);
+    sf_ShapeGhost->setFillColor(sf::Color(200, 200, 200, 100));
 }
 

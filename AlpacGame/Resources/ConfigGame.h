@@ -5,6 +5,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
+#include <queue>
 
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
@@ -48,6 +49,7 @@ public:
     sf::RenderWindow *window = nullptr;
 
     std::vector<Entity*> *entities = nullptr;
+    std::queue<b2Vec2> queue;
 
     sf::CircleShape mouseArrow;
     std::vector<Scenery*> *sceneries = nullptr;
@@ -122,6 +124,8 @@ public:
 
     // Single Textures
     sf::Texture healthTexture;
+
+    sf::Texture fertileHeartTexture;
 
     sf::Texture trapOpenTexture;
     sf::Texture trapClosedTexture;
