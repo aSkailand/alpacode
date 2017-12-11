@@ -53,8 +53,10 @@ Planet::Planet(ConfigGame *configGame, float radius, float x, float y) {
 void Planet::render(sf::RenderWindow *window) {
 
     // Change opacity by delta
-    sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0,0,0,2));
-    shapeBackground.setFillColor(shapeBackground.getFillColor() + sf::Color(0,0,0,2));
+    if(!configGame->isPaused){
+        sf_ShapeEntity->setFillColor(sf_ShapeEntity->getFillColor() - sf::Color(0,0,0,2));
+        shapeBackground.setFillColor(shapeBackground.getFillColor() + sf::Color(0,0,0,2));
+    }
 
     if (configGame->showDebugMode) {
 

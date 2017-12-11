@@ -192,7 +192,7 @@ void Alpaca::render(sf::RenderWindow *window) {
     window->draw(*sf_ShapeEntity);
 
     // Draw HitPoint barometer
-    if(currentHealth == Health::ALIVE && currentlyMousedOver){
+    if(currentHealth == Health::ALIVE && !configGame->isPaused && currentlyMousedOver){
         hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).x*SCALE,
                                         getBody()->GetWorldPoint(b2Vec2(0.f,-3.f)).y*SCALE,
                                         sf_ShapeEntity->getRotation());

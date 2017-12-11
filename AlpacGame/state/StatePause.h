@@ -8,6 +8,12 @@
 
 /**
  * The state that handles pausing of the game.
+ * The pause state works in this manner, not ordered in any specific way:
+ *      a. Transition to StatePause will ALWAYS pause the game.
+ *      b. Pause is over when a new state is queued up.*
+ *          -> * = Not when the next state is Option State.
+ *      c. Pause State is basically a Game State, but with limited,
+ *         possible inputs.
  */
 class StatePause : public State{
 

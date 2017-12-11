@@ -18,8 +18,6 @@ class StateMachine;
 class ConfigMenu {
 public:
 
-    bool pauseBool;
-
     /// Enums
     enum class layouts {
         MAINMENU,

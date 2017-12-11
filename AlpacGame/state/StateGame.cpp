@@ -7,8 +7,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
     machine = &stateMachine;
     configGame = &machine->configGame;
 
-    machine->configMenu->pauseBool = true;
-
     /// Reset Game
     if (configGame->newGame) {
 
@@ -171,7 +169,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->draw(configGame->mouseArrow);
 
         /// Check if game is over
-        if (farmer->currentHealth == EntityWarm::Health::ALIVE) {
+        if (farmer != nullptr && farmer->currentHealth == EntityWarm::Health::ALIVE) {
 
             // Finding angle of farmer
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();

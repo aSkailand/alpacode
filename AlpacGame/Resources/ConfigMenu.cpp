@@ -6,21 +6,17 @@ void ConfigMenu::run(StateMachine &stateMachine) {
 
     this->machine = &stateMachine;
 
-    pauseBool = true;
-
     theme = tgui::Theme::create("Resources/BabyBlue.txt");
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
 
     createButton(buttonID::PLAYGAME, "Play game!", "pressed",
                  [&] {
-                     machine->configGame.isPaused = false;
                      machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
                  });
 
     createButton(buttonID::SETTINGS, "Settings", "pressed",
                  [&] {
-                     machine->configGame.isPaused = false;
                      machine->setCurrentState(StateMachine::stateID::OPTION);
                  });
 
@@ -31,13 +27,8 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  [&] {
                      if (!machine->configGame.isPaused) {
                          machine->setCurrentState(StateMachine::stateID::MENU);
-                     } else if (machine->configGame.isPaused) {
-                         pauseBool = false;
-                         machine->configGame.isPaused = false;
-                         for (auto &e : *machine->configGame.entities) {
-                             e->resume();
-                         }
-                         machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
+                     } else{
+                         machine->setCurrentState(StateMachine::stateID::PAUSE);
                      }
                  });
 
@@ -270,13 +261,6 @@ void ConfigMenu::pauseMenuLayout() {
     resumeButton->setText("Resume Game");
     resumeButton->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
-        pauseBool = false;
-        // Resumes all entities
-        machine->configGame.isPaused = false;
-        for (auto &e : *machine->configGame.entities) {
-            e->resume();
-        }
-
         machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
     });
 
@@ -285,7 +269,6 @@ void ConfigMenu::pauseMenuLayout() {
     optionButton->setText("Settings");
     optionButton->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
-        pauseBool = false;
         machine->setCurrentState(StateMachine::stateID::OPTION);
     });
 
@@ -295,10 +278,7 @@ void ConfigMenu::pauseMenuLayout() {
     exitButton->setText("Main menu");
     exitButton->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
-        pauseBool = false;
-        for (auto &e : *machine->configGame.entities) {
-            e->resume();
-        }
+        machine->configGame.isPaused = false;
         machine->setCurrentState(StateMachine::stateID::MENU);
     });
     resumeButton->setSize(100, 100);

@@ -52,6 +52,14 @@ public:
         dayCycleTime.reset(true);
     };
 
+    void pause(){
+        dayCycleTime.pause();
+    };
+
+    void resume(){
+        dayCycleTime.resume();
+    };
+
 
 private:
 

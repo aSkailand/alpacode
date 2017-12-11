@@ -19,7 +19,8 @@ Sky::Sky(ConfigGame *configGame, float radius, float x, float y) {
 
 void Sky::render(sf::RenderWindow *window) {
 
-    shapeForeground.setFillColor(shapeForeground.getFillColor() - sf::Color(0,0,0,1));
+    if(!configGame->isPaused)
+        shapeForeground.setFillColor(shapeForeground.getFillColor() - sf::Color(0,0,0,1));
 
     window->draw(shapeBackground);
     window->draw(shapeForeground);
