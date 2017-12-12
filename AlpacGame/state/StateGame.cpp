@@ -336,7 +336,7 @@ void StateGame::checkDefeat() {
             window->setMouseCursorVisible(true);
             deadCheck = false;
         }
-        if (machine->configGame.numOfAliveAlpacas < 2) {
+        else if (machine->configGame.numOfAliveAlpacas < 2) {
             machine->configMenu->allAlpacasDead->setText(
                     "\t\t\t\tDefeat!\nAlpacas have gone extinct!\n \t\tDays survived: " +
                     std::to_string(machine->configGame.numOfDay));

@@ -2,7 +2,6 @@
 #ifndef ALPACGAME_MOB_H
 #define ALPACGAME_MOB_H
 
-// todo: Derive from warm entity instead?
 /**
  * Abstract class defining the mechanics for the random movement AI.
  * Includes a clock to determine if the AI is ready to switch to next action.
@@ -37,6 +36,8 @@ protected:
         return isCooldownTriggered(&randomActionClock, randomActionTick);
     }
 
+
+
     /**
     * Generates a random number from the generator in the range of given lower and upper.
     * @param lower the left number in the range.
@@ -52,6 +53,8 @@ protected:
      * The clock used to check if the AI is ready to switch action.
      */
     sftools::Chronometer randomActionClock{};
+
+    sftools::Chronometer behaviorClock;
 
 private:
 

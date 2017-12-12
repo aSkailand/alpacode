@@ -19,6 +19,7 @@ DayCycle::DayCycle(ConfigGame *configGame) {
 
     // Set initial cycle
     configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
+    configGame->initiateNewDay();
 
     /// Calculations
 
@@ -54,30 +55,19 @@ void DayCycle::proceed() {
 
         // If one day is over
         if (cycleFrame == 12) {
-            cycleFrame = 0;
-
-            // todo: Put in a function in configGame
-            configGame->numOfDay++;
-            for(Entity* entity : *configGame->entities){
-                if(entity->getEntity_ID() == Entity::ID::ALPACA){
-                    auto *alpacaPtr =  dynamic_cast<Alpaca*>(entity);
-                    if(alpacaPtr->isAdult){
-                        alpacaPtr->isFertile = true;
-                    } else{
-                        alpacaPtr->adultify();
-                    }
-                }
-            }
             std::cout << "DAY: " << configGame->numOfDay << std::endl;
+            cycleFrame = 0;
         }
 
         // Determine current cycle frame
         if (cycleFrame == 0) {
             configGame->setCurrentCycle(ConfigGame::Cycle::DAY);
             sun->setTexture(&sunTexture);
+            configGame->initiateNewDay();
         } else if (cycleFrame == 6) {
             configGame->setCurrentCycle(ConfigGame::Cycle::NIGHT);
             sun->setTexture(&moonTexture);
+            configGame->initiateNight();
         }
 
         // Switch textures

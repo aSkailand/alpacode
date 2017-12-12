@@ -34,6 +34,7 @@ public:
         SHOTGUN = 0x0010,
         BULLET  = 0x0020,
         TRAP    = 0x0040
+
     };
 
     enum class Status {
@@ -119,6 +120,10 @@ public:
         return body;
     };
 
+    sf::Shape *getSf_ShapeEntity() const {
+        return sf_ShapeEntity;
+    }
+
     /// For Detection
     void *convertToVoidPtr(int enumValue) {
         return reinterpret_cast<void *>(enumValue);
@@ -149,6 +154,9 @@ protected:
     b2Body *body = nullptr;
 
     sf::Shape *sf_ShapeEntity = nullptr;
+
+
+protected:
 
     /// Unit Vector + Force functions
 

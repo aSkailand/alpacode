@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <list>
 
 #include "../../Resources/ConfigGame.h"
 
@@ -56,6 +57,8 @@ private:
     float attackForce = 8.f;
     float attackAngle = 25.f;
 
+    float enteringDenTick = 2.f;
+
 public:
 
     void renderDebugMode() override;
@@ -63,11 +66,13 @@ public:
 private:
 
     /// Behavior
-    enum class Behavior{NORMAL, HUNTING, AFRAID};
-    Behavior currentBehavior;
+    enum class Behavior{HUNTING, CHASING, RETREATING};
+    Behavior currentBehavior = Behavior::HUNTING;
 
-    /// Wolf Base
-    sf::CircleShape *wolfBase = nullptr;
+    sf::CircleShape *wolfDen_Debug = nullptr;
+
+    /// Wolf AttackVector
+    std::list<Entity *> currentlyDetectedEntities;
 
     /// Functions
     /**

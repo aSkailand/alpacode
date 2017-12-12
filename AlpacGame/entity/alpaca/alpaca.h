@@ -22,6 +22,8 @@ public:
     sf::Vector2f sizeAdult = sf::Vector2f(100.f, 100.f);
     sf::Vector2f sizeKid   = sf::Vector2f(70.f, 70.f);
 
+    int max_HP = 3;
+
     void adultify();
 
     void pause() override;
