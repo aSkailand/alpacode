@@ -24,7 +24,8 @@ public:
         SETTINGS,
         VIDEO,
         SOUND,
-        CONTROLS
+        CONTROLS,
+        PAUSE
     };
 
     enum class buttonID {
@@ -79,6 +80,7 @@ private:
 
     bool checkBoxFullScreenChecked = false;
 
+
     /// Layout Functions
     /**
      * Creates the main menu layout and settings menu layout
@@ -95,6 +97,13 @@ private:
      * Creates the sound settings layout
      */
     void soundSettingsLayout();
+
+    /**
+     * Creates the pause menu layout
+     */
+    void pauseMenuLayout();
+
+
 
     /// Button Functions
     /**

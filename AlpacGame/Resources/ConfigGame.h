@@ -5,10 +5,15 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
+#include <queue>
+#include <random>
 
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
 #include "../Resources/SpriteInfo.h"
+#include "../scenery/Scenery.h"
+#include "../scenery/DayCycle/DayCycle.h"
+
 
 /**
  * Common resources accessible by all game entities.
@@ -18,13 +23,30 @@ public:
 
     /// Day / Night Cycle
     enum class Cycle{DAY, NIGHT};
-    Cycle currentCycle;
+    Cycle getCurrentCycle() const;
+    void setCurrentCycle(Cycle currentCycle);
+    DayCycle *dayCycle = nullptr;
+    unsigned int numOfDay = 1;
+
+    unsigned int numOfAliveAlpacas = 0;
+
+    /**
+     * Initiated every new day (per 2 revolution.
+     */
+    void initiateNewDay();
+    void initiateNight();
+
+    /// Wolf Spawn
+    sf::Vector2f wolfDenPos;
+    float wolfDenAngle = 180.f;
 
     /// Customizable Properties
-    /**
-     * The radius of the planet.
-     */
-    unsigned int planetRadius = 600;
+    float sunRadius = 300.f;
+    float planetRadius = 700.f;
+
+
+    Scenery* sun = nullptr;
+    Scenery* sky = nullptr;
 
     bool newGame = true;
     bool isPaused = false;
@@ -32,16 +54,18 @@ public:
     b2World* world = nullptr;
     Entity* planet = nullptr;
     Entity* farmer = nullptr;
-    b2Body* planetBody = nullptr;
+
+    Scenery* cave;
 
     void reset();
 
     sf::RenderWindow *window = nullptr;
 
     std::vector<Entity*> *entities = nullptr;
+    std::queue<b2Vec2> queue;
 
     sf::CircleShape mouseArrow;
-
+    std::vector<Scenery*> *sceneries = nullptr;
 
     /**
      * Show in-game labels or not.
@@ -104,24 +128,18 @@ public:
      */
     float calcY(float degree, float radius);
 
+    //Create label
+    sf::Text createLabel(sf::Font *font, unsigned int fontSize, const std::string &text);;
+
     /// Fonts
     sf::Font fontID;
 
     /// Textures
-    sf::Texture planetTexture;
 
-    sf::Texture morning_1;
-    sf::Texture morning_2;
-    sf::Texture morning_3;
-    sf::Texture afternoon_4;
-    sf::Texture afternoon_5;
-    sf::Texture afternoon_6;
-    sf::Texture evening_7;
-    sf::Texture evening_8;
-    sf::Texture evening_9;
-    sf::Texture night_10;
-    sf::Texture night_11;
-    sf::Texture night_12;
+    // Single Textures
+    sf::Texture healthTexture;
+
+    sf::Texture fertileHeartTexture;
 
     sf::Texture trapOpenTexture;
     sf::Texture trapClosedTexture;
@@ -129,15 +147,26 @@ public:
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
-    std::vector<sf::Texture*> cooldownTextures;
+    // Texture Vectors
+    std::vector<sf::Texture> bulletIndicatorTextures;
+    std::vector<sf::Texture> sunTextures;
+    std::vector<sf::Texture> planetTextures;
+    std::vector<sf::Texture> skyTextures;
+    std::vector<sf::Texture*> cooldownTextures; // todo switch to non pointer
 
-    /// Map of every entities sprites.
+    // Texture Maps
     std::map<EntityWarm::Action, SpriteInfo> wolfSprites;
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
-
 private:
+
+    /**
+   * The random number generator.
+   */
+    std::default_random_engine generator{};
+
+    Cycle currentCycle = Cycle::DAY;
 
     /**
     * Load all necessary font used during the game.

@@ -8,77 +8,109 @@ void StatePause::goNext(StateMachine &stateMachine) {
     this->stateMachine = &stateMachine;
     configGame = &stateMachine.configGame;
     window = &stateMachine.configWindow.getWindow();
+    menuGUI = stateMachine.configWindow.getMenuGUI();
 
     /// Pausing
-    configGame->isPaused = true;
-    for (auto &e : *configGame->entities) {
-        e->pause();
-    }
 
-    /// View
+    // Set pause bool
+    stateMachine.configGame.isPaused = true;
+
+    // Set the mouse cursor visible
+    stateMachine.configWindow.getWindow().setMouseCursorVisible(true);
+
+    // View
     sf::View view = sf::View(window->getDefaultView());
 
-    /// Create Pause Filter
+    // Create Pause Filter
     sf::RectangleShape pauseFilter;
     pauseFilter.setFillColor(sf::Color(100, 100, 100, 150));
     pauseFilter.setSize(sf::Vector2f(6000, 6000));
     pauseFilter.setOrigin(sf::Vector2f(3000, 3000));
     pauseFilter.setPosition(window->mapPixelToCoords(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2)));
 
+    // Pause DayCycle
+    configGame->dayCycle->pause();
 
-    while(pollGame()){
+    // Pause entities
+    for (auto &e : *configGame->entities) {
+        e->pause();
+    }
+
+    // Add Pause Menu
+    menuGUI->removeAllWidgets();
+    menuGUI->add(stateMachine.configMenu->mapLayouts[ConfigMenu::layouts::PAUSE]);
+
+    /// Poll Paused Game
+    while (pollGame()) {
 
         /// Render Phase
         window->clear(sf::Color::Blue);
 
-        /// Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        // Draw sceneries
+        for (Scenery *s : *configGame->sceneries) {
+            s->render(window);
+        }
+
+        // Draw entities
         for (Entity *e : *configGame->entities) {
             e->render(configGame->window);
         }
 
-        /// Draw Filter
+        // Draw Filter
         window->draw(pauseFilter);
 
-        /// Save current mouse coordinates relatively to view
-        sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
-        sf::Vector2f worldPos = window->mapPixelToCoords(pixelPos);
-        configGame->mouseXpos = worldPos.x;
-        configGame->mouseYpos = worldPos.y;
-
-        double mouse = sf::Mouse::getPosition(*configGame->window).x;
-        double center = configGame->window->getSize().x / 2;
-        configGame->mouseInLeftSide = mouse < center;
-
-        configGame->mouseArrow.setPosition(configGame->mouseXpos, configGame->mouseYpos);
-        configGame->window->draw(configGame->mouseArrow);
-
-        /// Update View
+        // Draw screen
+        menuGUI->draw();
         window->display();
-
     }
 }
 
 bool StatePause::pollGame() {
     sf::Event event{};
-    while(window->pollEvent(event)){
-        switch(event.type){
-            case sf::Event::Closed:{
+    while (window->pollEvent(event)) {
+        menuGUI->handleEvent(event);
+        switch (event.type) {
+            case sf::Event::Closed: {
                 stateMachine->setCurrentState(StateMachine::stateID::EXIT);
-                return false;
+                break;
             }
-            case sf::Event::KeyPressed:{
-                if(event.key.code == sf::Keyboard::P){
-                    configGame->isPaused = false;
-                    for (auto &e : *configGame->entities) {
-                        e->resume();
-                    }
+            case sf::Event::KeyPressed: {
+                if (event.key.code == sf::Keyboard::P) {
                     stateMachine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
-                    return false;
+                    break;
                 }
             }
             default:
                 break;
         }
     }
-    return true;
+
+    // Check what state is current
+    if (stateMachine->getCurrentState() != StateMachine::stateID::PAUSE) {
+
+        // Turn off logic pause
+        stateMachine->configGame.isPaused = stateMachine->getCurrentState() == StateMachine::stateID::OPTION;
+
+        // Set the mouse cursor invisible
+        if (stateMachine->getCurrentState() == StateMachine::stateID::SINGLEPLAYER)
+            stateMachine->configWindow.getWindow().setMouseCursorVisible(false);
+
+        // Resume DayCycle
+        configGame->dayCycle->resume();
+
+        // Resume entities
+        for (auto &e : *configGame->entities) {
+            e->resume();
+        }
+
+        // End StatePause if new state is queued
+        return false;
+
+    } else {
+
+        // Resume StatePause if no new state is queued
+        return true;
+
+    }
 }
+

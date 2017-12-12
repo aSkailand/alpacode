@@ -64,13 +64,18 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     sf_DebugHit->setFillColor(sf::Color::Transparent);
     sf_DebugHit->setOrigin(radius, radius);
 
+    // Set HP
     HP = 10;
 
-    createLabel(label_ID, &this->configGame->fontID, "P1");
+    // Create HitPoint barometer
+    hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);
+
+    // Create ID
+    label_ID = configGame->createLabel(&configGame->fontID, 20, "Farmer");
+
 
     graspClock.reset(true);
     movementTriggerClock.reset(true);
-
 
 }
 
@@ -91,6 +96,14 @@ void Farmer::render(sf::RenderWindow *window) {
 
     window->draw(*sf_ShapeEntity);
 
+    // Draw Hit Points Barometer
+    if(currentHealth == Health::ALIVE && !configGame->isPaused){
+        hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+                                        getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE,
+                                        sf_ShapeEntity->getRotation());
+        hitPointBarometer->render(window);
+    }
+
     renderDebugMode();
 
 }
@@ -105,7 +118,7 @@ void Farmer::switchAction() {
         return;
     }
 
-    // Handle input
+    // Handle Input
     switch (configGame->currentInput) {
         case sf::Keyboard::W: {
             currentAction = Action::JUMP;
@@ -452,10 +465,10 @@ void Farmer::renderDebugMode() {
 
         // Draw label_ID
         float offset = fixture_body->GetShape()->m_radius + 1.f;
-        label_ID->setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
+        label_ID.setPosition(body->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
                               body->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
-        label_ID->setRotation(sf_ShapeEntity->getRotation());
-        configGame->window->draw(*label_ID);
+        label_ID.setRotation(sf_ShapeEntity->getRotation());
+        configGame->window->draw(label_ID);
 
         // Draw hitSensor debug
         sf_DebugHit->setOutlineThickness(2);

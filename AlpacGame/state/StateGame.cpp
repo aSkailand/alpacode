@@ -18,6 +18,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
         entities = configGame->entities;
         planet = configGame->planet;
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
+        dayCycle = configGame->dayCycle;
+        dayCycle->initiateClock();
 
         configGame->newGame = false;
 
@@ -88,8 +90,19 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         }
 
+
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
+
+        dayCycle->proceed();
+
+        /// Render Phase
+        window->clear(sf::Color::Blue);
+
+        /// Draw Background;
+        for( Scenery *s : *configGame->sceneries){
+            s->render(window);
+        }
 
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
@@ -108,16 +121,42 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        /// Spawn Alpacas
+        while (!configGame->queue.empty()){
+            b2Vec2 babySpawnPos = configGame->queue.front();
+            configGame->queue.pop();
+            auto* babyAlpaca = new Alpaca(configGame, false, babySpawnPos.x * SCALE, babySpawnPos.y * SCALE);
+            b2Vec2 delta = planet->getBody()->GetWorldCenter() - babyAlpaca->getBody()->GetWorldCenter();
+            delta.Normalize();
+            float mass = babyAlpaca->getBody()->GetMass();
+            babyAlpaca->getBody()->ApplyLinearImpulseToCenter(mass * 2.f * -delta, true);
+            entities->push_back(babyAlpaca);
+        }
+
+        // todo: Make the defeat check here
+        unsigned int numAliveAlpacas = 0;
+
         /// Activate all warm entities
         for (Entity *e : *entities) {
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
             if (warm_e != nullptr) {
+
+                // Update Warm Entity Action
                 warm_e->switchAction();
                 warm_e->performAction();
 
+                // Check if mouse pointer is hovering over the entity
+                warm_e->currentlyMousedOver = warm_e->get_sf_ShapeEntity()->getGlobalBounds().contains(
+                        window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
+
+                if(warm_e->getEntity_ID() == Entity::ID::ALPACA && warm_e->currentHealth == EntityWarm::Health::ALIVE){
+                    numAliveAlpacas++;
+                }
             }
         }
+
+        // todo: Do a defeat check here
 
         /// Update all cold entities
         for (Entity *e : *entities) {
@@ -127,10 +166,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
-        /// Render Phase
-        window->clear(sf::Color::Blue);
 
-        /// Draw crosshair
+
+
+
+        /// Draw aim
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
 
@@ -143,7 +183,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->draw(configGame->mouseArrow);
 
         /// Check if game is over
-        if (farmer->currentHealth == EntityWarm::Health::ALIVE) {
+        if (farmer != nullptr && farmer->currentHealth == EntityWarm::Health::ALIVE) {
 
             // Finding angle of farmer
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
@@ -207,6 +247,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
     switch (event.key.code) {
         case sf::Keyboard::I: {
             configGame->showDebugMode = !configGame->showDebugMode;
+            std::cout << "Number of alive alpacas: " << configGame->numOfAliveAlpacas << std::endl;
             break;
         }
         case sf::Keyboard::R: {
@@ -217,17 +258,15 @@ void StateGame::keyPressedHandler(sf::Event event) {
         }
 
         case sf::Keyboard::Num1: {
-            entities->emplace_back(new Alpaca(configGame, 40, 100, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Alpaca(configGame, true, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace(entities->begin(),
-                              new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num3: {
-            entities->emplace_back(
-                    new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num4: {

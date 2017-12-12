@@ -2,7 +2,6 @@
 #ifndef ALPACGAME_MOB_H
 #define ALPACGAME_MOB_H
 
-// todo: Derive from warm entity instead?
 /**
  * Abstract class defining the mechanics for the random movement AI.
  * Includes a clock to determine if the AI is ready to switch to next action.
@@ -20,7 +19,7 @@ protected:
      * that is used to determine if the AI can switch to next action.
      * @param seeder additional seed to spice up the generator's seed.
      */
-    explicit Mob(int seeder) {
+    explicit Mob(int seeder){
         // Creating Random Number Generator
         long long int seed = std::chrono::system_clock::now().time_since_epoch().count() + seeder;
         generator = std::default_random_engine(seed);
@@ -55,7 +54,6 @@ protected:
      */
     sftools::Chronometer randomActionClock{};
 
-    // todo move to Mob
     sftools::Chronometer behaviorClock;
 
 private:

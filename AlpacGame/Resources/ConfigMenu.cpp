@@ -11,16 +11,26 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     masterButton = theme->load("Button");
 
     createButton(buttonID::PLAYGAME, "Play game!", "pressed",
-                 [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
+                 [&] {
+                     machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
+                 });
 
     createButton(buttonID::SETTINGS, "Settings", "pressed",
-                 [&] { machine->setCurrentState(StateMachine::stateID::OPTION); });
+                 [&] {
+                     machine->setCurrentState(StateMachine::stateID::OPTION);
+                 });
 
     createButton(buttonID::QUIT, "Quit", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::EXIT); });
 
     createButton(buttonID::BACK_TO_MAIN, "Back", "pressed",
-                 [&] { machine->setCurrentState(StateMachine::stateID::MENU); });
+                 [&] {
+                     if (!machine->configGame.isPaused) {
+                         machine->setCurrentState(StateMachine::stateID::MENU);
+                     } else{
+                         machine->setCurrentState(StateMachine::stateID::PAUSE);
+                     }
+                 });
 
     createButton(buttonID::VIDEO, "Video", "pressed",
                  [&] {
@@ -62,6 +72,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createSlider(buttonID::MASTER_SLIDER);
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
+
 
     mainMenuLayout(machine->configWindow.getMenuGUI());
 }
@@ -122,6 +133,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     videoSettingsLayout();
     soundSettingsLayout();
+    pauseMenuLayout();
 }
 
 void ConfigMenu::videoSettingsLayout() {
@@ -134,6 +146,7 @@ void ConfigMenu::videoSettingsLayout() {
     // ComboBox
     tgui::ComboBox::Ptr resolutionBox = theme->load("ComboBox");
 
+
     // Add all possible options inside ComboBox
     for (auto &iter : machine->configWindow.mapResolutionString) {
         resolutionBox->addItem(iter.second);
@@ -142,11 +155,13 @@ void ConfigMenu::videoSettingsLayout() {
     // Set initial selection
     resolutionBox->setSelectedItem(machine->configWindow.mapResolutionString[machine->configWindow.currentResolution]);
 
+
     // Setup selection mechanism
+
     resolutionBox->connect("ItemSelected",
                            [&](std::string itemSelected) {
                                for (auto &iter : machine->configWindow.mapResolutionString) {
-                                   if(itemSelected == iter.second)
+                                   if (itemSelected == iter.second)
                                        setCurrentResolution(iter.first);
                                }
                            });
@@ -165,6 +180,8 @@ void ConfigMenu::videoSettingsLayout() {
     fullScreenCheck->setTextSize(24);
     fullScreenCheck->connect("clicked", [&] { checkBoxFullScreenChecked = !checkBoxFullScreenChecked; });
 
+
+
     // Adds the widgets and layout to the GUI
     videoSettingsLayout->add(resLabel);
     videoSettingsLayout->addSpace();
@@ -175,7 +192,6 @@ void ConfigMenu::videoSettingsLayout() {
     videoSettingsLayout->add(hori);
     videoSettingsLayout->addSpace(5);
     videoSettingsLayout->add(mapButtons[buttonID::APPLY_VIDEO_SETTINGS]);
-
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
 
@@ -227,6 +243,56 @@ void ConfigMenu::soundSettingsLayout() {
     layout->add(mapButtons[buttonID::APPLY_SOUND_SETTINGS]);
 
     mapLayouts.emplace(layouts::SOUND, layout);
+}
+
+void ConfigMenu::pauseMenuLayout() {
+
+    // The pause layout
+    tgui::VerticalLayout::Ptr tempPauseLayout = tgui::VerticalLayout::create();
+    tempPauseLayout->setSize(windowWidth * 2 / 3, windowHeight / 2);
+    tempPauseLayout->setPosition(windowWidth / 6, windowHeight / 6);
+
+    // The horizontal layouts for the buttons
+    //   tgui::HorizontalLayout::Ptr resumeLayout
+
+
+    // Resume button, resumes the game
+    tgui::Button::Ptr resumeButton = tgui::Button::copy(masterButton);
+    resumeButton->setText("Resume Game");
+    resumeButton->connect("pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
+    });
+
+    // Options button, enters the option state
+    tgui::Button::Ptr optionButton = tgui::Button::copy(masterButton);
+    optionButton->setText("Settings");
+    optionButton->connect("pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->setCurrentState(StateMachine::stateID::OPTION);
+    });
+
+
+    // Exit button, exits to main menu
+    tgui::Button::Ptr exitButton = tgui::Button::copy(masterButton);
+    exitButton->setText("Main menu");
+    exitButton->connect("pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->configGame.isPaused = false;
+        machine->setCurrentState(StateMachine::stateID::MENU);
+    });
+    resumeButton->setSize(100, 100);
+
+    // Adds all the widgets to the layout
+    tempPauseLayout->addSpace();
+    tempPauseLayout->add(resumeButton);
+    tempPauseLayout->addSpace();
+    tempPauseLayout->add(optionButton);
+    tempPauseLayout->addSpace();
+    tempPauseLayout->add(exitButton);
+    tempPauseLayout->addSpace();
+
+    mapLayouts.emplace(layouts::PAUSE, tempPauseLayout);
 }
 
 ConfigWindow::Resolution ConfigMenu::getCurrentResolution() const {

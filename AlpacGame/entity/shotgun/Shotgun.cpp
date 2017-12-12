@@ -8,6 +8,7 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     this->configGame = configGame;
     this->world = configGame->world;
     this->length = length;
+    this->bulletIndicatorTextures = configGame->bulletIndicatorTextures;
 
     // Create Body
     b2BodyDef bodyDef;
@@ -56,6 +57,17 @@ Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, fl
     sf_DebugHit->setFillColor(sf::Color::Transparent);
     sf_DebugHit->setOrigin(length / 2, length / 2);
 
+    // Assigning bullets
+    numCurrentBullets = numMaxBullets;
+
+    // Readying clock
+    reloadClock.reset(false);
+    reloadCooldownBarometer = new CooldownBarometer(configGame->cooldownTextures, &reloadClock, 35.f, 35.f);
+
+    indicatorShape.setSize(sf::Vector2f(35.f, 35.f));
+    indicatorShape.setOrigin(0.5f * indicatorShape.getSize());
+    indicatorShape.setTexture(&bulletIndicatorTextures[0]);
+
 }
 
 void Shotgun::render(sf::RenderWindow *window) {
@@ -79,7 +91,25 @@ void Shotgun::render(sf::RenderWindow *window) {
 
     window->draw(*sf_ShapeEntity);
 
+    if (isHeld) {
+
+        // Reload Cooldown Barometer
+        reloadCooldownBarometer->setPlacement(
+                configGame->farmer->getBody()->GetWorldPoint(b2Vec2(-0.5f, -4.2f)).x * SCALE,
+                configGame->farmer->getBody()->GetWorldPoint(b2Vec2(-0.5f, -4.2f)).y * SCALE,
+                configGame->farmer->getSf_ShapeEntity()->getRotation());
+        reloadCooldownBarometer->render(window);
+
+        // Draw bullet indicator shape
+        indicatorShape.setPosition(configGame->farmer->getBody()->GetWorldPoint(b2Vec2(-2.0f, -4.2f)).x * SCALE,
+                                   configGame->farmer->getBody()->GetWorldPoint(b2Vec2(-2.0f, -4.2f)).y * SCALE);
+        indicatorShape.setRotation(configGame->farmer->getSf_ShapeEntity()->getRotation());
+        indicatorShape.setTexture(&bulletIndicatorTextures[2-numCurrentBullets]);
+        window->draw(indicatorShape);
+    }
+
     if (configGame->showDebugMode) {
+
         // Draw sf_ShapeEntity Debug
         sf_ShapeEntity->setOutlineThickness(2);
 
@@ -101,16 +131,26 @@ void Shotgun::render(sf::RenderWindow *window) {
 
 void Shotgun::use() {
 
-    // Shoot bullets
-    shootBullets(20.f, 10.f, 5);
+    if (numCurrentBullets > 0) {
 
-    // Recoil push
-    b2Body *farmerBody = configGame->farmer->getBody();
-    float mass = farmerBody->GetMass();
-    b2Vec2 muzzle = getBody()->GetWorldPoint(b2Vec2(length / 2 / SCALE, 0));
-    b2Vec2 toTarget = b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE) - muzzle;
-    toTarget.Normalize();
-    farmerBody->ApplyLinearImpulseToCenter(10.f * mass * -toTarget, true);
+        // Shoot bullets
+        shootBullets(20.f, 10.f, 5);
+
+        // Decrement number of bullets
+        numCurrentBullets--;
+
+        // Recoil push
+        b2Body *farmerBody = configGame->farmer->getBody();
+        float mass = farmerBody->GetMass();
+        b2Vec2 muzzle = getBody()->GetWorldPoint(b2Vec2(length / 2 / SCALE, 0));
+        b2Vec2 toTarget = b2Vec2(configGame->mouseXpos / SCALE, configGame->mouseYpos / SCALE) - muzzle;
+        toTarget.Normalize();
+        farmerBody->ApplyLinearImpulseToCenter(10.f * mass * -toTarget, true);
+
+    } else {
+        // todo: Add a sound for empty barrels
+    }
+
 
 }
 
@@ -155,15 +195,32 @@ void Shotgun::endContact(Entity::CollisionID selfCollision, Entity::CollisionID 
 }
 
 void Shotgun::performHold() {
-
+    isHeld = true;
 }
 
 void Shotgun::performThrow() {
-
+    isHeld = false;
 }
 
 void Shotgun::update() {
+
+    if (!reloadClock.isRunning()) {
+        if (isHeld && numCurrentBullets < numMaxBullets) {
+            reloadClock.reset(true);
+            reloadCooldownBarometer->calcTicks(reloadTick);
+        }
+    } else {
+        if(!isHeld){
+            reloadClock.reset(false);
+        }
+        else if(reloadClock.getElapsedTime().asSeconds() > reloadTick){
+            numCurrentBullets++;
+            reloadClock.reset(false);
+        }
+    }
+
 }
+
 
 void Shotgun::pause() {
 }

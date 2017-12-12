@@ -3,6 +3,7 @@
 #define ALPACGAME_ENTITYWARM_H
 
 #include "Entity.h"
+#include "HitPoint/HitPointBarometer.h"
 
 
 /**
@@ -60,6 +61,14 @@ public:
     // Health points
     int HP = 0;
 
+    /// Visual Entity Info
+    sf::Shape* get_sf_ShapeEntity() const {
+        return sf_ShapeEntity;
+    }
+
+    bool currentlyMousedOver = false;
+
+
     /**
      * How much damage to substract from entity's HP.
      * @param damage the amount to substract from entity's HP.
@@ -68,15 +77,11 @@ public:
         HP -= damage;
     }
 
-    /**
-     * Handles the health state logic.
-     * In short, it handles when to transition through the health states.
-     * In detail, when:
-     *      Alive:  Check if hp <= 0. Move to dead state if true.
-     *      Dead:   Check if it is time to change to ghost state.
-     *      Ghost:  Check if it is time to stop death clock.
-     */
-    void removeEntity(){
+#include "../Resources/ConfigGame.h"
+
+
+
+    void removeEntityCollision(){
 
         // Create filter of dead entity
         b2Filter deadFilter;
@@ -90,7 +95,15 @@ public:
 
     }
 
-    void handleHealth() {
+    /**
+     * Handles the health state logic.
+     * In short, it handles when to transition through the health states.
+     * In detail, when:
+     *      Alive:  Check if hp <= 0. Move to dead state if true.
+     *      Dead:   Check if it is time to change to ghost state.
+     *      Ghost:  Check if it is time to stop death clock.
+     */
+    void handleHealth(unsigned int* numOfAlpacas = nullptr) {
 
         switch (currentHealth) {
 
@@ -98,15 +111,11 @@ public:
 
                 if (HP <= 0) {
 
-                    // Create filter of dead entity
-                    b2Filter deadFilter;
-                    deadFilter.categoryBits = (uint16) getEntity_ID();
-                    deadFilter.maskBits = (uint16) ID::PLANET;
+                    removeEntityCollision();
 
-                    // Set filter
-                    fixture_body->SetFilterData(deadFilter);
-                    fixture_hit->SetFilterData(deadFilter);
-                    if (fixture_detection) fixture_detection->SetFilterData(deadFilter);
+                    if(entity_ID == ID::ALPACA){
+                        *numOfAlpacas -= 1;
+                    }
 
                     // Proceed state
                     currentHealth = Health::DEAD;
@@ -149,18 +158,9 @@ public:
     /**
      * The label above entities' head in-game.
      */
-    sf::Text *label_ID = new sf::Text();
-    sf::Text *label_HP = new sf::Text();
+    sf::Text label_ID{};
 
-    void createLabel(sf::Text *label, sf::Font *font, std::string text) {
-        label->setString(text);
-        label->setFont(*font);
-        label->setCharacterSize(40);
-        label->setFillColor(sf::Color::White);
-        label->setOutlineColor(sf::Color::Black);
-        label->setOutlineThickness(3);
-        label->setOrigin(label->getLocalBounds().width / 2.f, label->getLocalBounds().height / 2.f);
-    };
+    HitPointBarometer *hitPointBarometer = nullptr;;
 
     /// Action Functions
 
@@ -256,14 +256,12 @@ protected:
         return triggered;
     }
 
-
 protected:
 
     /**
      * Clock used to determine if entity is allowed to move or not.
      */
     sftools::Chronometer movementTriggerClock{};
-
 
 };
 

@@ -10,9 +10,18 @@
 #include "../../Resources/ConfigGame.h"
 #include "../Usable.h"
 #include "../Holdable.h"
+#include "../cooldown/CooldownBarometer.h"
 
 class Shotgun : public EntityCold, public Usable, public Holdable {
 public:
+
+    unsigned int numMaxBullets = 2; // Max. 2
+    unsigned int numCurrentBullets = 0;
+    sftools::Chronometer reloadClock;
+    float reloadTick = 5.f;
+    CooldownBarometer *reloadCooldownBarometer = nullptr;
+    std::vector<sf::Texture> bulletIndicatorTextures;
+    sf::RectangleShape indicatorShape;
 
 
     void update() override;
@@ -25,10 +34,7 @@ public:
     void pause() override;
     void resume() override;
 
-
     float length;
-
-    ConfigGame *configGame;
 
     b2World *world;
 

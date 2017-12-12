@@ -4,6 +4,9 @@
 #include "ConfigGame.h"
 #include "../entity/CollisionListener.h"
 #include "../entity/planet/planet.h"
+#include "../scenery/Sun/Sun.h"
+#include "../scenery/Sky/Sky.h"
+#include "../scenery/Cave/Cave.h"
 
 void ConfigGame::run(sf::RenderWindow &window) {
 
@@ -18,7 +21,13 @@ void ConfigGame::run(sf::RenderWindow &window) {
 
     loadAllTextures();
     loadAllFonts();
+
+    // Randomize number generator
+    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    generator = std::default_random_engine(seed);
+
 }
+
 
 float ConfigGame::calcX(float angle) {
     float x = planetCenter.x + planetRadius * (float) std::sin(angle * (M_PI / 180));
@@ -65,23 +74,98 @@ void ConfigGame::loadTexture(std::string filename,
 
 void ConfigGame::loadAllTextures() {
 
-    /// Mapping sprites for entities
+    // Sky
+    sf::Texture morning_1;
+    sf::Texture morning_2;
+    sf::Texture morning_3;
+    sf::Texture afternoon_4;
+    sf::Texture afternoon_5;
+    sf::Texture afternoon_6;
+    sf::Texture evening_7;
+    sf::Texture evening_8;
+    sf::Texture evening_9;
+    sf::Texture night_10;
+    sf::Texture night_11;
+    sf::Texture night_12;
+
+    morning_1.loadFromFile(  "scenery/Sky/Background/1_Morning.png");
+    morning_2.loadFromFile(  "scenery/Sky/Background/2_Morning.png");
+    morning_3.loadFromFile(  "scenery/Sky/Background/3_Morning.png");
+    afternoon_4.loadFromFile("scenery/Sky/Background/4_Afternoon.png");
+    afternoon_5.loadFromFile("scenery/Sky/Background/5_Afternoon.png");
+    afternoon_6.loadFromFile("scenery/Sky/Background/6_Afternoon.png");
+    evening_7.loadFromFile(  "scenery/Sky/Background/7_Evening.png");
+    evening_8.loadFromFile(  "scenery/Sky/Background/8_Evening.png");
+    evening_9.loadFromFile(  "scenery/Sky/Background/9_Evening.png");
+    night_10.loadFromFile(   "scenery/Sky/Background/10_Night.png");
+    night_11.loadFromFile(   "scenery/Sky/Background/11_Night.png");
+    night_12.loadFromFile(   "scenery/Sky/Background/12_Night.png");
+
+    skyTextures.push_back(morning_1);
+    skyTextures.push_back(morning_2);
+    skyTextures.push_back(morning_3);
+    skyTextures.push_back(afternoon_4);
+    skyTextures.push_back(afternoon_5);
+    skyTextures.push_back(afternoon_6);
+    skyTextures.push_back(evening_7);
+    skyTextures.push_back(evening_8);
+    skyTextures.push_back(evening_9);
+    skyTextures.push_back(night_10);
+    skyTextures.push_back(night_11);
+    skyTextures.push_back(night_12);
 
     // Planet
-    planetTexture.loadFromFile("entity/planet/planet.png");
+    sf::Texture earth_1;
+    sf::Texture earth_2;
+    sf::Texture earth_3;
+    sf::Texture earth_4;
+    sf::Texture earth_5;
+    sf::Texture earth_6;
+    sf::Texture earth_7;
+    sf::Texture earth_8;
+    sf::Texture earth_9;
+    sf::Texture earth_10;
+    sf::Texture earth_11;
+    sf::Texture earth_12;
 
-    morning_1.loadFromFile("entity/planet/1_Morning.png");
-    morning_2.loadFromFile("entity/planet/2_Morning.png");
-    morning_3.loadFromFile("entity/planet/3_Morning.png");
-    afternoon_4.loadFromFile("entity/planet/4_Afternoon.png");
-    afternoon_5.loadFromFile("entity/planet/5_Afternoon.png");
-    afternoon_6.loadFromFile("entity/planet/6_Afternoon.png");
-    evening_7.loadFromFile("entity/planet/7_Evening.png");
-    evening_8.loadFromFile("entity/planet/8_Evening.png");
-    evening_9.loadFromFile("entity/planet/9_Evening.png");
-    night_10.loadFromFile("entity/planet/10_Night.png");
-    night_11.loadFromFile("entity/planet/11_Night.png");
-    night_12.loadFromFile("entity/planet/12_Night.png");
+    earth_1.loadFromFile( "entity/planet/Earth/Earth_1.png");
+    earth_2.loadFromFile( "entity/planet/Earth/Earth_2.png");
+    earth_3.loadFromFile( "entity/planet/Earth/Earth_3.png");
+    earth_4.loadFromFile( "entity/planet/Earth/Earth_4.png");
+    earth_5.loadFromFile( "entity/planet/Earth/Earth_5.png");
+    earth_6.loadFromFile( "entity/planet/Earth/Earth_6.png");
+    earth_7.loadFromFile( "entity/planet/Earth/Earth_7.png");
+    earth_8.loadFromFile( "entity/planet/Earth/Earth_8.png");
+    earth_9.loadFromFile( "entity/planet/Earth/Earth_9.png");
+    earth_10.loadFromFile("entity/planet/Earth/Earth_10.png");
+    earth_11.loadFromFile("entity/planet/Earth/Earth_11.png");
+    earth_12.loadFromFile("entity/planet/Earth/Earth_12.png");
+
+    planetTextures.push_back(earth_1);
+    planetTextures.push_back(earth_2);
+    planetTextures.push_back(earth_3);
+    planetTextures.push_back(earth_4);
+    planetTextures.push_back(earth_5);
+    planetTextures.push_back(earth_6);
+    planetTextures.push_back(earth_7);
+    planetTextures.push_back(earth_8);
+    planetTextures.push_back(earth_9);
+    planetTextures.push_back(earth_10);
+    planetTextures.push_back(earth_11);
+    planetTextures.push_back(earth_12);
+
+    // Sun/Moon
+    sf::Texture sun_1;
+    sf::Texture sun_2;
+    sf::Texture moon_1;
+
+    sun_1.loadFromFile( "scenery/Sun/Sun_1.png");
+    sun_2.loadFromFile( "scenery/Sun/Sun_2.png");
+    moon_1.loadFromFile("scenery/Sun/Moon_1.png");
+
+    sunTextures.push_back(sun_1);
+    sunTextures.push_back(sun_2);
+    sunTextures.push_back(moon_1);
 
     // Shotgun
     shotgunHeldTexture.loadFromFile("entity/shotgun/shotgunHeld.png");
@@ -102,6 +186,21 @@ void ConfigGame::loadAllTextures() {
                                  sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
         cooldownTextures.push_back(tempTexture);
     }
+
+    // Shotgun Bullets Indicator
+    int indicatorWidth = 280;
+    int indicatorHeight = 280;
+    for (int i = 0; i < 3; ++i) {
+        auto tempTexture = sf::Texture();
+        tempTexture.loadFromFile("entity/Shotgun/shotgun-bullet.png",
+                                  sf::IntRect(i * indicatorWidth, 0, indicatorWidth, indicatorHeight));
+        bulletIndicatorTextures.push_back(tempTexture);
+    }
+
+    // HitPoint
+    healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
+
+    fertileHeartTexture.loadFromFile("entity/HitPoint/heart.png");
 
     // Farmer
     std::string farmerSpriteSheet = "entity/player/farmer-sprite.png";
@@ -156,27 +255,126 @@ void ConfigGame::loadAllTextures() {
 
 void ConfigGame::reset() {
 
-    /// Initiating World (With no innate gravitation)
+    // Initiating World (With no innate gravitation)
     delete world;
     world = new b2World(b2Vec2(0, 0));
     world->SetContactListener(new CollisionListener());
 
-    /// Instantiating initial entities
+    // Instantiating initial entities
     delete planet;
-    planet = new Planet(world, this, planetRadius, planetCenter.x, planetCenter.y);
-    planetBody = planet->getBody();
+    planet = new Planet(this, planetRadius, planetCenter.x, planetCenter.y);
 
     farmer = nullptr;
     delete farmer;
-    farmer = new Farmer(this, 30, 100, 100, 100, -200);
+    farmer = new Farmer(this, 30, 100, 100, calcX(0), calcY(0));
 
     /// Create Vectors
     delete entities;
     entities = new std::vector<Entity *>;
-    entities->push_back(farmer);
     entities->push_back(planet);
+    entities->push_back(farmer);
 
+    entities->push_back(new Shotgun(this, 100, 25, calcX(5.f), calcY(5.f)));
+    entities->push_back(new Trap(this, 150, 75, calcY(-5.f), calcY(-5.f)));
+    entities->push_back(new Trap(this, 150, 75, calcY(-10.f), calcY(-10.f)));
+
+    entities->push_back(new Alpaca(this, true, calcX(20.f), calcY(20.f)));
+    entities->push_back(new Alpaca(this, true, calcX(10.f), calcY(10.f)));
+    entities->push_back(new Alpaca(this, true, calcX(-10.f), calcY(-10.f)));
+    entities->push_back(new Alpaca(this, true, calcX(-20.f), calcY(-20.f)));
+
+    //todo Spawn weapon + traps
+
+    // Instantiating initial scenery
+    delete sceneries;
+    sceneries = new std::vector<Scenery *>;
+
+    delete sky;
+    sky = new Sky(this, 4500.f, planetCenter.x, planetCenter.y);
+    sceneries->push_back(sky);
+
+    delete sun;
+    sun = new Sun(this, sunRadius, calcX(0.f, sunRadius), calcY(0.f, sunRadius), 0.f);
+    sceneries->push_back(sun);
+
+    cave = new Cave(this, 200.f, 400.f);
+    dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
+    sceneries->push_back(cave);
+
+    // Initiate dayCycle
+    delete dayCycle;
+    dayCycle = new DayCycle(this);
+
+
+    // Set ID
     Wolf::nextId = 0;
     Alpaca::nextId = 0;
 
+    // Reset Game Stats
+    numOfDay = 1;
+
+}
+
+ConfigGame::Cycle ConfigGame::getCurrentCycle() const {
+    return currentCycle;
+}
+
+void ConfigGame::setCurrentCycle(ConfigGame::Cycle currentCycle) {
+    ConfigGame::currentCycle = currentCycle;
+}
+
+sf::Text ConfigGame::createLabel(sf::Font *font, unsigned int fontSize, const std::string &text) {
+    sf::Text label;
+    label.setFont(*font);
+    label.setCharacterSize(fontSize);
+    label.setFillColor(sf::Color::White);
+    label.setOutlineColor(sf::Color::Black);
+    label.setOutlineThickness(3);
+    label.setString(text);
+    label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
+    return label;
+}
+
+void ConfigGame::initiateNewDay() {
+
+    // Increment days
+    numOfDay++;
+
+    /// Morning alpaca check
+    for(Entity* entity : *entities){
+        if(entity->getEntity_ID() == Entity::ID::ALPACA){
+
+            // Retrieve alpaca
+            auto *alpacaPtr =  dynamic_cast<Alpaca*>(entity);
+
+            // Fertilize and grow alpacas
+            if(alpacaPtr->isAdult){
+                alpacaPtr->isFertile = true;
+            } else{
+                alpacaPtr->adultify();
+            }
+
+            // Heal alpaca to max
+            alpacaPtr->HP = alpacaPtr->max_HP;
+        }
+    }
+
+    // Update wolf den position
+    std::uniform_int_distribution<int> distribution(0, 359);
+    wolfDenAngle = (float) distribution(generator);
+    wolfDenPos = sf::Vector2f(
+            calcX(wolfDenAngle),
+            calcY(wolfDenAngle));
+
+    // Spawn Cave
+    dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
+
+}
+
+void ConfigGame::initiateNight() {
+
+    // Spawn wolves
+    for (int i = 0; i < numOfDay * 2; ++i) {
+        entities->push_back(new Wolf(this, 40, 150, 100, wolfDenPos.x, wolfDenPos.y));
+    }
 }

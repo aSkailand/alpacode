@@ -15,6 +15,16 @@
 class Alpaca : public Mob, public Holdable {
 public:
 
+    /// Breeding Logic
+    bool isAdult = false;
+    bool isFertile = false;
+    float radius = 40.f;
+    sf::Vector2f sizeAdult = sf::Vector2f(100.f, 100.f);
+    sf::Vector2f sizeKid   = sf::Vector2f(70.f, 70.f);
+
+    int max_HP = 3;
+
+    void adultify();
 
     void pause() override;
 
@@ -30,7 +40,7 @@ public:
      * @param x the x-coordinate of the origin of the alpaca, in pixels.
      * @param y the y-coordinate of the origin of the alpaca, in pixels.
      */
-    Alpaca(ConfigGame *configGame, float radius, float width, float height, float x, float y);
+    Alpaca(ConfigGame *configGame, bool isAdult, float x, float y);
 
     static int nextId;
 
@@ -48,6 +58,8 @@ private:
 
 
 private:
+
+    sf::RectangleShape sf_fertileHeart;
 
 
     /// AI Behavior
@@ -119,12 +131,6 @@ public:
 
 private:
 
-    /// Pointers
-    ConfigGame *configGame;
-
-    /// Animation tool
-    bool spriteSwitch = false;
-
     std::map<EntityWarm::Action, SpriteInfo> alpacaMapPtr;
 
 public:
@@ -147,7 +153,6 @@ public:
     void endContact_body(CollisionID otherCollision, Entity *contactEntity);
 
     void endContact_detection(CollisionID otherCollision, Entity *contactEntity);
-
 
 };
 

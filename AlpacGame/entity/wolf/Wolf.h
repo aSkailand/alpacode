@@ -20,7 +20,7 @@ public:
 
     void resume() override;
 
-    virtual ~Wolf();
+    ~Wolf() override;
 
     /**
      * CONSTRUCTOR: Creates a wolf and adds it to the world.
@@ -57,21 +57,18 @@ private:
     float attackForce = 8.f;
     float attackAngle = 25.f;
 
+    float enteringDenTick = 2.f;
+
 public:
+
     void renderDebugMode() override;
 
 private:
 
-
-    /// Pointers
-    ConfigGame *configGame = nullptr;
-
     /// Behavior
-    enum class Behavior{HUNTING, ENTERHOME, RUNHOME};
-    Behavior currentBehavior;
+    enum class Behavior{HUNTING, CHASING, RETREATING};
+    Behavior currentBehavior = Behavior::HUNTING;
 
-    /// Wolf Base
-    b2Vec2 wolfDenVec2;
     sf::CircleShape *wolfDen_Debug = nullptr;
 
     /// Wolf AttackVector
