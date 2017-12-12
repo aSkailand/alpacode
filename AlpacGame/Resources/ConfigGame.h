@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <queue>
+#include <random>
 
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
@@ -29,11 +30,21 @@ public:
 
     unsigned int numOfAliveAlpacas = 0;
 
+    /**
+     * Initiated every new day (per 2 revolution.
+     */
+    void initiateNewDay();
+    void initiateNight();
+
+    /// Wolf Spawn
+    sf::Vector2f wolfDenPos;
+    float wolfDenAngle = 180.f;
+
     /// Customizable Properties
     float sunRadius = 300.f;
     float planetRadius = 700.f;
 
-    // todo: Necessary?
+
     Scenery* sun = nullptr;
     Scenery* sky = nullptr;
     Scenery* treeHigh = nullptr;
@@ -47,6 +58,8 @@ public:
     b2World* world = nullptr;
     Entity* planet = nullptr;
     Entity* farmer = nullptr;
+
+    Scenery* cave;
 
     void reset();
 
@@ -67,6 +80,7 @@ public:
      * The position of the planet's center relatively to the game window.
      */
     sf::Vector2f planetCenter;
+
 
     /**
      * The current buffered input, used to
@@ -155,6 +169,11 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
 private:
+
+    /**
+   * The random number generator.
+   */
+    std::default_random_engine generator{};
 
     Cycle currentCycle = Cycle::DAY;
 

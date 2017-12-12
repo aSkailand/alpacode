@@ -90,7 +90,7 @@ Alpaca::Alpaca(ConfigGame *configGame, bool isAdult, float x, float y)
 
 
     // Set HP
-    HP = 1;
+    HP = max_HP;
 
     // Create HitPoint barometer
     hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);

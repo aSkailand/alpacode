@@ -6,9 +6,12 @@
 #include "../entity/planet/planet.h"
 #include "../scenery/Sun/Sun.h"
 #include "../scenery/Sky/Sky.h"
+
 #include "../scenery/Trees/TreeHigh.h"
 #include "../scenery/Trees/TreeMedium.h"
 #include "../scenery/Trees/TreeLow.h"
+#include "../scenery/Cave/Cave.h"
+
 
 void ConfigGame::run(sf::RenderWindow &window) {
 
@@ -23,6 +26,10 @@ void ConfigGame::run(sf::RenderWindow &window) {
 
     loadAllTextures();
     loadAllFonts();
+
+    // Randomize number generator
+    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    generator = std::default_random_engine(seed);
 
 }
 
@@ -279,8 +286,16 @@ void ConfigGame::reset() {
     entities->push_back(planet);
     entities->push_back(farmer);
 
-    entities->push_back(new Alpaca(this, 100, calcX(10.f), calcY(10.f)));
-    entities->push_back(new Alpaca(this, 100, calcX(-10.f), calcY(-10.f)));
+    entities->push_back(new Shotgun(this, 100, 25, calcX(5.f), calcY(5.f)));
+    entities->push_back(new Trap(this, 150, 75, calcY(-5.f), calcY(-5.f)));
+    entities->push_back(new Trap(this, 150, 75, calcY(-10.f), calcY(-10.f)));
+
+    entities->push_back(new Alpaca(this, true, calcX(20.f), calcY(20.f)));
+    entities->push_back(new Alpaca(this, true, calcX(10.f), calcY(10.f)));
+    entities->push_back(new Alpaca(this, true, calcX(-10.f), calcY(-10.f)));
+    entities->push_back(new Alpaca(this, true, calcX(-20.f), calcY(-20.f)));
+
+    //todo Spawn weapon + traps
 
     // Instantiating initial scenery
     delete sceneries;
@@ -294,6 +309,7 @@ void ConfigGame::reset() {
     sun = new Sun(this, sunRadius, calcX(0.f, sunRadius), calcY(0.f, sunRadius), 0.f);
     sceneries->push_back(sun);
 
+
     delete treeHigh;
     treeHigh = new TreeHigh(this, 250.f, 500.f, 360.f);
     sceneries->push_back(treeHigh);
@@ -306,9 +322,14 @@ void ConfigGame::reset() {
     treeLow = new TreeLow(this, 250.f, 500.f, 60.f);
     sceneries->push_back(treeLow);
 
+    cave = new Cave(this, 200.f, 400.f);
+    dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
+    sceneries->push_back(cave);
+
     // Initiate dayCycle
     delete dayCycle;
     dayCycle = new DayCycle(this);
+
 
     // Set ID
     Wolf::nextId = 0;
@@ -337,4 +358,48 @@ sf::Text ConfigGame::createLabel(sf::Font *font, unsigned int fontSize, const st
     label.setString(text);
     label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
     return label;
+}
+
+void ConfigGame::initiateNewDay() {
+
+    // Increment days
+    numOfDay++;
+
+    /// Morning alpaca check
+    for(Entity* entity : *entities){
+        if(entity->getEntity_ID() == Entity::ID::ALPACA){
+
+            // Retrieve alpaca
+            auto *alpacaPtr =  dynamic_cast<Alpaca*>(entity);
+
+            // Fertilize and grow alpacas
+            if(alpacaPtr->isAdult){
+                alpacaPtr->isFertile = true;
+            } else{
+                alpacaPtr->adultify();
+            }
+
+            // Heal alpaca to max
+            alpacaPtr->HP = alpacaPtr->max_HP;
+        }
+    }
+
+    // Update wolf den position
+    std::uniform_int_distribution<int> distribution(0, 359);
+    wolfDenAngle = (float) distribution(generator);
+    wolfDenPos = sf::Vector2f(
+            calcX(wolfDenAngle),
+            calcY(wolfDenAngle));
+
+    // Spawn Cave
+    dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
+
+}
+
+void ConfigGame::initiateNight() {
+
+    // Spawn wolves
+    for (int i = 0; i < numOfDay * 2; ++i) {
+        entities->push_back(new Wolf(this, 40, 150, 100, wolfDenPos.x, wolfDenPos.y));
+    }
 }

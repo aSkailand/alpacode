@@ -34,6 +34,7 @@ public:
         SHOTGUN = 0x0010,
         BULLET  = 0x0020,
         TRAP    = 0x0040
+
     };
 
     enum class Status {

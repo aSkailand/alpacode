@@ -1,7 +1,7 @@
 #include "Wolf.h"
 
 Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y)
-        : id(nextId++), Mob(id){
+        : id(nextId++), Mob(id) {
 
     /// Assign Pointers
     this->configGame = configGame;
@@ -96,12 +96,17 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     label_ID = configGame->createLabel(&this->configGame->fontID, 20, std::to_string(id));
 
     // todo: Determine where to put this chunk of code
-    /// Initialize behavior
-    currentBehavior = Behavior::NORMAL;
-    wolfBase = new sf::CircleShape(10);
-    wolfBase->setFillColor(sf::Color::Transparent);
-    wolfBase->setOrigin(10, 10);
-    wolfBase->setPosition(0, 0);
+    /// WolfBase
+    // Wolf Den is placed on an angle with planets radius.
+    // 180 degrees because farmer position is at 0 degrees.
+    wolfDen_Debug = new sf::CircleShape(10);
+    wolfDen_Debug->setFillColor(sf::Color::Transparent);
+    wolfDen_Debug->setOrigin(10, 10);
+    float tmp_X = configGame->calcX(180.f, configGame->planetRadius);
+    float tmp_Y = configGame->calcY(180.f, configGame->planetRadius);
+
+    wolfDen_Debug->setPosition(tmp_X, tmp_Y);
+    b2Vec2(tmp_X / SCALE, tmp_Y / SCALE);
 
     randomActionClock.reset(true);
     movementTriggerClock.reset(true);
@@ -119,64 +124,148 @@ void Wolf::switchAction() {
     if (currentHealth != Health::ALIVE || isStunned)
         return;
 
-    // Check if it is time for randomizing the wolf's current state
-    if (currentBehavior == Behavior::NORMAL && randomActionTriggered(randomActionTick)) {
+//    // TODO: Hunting when wolves spawn at night. Temporarily is set to input "M"
+//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+//        currentAction = Action::WALKING;
+//        currentBehavior = Behavior ::HUNTING;
+//
+//        currentDirection = (Direction) randomNumberGenerator(0, 1);
+//        switch (currentDirection) {
+//            case Wolf::Direction::LEFT: {
+//                sf_ShapeEntity->setScale(-1.f, 1.f);
+//                break;
+//            }
+//            case Wolf::Direction::RIGHT: {
+//                sf_ShapeEntity->setScale(1.f, 1.f);
+//                break;
+//            }
+//        }
+//    }
 
-        currentAction = (Action) randomNumberGenerator(0, 1);
-        switch (currentAction) {
-            case Action::WALKING: {
-                currentDirection = (Direction) randomNumberGenerator(0, 1);
-                switch (currentDirection) {
-                    case Wolf::Direction::LEFT: {
-                        sf_ShapeEntity->setScale(-1.f, 1.f);
+//    // TODO: Wolves runs home when night is over. Temporarily set to input "N"
+//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
+//        currentBehavior = Behavior::RETREAT;
+//    }
+
+    /// Change to correct state
+    switch (configGame->getCurrentCycle()) {
+        case ConfigGame::Cycle::DAY: {
+            currentBehavior = Behavior::RETREATING;
+            break;
+        }
+        case ConfigGame::Cycle::NIGHT: {
+            if (currentlyDetectedEntities.empty()) {
+                currentBehavior = Behavior::HUNTING;
+            } else {
+                currentBehavior = Behavior::CHASING;
+            }
+            break;
+        }
+    }
+
+    /// Set correct action + direction
+    switch (currentBehavior) {
+
+        case Behavior::HUNTING: {
+
+            // Randomize action + direction
+            if (randomActionTriggered(randomActionTick)) {
+                currentAction = (Action) randomNumberGenerator(0, 1);
+                switch (currentAction) {
+                    case Action::WALKING: {
+                        currentDirection = (Direction) randomNumberGenerator(0, 1);
+                        switch (currentDirection) {
+                            case Direction::LEFT: {
+                                sf_ShapeEntity->setScale(-1.f, 1.f);
+                                break;
+                            }
+                            case Direction::RIGHT: {
+                                sf_ShapeEntity->setScale(1.f, 1.f);
+
+                                break;
+                            }
+                        }
                         break;
                     }
-                    case Wolf::Direction::RIGHT: {
-                        sf_ShapeEntity->setScale(1.f, 1.f);
+                    case Action::JUMP:
                         break;
-                    }
+                    case Action::IDLE:
+                        break;
                 }
-                break;
             }
-            case Action::JUMP: {
-                break;
-            }
-            case Action::IDLE: {
-                break;
-            }
+
+            break;
 
         }
+        case Behavior::CHASING: {
 
-    }
+            // Set to walking
+            currentAction = Action::WALKING;
 
-    // todo: Remove when behavior is done.
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-        currentDirection = (Direction) randomNumberGenerator(0, 1);
-        switch (currentDirection) {
-            case Wolf::Direction::LEFT: {
+            // Reset b2Vec to its corresponding direction
+            b2Vec2 temp;
+            if (currentDirection == Direction::RIGHT) temp = b2Vec2(10, 10);
+            else temp = b2Vec2(-10, 10);
+
+            // Calculate closest target
+            for (auto &detectedEntity : currentlyDetectedEntities) {
+
+                b2Vec2 currentVector = body->GetLocalPoint(detectedEntity->getBody()->GetWorldCenter());
+                float length_1 = currentVector.LengthSquared();
+                float length_2 = temp.LengthSquared();
+
+                if (length_1 < length_2) {
+                    temp = currentVector;
+                }
+
+            }
+
+            // Set current direction toward the closest target
+            if (temp.x < 0) {
+                currentDirection = Direction::LEFT;
                 sf_ShapeEntity->setScale(-1.f, 1.f);
-                break;
-            }
-            case Wolf::Direction::RIGHT: {
+            } else {
+                currentDirection = Direction::RIGHT;
                 sf_ShapeEntity->setScale(1.f, 1.f);
-                break;
             }
+            break;
         }
+        case Behavior::RETREATING: {
 
-        currentBehavior = Behavior::HUNTING;
-        std::cout << "Hunting" << std::endl;
-    }
+            if(behaviorClock.isRunning()){
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-        currentBehavior = Behavior::AFRAID;
-    }
+                // Set to idling
+                currentAction = Action::IDLE;
 
-    if (currentBehavior == Behavior::HUNTING) {
-        currentAction = Action::WALKING;
-    }
+            } else{
 
-    if (currentBehavior == Behavior::AFRAID) {
-        currentAction = Action::WALKING;
+                // Set to walking
+                currentAction = Action::WALKING;
+
+                // Calculate nearest direction to reach den
+                b2Vec2 temp = getBody()->GetLocalPoint(b2Vec2(configGame->wolfDenPos.x / SCALE,
+                                                              configGame->wolfDenPos.y / SCALE));
+
+                // Determine best direction
+                if (temp.x < 0) {
+                    currentDirection = Direction::LEFT;
+                    sf_ShapeEntity->setScale(-1.f, 1.f);
+                } else {
+                    currentDirection = Direction::RIGHT;
+                    sf_ShapeEntity->setScale(1.f, 1.f);
+                }
+
+                // Check if destination is reached
+                if(temp.Length() < 3.0f){
+                    behaviorClock.reset(true);
+                    removeEntityCollision();
+                    renderFadeOut();
+                }
+
+            }
+
+            break;
+        }
     }
 
 
@@ -188,6 +277,7 @@ void Wolf::performAction() {
     if (currentHealth != Health::ALIVE || isStunned)
         return;
 
+    /// Perform Action + Direction
     // Check if the entity is allowed to move
     if (currentStatus == Status::GROUNDED && isMovementAvailable(moveAvailableTick)) {
         switch (currentAction) {
@@ -200,6 +290,14 @@ void Wolf::performAction() {
             }
         }
     }
+
+    // todo: move this to h file
+    /** HUNTING
+     *  1. Moves to one direction (Random) until an entity is detected
+     *  2. Adds the entity in a list<Entity *>
+     *  3. Iterates list, finds the lowest Length() value and follows it
+     */
+
 }
 
 void Wolf::render(sf::RenderWindow *window) {
@@ -211,16 +309,20 @@ void Wolf::render(sf::RenderWindow *window) {
     calcShapeEntityPlacement();
 
     // Handle death rendering
-    if (currentHealth == Health::GHOST){
+    if (currentHealth == Health::GHOST) {
         renderDeath();
         window->draw(*sf_ShapeGhost);
+    }
+
+    if(behaviorClock.isRunning()){
+        renderFadeOut();
     }
 
     // Draw entity shape
     window->draw(*sf_ShapeEntity);
 
     // Draw Hit Point Barometer
-    if(currentHealth == Health::ALIVE && !configGame->isPaused && currentlyMousedOver) {
+    if (currentHealth == Health::ALIVE && !configGame->isPaused && currentlyMousedOver) {
         hitPointBarometer->setPlacement(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
                                         getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE,
                                         sf_ShapeEntity->getRotation());
@@ -233,7 +335,11 @@ void Wolf::render(sf::RenderWindow *window) {
 }
 
 bool Wolf::deadCheck() {
-    return currentHealth == Health::GHOST && !deathClock.isRunning();
+
+    // Wolf is queued up for deletion if the ghost have been lurking for long enough OR has retreated home.
+    bool dead = currentHealth == Health::GHOST && !deathClock.isRunning();
+    bool home = currentBehavior == Behavior::RETREATING && behaviorClock.getElapsedTime().asSeconds() > enteringDenTick;
+    return dead || home;
 }
 
 Wolf::~Wolf() {
@@ -329,6 +435,7 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
             }
             break;
         }
+
         default:
             break;
     }
@@ -337,20 +444,20 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
 void Wolf::startContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getEntity_ID()) {
         case ID::FARMER:
+
+            /// Placing Farmer to Vector
+            if (otherCollision == CollisionID::HIT) {
+                currentlyDetectedEntities.push_back(contactEntity);
+            }
+
             break;
         case ID::ALPACA: {
-            /// All sensor his
-            if (!isStunned && otherCollision == CollisionID::HIT) {
-                b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
-                if (delta.x > 0) {
-                    currentDirection = Direction::RIGHT;
-                    sf_ShapeEntity->setScale(1.f, 1.f);
 
-                } else {
-                    currentDirection = Direction::LEFT;
-                    sf_ShapeEntity->setScale(-1.f, 1.f);
-                }
+            /// Placing Alpaca to Vector
+            if (otherCollision == CollisionID::HIT) {
+                currentlyDetectedEntities.push_back(contactEntity);
             }
+
             break;
         }
         default:
@@ -394,19 +501,19 @@ void Wolf::endContact_hit(Entity::CollisionID otherCollision, Entity *contactEnt
 void Wolf::endContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getEntity_ID()) {
         case ID::FARMER:
+            /// Removing Farmer from Vector
+            if (otherCollision == CollisionID::HIT) {
+                currentlyDetectedEntities.remove(contactEntity);
+            }
+
             break;
         case ID::ALPACA: {
-            if (otherCollision == CollisionID::HIT) {
-                b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
-                if (delta.x > 0) {
-                    currentDirection = Direction::RIGHT;
-                    sf_ShapeEntity->setScale(1.f, 1.f);
 
-                } else {
-                    currentDirection = Direction::LEFT;
-                    sf_ShapeEntity->setScale(-1.f, 1.f);
-                }
+            /// Removing Alpaca from Vector
+            if (otherCollision == CollisionID::HIT) {
+                currentlyDetectedEntities.remove(contactEntity);
             }
+
             break;
         }
         default:
@@ -500,25 +607,23 @@ void Wolf::renderDebugMode() {
         // Draw debug: Detection
         sf_DebugDetection->setOutlineThickness(2);
         sf_DebugDetection->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        if (currentBehavior == Behavior::NORMAL) sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
-        else if (currentBehavior == Behavior::HUNTING) sf_DebugDetection->setOutlineColor(sf::Color::Red);
-        else if (currentBehavior == Behavior::AFRAID) sf_DebugDetection->setOutlineColor(sf::Color::Green);
+        if (currentBehavior == Behavior::HUNTING) sf_DebugDetection->setOutlineColor(sf::Color::Yellow);
+        else if (currentBehavior == Behavior::CHASING) sf_DebugDetection->setOutlineColor(sf::Color::Red);
+        else if (currentBehavior == Behavior::RETREATING) sf_DebugDetection->setOutlineColor(sf::Color::Green);
         configGame->window->draw(*sf_DebugDetection);
 
         // Draw debug: Label ID
         float offset = fixture_body->GetShape()->m_radius + 1.f;
         label_ID.setPosition(getBody()->GetWorldPoint(b2Vec2(0, -offset)).x * SCALE,
-                              getBody()->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
+                             getBody()->GetWorldPoint(b2Vec2(0, -offset)).y * SCALE);
         label_ID.setRotation(sf_ShapeEntity->getRotation());
         configGame->window->draw(label_ID);
 
         // todo: Fix this
         // Draw debug: Base
-        wolfBase->setOutlineThickness(2);
-        wolfBase->setOutlineColor(sf::Color::Cyan);
-        if (wolfBase->getPosition().x == 0)
-            wolfBase->setPosition(body->GetPosition().x * SCALE, body->GetPosition().y * SCALE);
-        configGame->window->draw(*wolfBase);
+        wolfDen_Debug->setOutlineThickness(2);
+        wolfDen_Debug->setOutlineColor(sf::Color::Cyan);
+        configGame->window->draw(*wolfDen_Debug);
 
 
     } else {
@@ -538,7 +643,7 @@ void Wolf::resume() {
     randomActionClock.resume();
     behaviorClock.resume();
 
-    if(currentHealth != Health::ALIVE){
+    if (currentHealth != Health::ALIVE) {
         deathClock.resume();
     }
 }
