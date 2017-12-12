@@ -145,7 +145,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             entities->push_back(babyAlpaca);
         }
 
-        // todo: Make the defeat check here
+
         unsigned int numAliveAlpacas = 0;
 
         /// Activate all warm entities
@@ -169,8 +169,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
-        // todo: Do a defeat check here
-
         /// Update all cold entities
         for (Entity *e : *entities) {
             auto cold_e = dynamic_cast<EntityCold *> (e);
@@ -178,10 +176,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
                 cold_e->update();
             }
         }
-
-
-
-
 
         /// Draw aim
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
@@ -333,7 +327,7 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
 void StateGame::checkDefeat() {
     if (deadCheck) {
-        if (farmer->currentHealth == EntityWarm::Health::DEAD) {
+        if (farmer->currentHealth != EntityWarm::Health::ALIVE) {
             machine->configMenu->farmerDead->setText(
                     "\t\t\t\tDefeat!\n\t\t\t  You died!\n \t\tDays survived: " + std::to_string(machine->configGame.numOfDay));
 
