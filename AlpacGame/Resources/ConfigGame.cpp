@@ -11,6 +11,7 @@
 #include "../scenery/Trees/TreeMedium.h"
 #include "../scenery/Trees/TreeLow.h"
 #include "../scenery/Cave/Cave.h"
+#include "../scenery/Stone/Stone.h"
 
 
 void ConfigGame::run(sf::RenderWindow &window) {
@@ -166,6 +167,12 @@ void ConfigGame::loadAllTextures() {
     treeMediumTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(treeWidth, 0, treeWidth, treeHeight));
     treeLowTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(2*treeWidth, 0, treeWidth, treeHeight));
 
+    //Stone
+    stoneTexture.loadFromFile("scenery/Stone/stone.png");
+
+    // Wolf Cave
+    wolfCaveTexture.loadFromFile("scenery/Cave/cave.png");
+
     // Sun/Moon
     sf::Texture sun_1;
     sf::Texture sun_2;
@@ -310,19 +317,37 @@ void ConfigGame::reset() {
     sceneries->push_back(sun);
 
 
-    delete treeHigh;
-    treeHigh = new TreeHigh(this, 250.f, 500.f, 360.f);
-    sceneries->push_back(treeHigh);
+    std::uniform_int_distribution<int> distributionAmount(5, 8);
+    treeHighAmount = (int) distributionAmount(generator);
+    treeMediumAmount = (int) distributionAmount(generator);
+    treeLowAmount = (int) distributionAmount(generator);
+    stoneAmount = (int) distributionAmount(generator);
 
-    delete treeMedium;
-    treeMedium = new TreeMedium(this, 250.f, 500.f, 30.f);
-    sceneries->push_back(treeMedium);
+    std::uniform_int_distribution<int> distribution(0, 359);
+    for (int i = 0; i < treeHighAmount; i++) {
+        treeHighAngle = (float) distribution(generator);
+        sceneries->push_back(new TreeHigh(this, treeHighWidth, treeHighHeight, treeHighAngle));
+    }
 
-    delete treeLow;
-    treeLow = new TreeLow(this, 250.f, 500.f, 60.f);
-    sceneries->push_back(treeLow);
 
-    cave = new Cave(this, 200.f, 400.f);
+    for (int i = 0; i < treeMediumAmount; i++) {
+    treeMediumAngle = (float) distribution(generator);
+    sceneries->push_back(new TreeMedium(this, treeMediumWidth, treeMediumHeight, treeMediumAngle));
+    }
+
+
+    for(int i = 0; i<treeLowAmount; i++) {
+        treeLowAngle = (float) distribution(generator);
+        sceneries->push_back(new TreeLow(this, treeLowWidth, treeLowHeight, treeLowAngle));
+    }
+
+    for(int i = 0; i< stoneAmount; i++){
+        stoneAngle = (float) distribution(generator);
+        sceneries->push_back(new Stone(this,stoneWidth,stoneHeight,stoneAngle));
+    }
+
+
+    cave = new Cave(this, 200.f, 150.f);
     dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
     sceneries->push_back(cave);
 
