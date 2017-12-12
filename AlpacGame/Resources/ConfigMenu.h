@@ -32,7 +32,7 @@ public:
     };
 
     enum class buttonID {
-        PLAYGAME,
+        NEWGAME,
         RESUME,
         HIGHSCORE,
         SETTINGS,

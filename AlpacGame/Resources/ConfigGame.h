@@ -39,7 +39,7 @@ public:
      */
     unsigned int planetRadius = 600;
 
-    bool newGame = true;
+    bool newGame = false;
 
     b2World* world = nullptr;
     Entity* planet = nullptr;

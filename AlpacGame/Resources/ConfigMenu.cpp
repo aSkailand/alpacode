@@ -13,8 +13,17 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createButton(buttonID::RESUME, "Resume", "pressed",
                  [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
 
-    createButton(buttonID::PLAYGAME, "New game", "pressed",
-                 [&] { machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER); });
+    createButton(buttonID::NEWGAME, "New game", "pressed",
+                 [&] {
+                     if (machine->configGame.newGame) {
+                         machine->configGame.reset();
+                     } else {
+                         machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
+                         machine->configGame.newGame = true;
+                     }
+                     mapButtons[buttonID::RESUME]->enable();
+                     mapButtons[buttonID::RESUME]->setOpacity(1);
+                 });
 
     createButton(buttonID::HIGHSCORE, "High score", "pressed",
                  [&] {
@@ -153,7 +162,6 @@ void ConfigMenu::createButton(buttonID buttonID,
     tempButton->setTextSize(20);
     tempButton->connect(typeActivation, func);
     mapButtons.emplace(buttonID, tempButton);
-
 }
 
 
@@ -184,7 +192,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     tempVerticalLayout->addSpace(2.f);
     tempVerticalLayout->add(mapButtons[buttonID::RESUME]);
     tempVerticalLayout->addSpace(0.1f);
-    tempVerticalLayout->add(mapButtons[buttonID::PLAYGAME]);
+    tempVerticalLayout->add(mapButtons[buttonID::NEWGAME]);
     tempVerticalLayout->addSpace(0.1f);
     tempVerticalLayout->add(mapButtons[buttonID::HIGHSCORE]);
     tempVerticalLayout->addSpace(0.1f);
@@ -215,6 +223,10 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
     optionsVerticalLayout->addSpace(1);
     optionsVerticalLayout->add(mapButtons[buttonID::BACK_TO_MAIN]);
     optionsVerticalLayout->addSpace(0.5f);
+
+    //New game initial settings
+    mapButtons[buttonID::RESUME]->disable();
+    mapButtons[buttonID::RESUME]->setOpacity(0.5f);
 
     // Adds the settings layout to the map
     mapLayouts.emplace(layouts::SETTINGS, optionsVerticalLayout);
