@@ -20,8 +20,9 @@ void ConfigGame::run(sf::RenderWindow &window) {
 
     loadAllTextures();
     loadAllFonts();
+    dayCounterLabel();
+    alpacaCounterLabel();
 
-    scoreTextLabel();
 }
 
 
@@ -84,18 +85,18 @@ void ConfigGame::loadAllTextures() {
     sf::Texture night_11;
     sf::Texture night_12;
 
-    morning_1.loadFromFile(  "scenery/Sky/Background/1_Morning.png");
-    morning_2.loadFromFile(  "scenery/Sky/Background/2_Morning.png");
-    morning_3.loadFromFile(  "scenery/Sky/Background/3_Morning.png");
+    morning_1.loadFromFile("scenery/Sky/Background/1_Morning.png");
+    morning_2.loadFromFile("scenery/Sky/Background/2_Morning.png");
+    morning_3.loadFromFile("scenery/Sky/Background/3_Morning.png");
     afternoon_4.loadFromFile("scenery/Sky/Background/4_Afternoon.png");
     afternoon_5.loadFromFile("scenery/Sky/Background/5_Afternoon.png");
     afternoon_6.loadFromFile("scenery/Sky/Background/6_Afternoon.png");
-    evening_7.loadFromFile(  "scenery/Sky/Background/7_Evening.png");
-    evening_8.loadFromFile(  "scenery/Sky/Background/8_Evening.png");
-    evening_9.loadFromFile(  "scenery/Sky/Background/9_Evening.png");
-    night_10.loadFromFile(   "scenery/Sky/Background/10_Night.png");
-    night_11.loadFromFile(   "scenery/Sky/Background/11_Night.png");
-    night_12.loadFromFile(   "scenery/Sky/Background/12_Night.png");
+    evening_7.loadFromFile("scenery/Sky/Background/7_Evening.png");
+    evening_8.loadFromFile("scenery/Sky/Background/8_Evening.png");
+    evening_9.loadFromFile("scenery/Sky/Background/9_Evening.png");
+    night_10.loadFromFile("scenery/Sky/Background/10_Night.png");
+    night_11.loadFromFile("scenery/Sky/Background/11_Night.png");
+    night_12.loadFromFile("scenery/Sky/Background/12_Night.png");
 
     skyTextures.push_back(morning_1);
     skyTextures.push_back(morning_2);
@@ -124,15 +125,15 @@ void ConfigGame::loadAllTextures() {
     sf::Texture earth_11;
     sf::Texture earth_12;
 
-    earth_1.loadFromFile( "entity/planet/Earth/Earth_1.png");
-    earth_2.loadFromFile( "entity/planet/Earth/Earth_2.png");
-    earth_3.loadFromFile( "entity/planet/Earth/Earth_3.png");
-    earth_4.loadFromFile( "entity/planet/Earth/Earth_4.png");
-    earth_5.loadFromFile( "entity/planet/Earth/Earth_5.png");
-    earth_6.loadFromFile( "entity/planet/Earth/Earth_6.png");
-    earth_7.loadFromFile( "entity/planet/Earth/Earth_7.png");
-    earth_8.loadFromFile( "entity/planet/Earth/Earth_8.png");
-    earth_9.loadFromFile( "entity/planet/Earth/Earth_9.png");
+    earth_1.loadFromFile("entity/planet/Earth/Earth_1.png");
+    earth_2.loadFromFile("entity/planet/Earth/Earth_2.png");
+    earth_3.loadFromFile("entity/planet/Earth/Earth_3.png");
+    earth_4.loadFromFile("entity/planet/Earth/Earth_4.png");
+    earth_5.loadFromFile("entity/planet/Earth/Earth_5.png");
+    earth_6.loadFromFile("entity/planet/Earth/Earth_6.png");
+    earth_7.loadFromFile("entity/planet/Earth/Earth_7.png");
+    earth_8.loadFromFile("entity/planet/Earth/Earth_8.png");
+    earth_9.loadFromFile("entity/planet/Earth/Earth_9.png");
     earth_10.loadFromFile("entity/planet/Earth/Earth_10.png");
     earth_11.loadFromFile("entity/planet/Earth/Earth_11.png");
     earth_12.loadFromFile("entity/planet/Earth/Earth_12.png");
@@ -155,8 +156,8 @@ void ConfigGame::loadAllTextures() {
     sf::Texture sun_2;
     sf::Texture moon_1;
 
-    sun_1.loadFromFile( "scenery/Sun/Sun_1.png");
-    sun_2.loadFromFile( "scenery/Sun/Sun_2.png");
+    sun_1.loadFromFile("scenery/Sun/Sun_1.png");
+    sun_2.loadFromFile("scenery/Sun/Sun_2.png");
     moon_1.loadFromFile("scenery/Sun/Moon_1.png");
 
     sunTextures.push_back(sun_1);
@@ -179,7 +180,7 @@ void ConfigGame::loadAllTextures() {
     for (int i = 0; i < 5; ++i) {
         auto *tempTexture = new sf::Texture();
         tempTexture->loadFromFile("entity/cooldown/cooldown.png",
-                                 sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
+                                  sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
         cooldownTextures.push_back(tempTexture);
     }
 
@@ -201,7 +202,7 @@ void ConfigGame::loadAllTextures() {
 
     farmerSprites[EntityWarm::Action::WALKING].startFrame = 4;
     farmerSprites[EntityWarm::Action::WALKING].endFrame = 9;
-    loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0 ,
+    loadTexture(farmerSpriteSheet, farmerSprites, farmerWidth, farmerHeight, 0,
                 EntityWarm::Action::WALKING);
 
     // Alpaca
@@ -229,7 +230,7 @@ void ConfigGame::loadAllTextures() {
 
     wolfSprites[EntityWarm::Action::IDLE].startFrame = 0;
     wolfSprites[EntityWarm::Action::IDLE].endFrame = 3;
-    loadTexture(wolfSpriteSheet1,wolfSprites,wolfWidth,wolfHeight, 0,
+    loadTexture(wolfSpriteSheet1, wolfSprites, wolfWidth, wolfHeight, 0,
                 EntityWarm::Action::IDLE);
 
     wolfSprites[EntityWarm::Action::WALKING].startFrame = 1;
@@ -308,13 +309,38 @@ sf::Text ConfigGame::createLabel(sf::Font *font, unsigned int fontSize, const st
     return label;
 }
 
-void ConfigGame::scoreTextLabel() {
-    scoreLabel->setPosition(10,10);
-    scoreLabel->setFont(this->fontID);
-    scoreLabel->setText("Score: ");
-    scoreLabel->setTextSize(100);
+void ConfigGame::dayCounterLabel() {
+    dayLabel = tgui::Label::create();
+    dayLabel->setPosition(5, 5);
+    dayLabel->setSize(500, 100);
+    dayLabel->setTextSize(38);
+    dayLabel->setTextStyle(sf::Text::Bold);
+    dayLabel->setFont(this->fontID);
+    dayLabel->setText("");
 }
 
-tgui::Label::Ptr ConfigGame::getScoreLabel() {
-    return scoreLabel;
+void ConfigGame::alpacaCounterLabel() {
+    alpacaCounter = tgui::Label::create();
+    alpacaCounter->setPosition(5, 55);
+    alpacaCounter->setSize(500, 100);
+    alpacaCounter->setTextSize(24);
+    alpacaCounter->setTextColor(sf::Color::White);
+    alpacaCounter->setFont(this->fontID);
+    alpacaCounter->setText("");
+}
+
+void ConfigGame::setDayCounter(std::string value) {
+    dayLabel->setText("Day " + value);
+}
+
+void ConfigGame::setAlpacaCounter(std::string value) {
+    alpacaCounter->setText("Alpacas: " + value);
+}
+
+tgui::Label::Ptr ConfigGame::getDayLabel() {
+    return dayLabel;
+}
+
+tgui::Label::Ptr ConfigGame::getAlpacaLabel() {
+    return alpacaCounter;
 }

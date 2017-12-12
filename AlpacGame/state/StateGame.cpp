@@ -9,6 +9,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
     menuGUI = machine->configWindow.getMenuGUI();
     menuGUI->removeAllWidgets();
 
+    /// Assign HUD elements to the GUI
+    menuGUI->add(machine->configGame.getDayLabel());
+    menuGUI->add(machine->configGame.getAlpacaLabel());
+
+    deadCheck = true;
 
     /// Reset Game
     if (configGame->newGame) {
@@ -40,10 +45,12 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
 
-    menuGUI->add(machine->configGame.scoreLabel);
-
     /// Poll game
     while (pollGame()) {
+
+        /// Sets the value and updates the day and alpaca counter view
+        machine->configGame.setDayCounter(std::to_string(machine->configGame.numOfDay));
+        machine->configGame.setAlpacaCounter(std::to_string(machine->configGame.numOfAliveAlpacas));
 
         /// Save current mouse coordinates relatively to view
         sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
@@ -105,7 +112,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->clear(sf::Color::Blue);
 
         /// Draw Background;
-        for( Scenery *s : *configGame->sceneries){
+        for (Scenery *s : *configGame->sceneries) {
             s->render(window);
         }
 
@@ -127,10 +134,10 @@ void StateGame::goNext(StateMachine &stateMachine) {
         }
 
         /// Spawn Alpacas
-        while (!configGame->queue.empty()){
+        while (!configGame->queue.empty()) {
             b2Vec2 babySpawnPos = configGame->queue.front();
             configGame->queue.pop();
-            auto* babyAlpaca = new Alpaca(configGame, false, babySpawnPos.x * SCALE, babySpawnPos.y * SCALE);
+            auto *babyAlpaca = new Alpaca(configGame, false, babySpawnPos.x * SCALE, babySpawnPos.y * SCALE);
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - babyAlpaca->getBody()->GetWorldCenter();
             delta.Normalize();
             float mass = babyAlpaca->getBody()->GetMass();
@@ -155,7 +162,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
                 warm_e->currentlyMousedOver = warm_e->get_sf_ShapeEntity()->getGlobalBounds().contains(
                         window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
 
-                if(warm_e->getEntity_ID() == Entity::ID::ALPACA && warm_e->currentHealth == EntityWarm::Health::ALIVE){
+                if (warm_e->getEntity_ID() == Entity::ID::ALPACA &&
+                    warm_e->currentHealth == EntityWarm::Health::ALIVE) {
                     numAliveAlpacas++;
                 }
             }
@@ -207,16 +215,21 @@ void StateGame::goNext(StateMachine &stateMachine) {
             window->setView(view);
         }
 
+        checkDefeat();
+
         menuGUI->draw();
+
         /// Update View
         window->display();
 
     }
+
 }
 
 bool StateGame::pollGame() {
     sf::Event event;
     while (window->pollEvent(event)) {
+        menuGUI->handleEvent(event);
         switch (event.type) {
             case sf::Event::Closed: {
                 machine->setCurrentState(StateMachine::stateID::EXIT);
@@ -239,7 +252,7 @@ bool StateGame::pollGame() {
                 break;
             }
             default: {
-                return true;
+                return machine->configMenu->returnToMenuCheck;
             }
         }
     }
@@ -317,4 +330,30 @@ void StateGame::mousePressedHandler(sf::Event event) {
     }
 
 }
+
+void StateGame::checkDefeat() {
+    if (deadCheck) {
+        if (farmer->currentHealth == EntityWarm::Health::DEAD) {
+            machine->configMenu->farmerDead->setText(
+                    "\t\t\t\tDefeat!\n\t\t\t  You died!\n \t\tDays survived: " + std::to_string(machine->configGame.numOfDay));
+
+            menuGUI->add(machine->configMenu->farmerDead);
+            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+            window->setMouseCursorVisible(true);
+            deadCheck = false;
+        }
+        if (machine->configGame.numOfAliveAlpacas < 2) {
+            machine->configMenu->allAlpacasDead->setText(
+                    "\t\t\t\tDefeat!\nAlpacas have gone extinct!\n \t\tDays survived: " +
+                    std::to_string(machine->configGame.numOfDay));
+
+            menuGUI->add(machine->configMenu->allAlpacasDead);
+            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+            window->setMouseCursorVisible(true);
+            farmer->HP = 0;
+            deadCheck = false;
+        }
+    }
+}
+
 

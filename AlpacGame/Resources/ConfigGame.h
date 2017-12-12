@@ -21,6 +21,16 @@
 class ConfigGame {
 public:
 
+    /// Getters and setters for the  score labels
+
+    tgui::Label::Ptr getDayLabel();
+
+    tgui::Label::Ptr getAlpacaLabel();
+
+    void setDayCounter(std::string value);
+
+    void setAlpacaCounter(std::string value);
+
     /// Day / Night Cycle
     enum class Cycle{DAY, NIGHT};
     Cycle getCurrentCycle() const;
@@ -145,13 +155,15 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
-    tgui::Label::Ptr scoreLabel;
-
-    tgui::Label::Ptr getScoreLabel();
 
 private:
 
-    void scoreTextLabel();
+    /// TGUI lables
+    tgui::Label::Ptr dayLabel;
+    tgui::Label::Ptr alpacaCounter;
+
+    void dayCounterLabel();
+    void alpacaCounterLabel();
 
     Cycle currentCycle = Cycle::DAY;
 

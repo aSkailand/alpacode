@@ -18,6 +18,8 @@ class StateMachine;
 class ConfigMenu {
 public:
 
+    bool returnToMenuCheck = true;
+
     /// Enums
     enum class layouts {
         MAINMENU,
@@ -25,7 +27,8 @@ public:
         VIDEO,
         SOUND,
         CONTROLS,
-        PAUSE
+        PAUSE,
+        DEFEAT
     };
 
     enum class buttonID {
@@ -61,6 +64,9 @@ public:
     std::map<buttonID, tgui::Button::Ptr> mapButtons;
     std::map<layouts, tgui::VerticalLayout::Ptr> mapLayouts;
     std::map<buttonID, tgui::Slider::Ptr> mapSliders;
+
+    tgui::Label::Ptr allAlpacasDead;
+    tgui::Label::Ptr farmerDead;
 
 private:
 
@@ -102,6 +108,16 @@ private:
      * Creates the pause menu layout
      */
     void pauseMenuLayout();
+
+    /**
+     * Creates the defeat screen layout
+     */
+    void defeatScreenLayout();
+
+    /**
+     * Creates the defeat labels
+     */
+    void defeatTitleLabel();
 
 
 

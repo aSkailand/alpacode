@@ -10,6 +10,9 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     pictureMenu = tgui::Picture::create("Resources/aluminium.jpg");
     masterButton = theme->load("Button");
 
+
+
+
     createButton(buttonID::PLAYGAME, "Play game!", "pressed",
                  [&] {
                      machine->setCurrentState(StateMachine::stateID::SINGLEPLAYER);
@@ -73,6 +76,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
     createSlider(buttonID::MUSIC_SLIDER);
     createSlider(buttonID::EFFECT_SLIDER);
 
+    defeatTitleLabel();
 
     mainMenuLayout(machine->configWindow.getMenuGUI());
 }
@@ -133,6 +137,7 @@ void ConfigMenu::mainMenuLayout(tgui::Gui *Width) {
 
     videoSettingsLayout();
     soundSettingsLayout();
+    defeatScreenLayout();
     pauseMenuLayout();
 }
 
@@ -303,9 +308,78 @@ void ConfigMenu::setCurrentResolution(ConfigWindow::Resolution currentResolution
     machine->configWindow.currentResolution = currentResolution;
 }
 
+void ConfigMenu::defeatScreenLayout() {
+    // Label
+    tgui::Label::Ptr tempLabel = theme->load("Label");
+    // Vertical Layout
+    tgui::VerticalLayout::Ptr defeatLayout = tgui::VerticalLayout::create();
+    tgui::VerticalLayout::Ptr tempLayout = tgui::VerticalLayout::create();
+    tgui::HorizontalLayout::Ptr defeatTitleLayout = tgui::HorizontalLayout::create();
+    tempLayout->setPosition(machine->configWindow.getWindow().getSize().x / 4,
+                            machine->configWindow.getWindow().getSize().y / 4);
+    tempLayout->setSize(400, 300);
+
+    // Defeat label
+    tgui::Label::Ptr defeatLabel = tgui::Label::copy(tempLabel);
+    defeatLabel->setFont(machine->configGame.fontID);
+    defeatLabel->setPosition(tempLayout->getSize().x / 2, tempLayout->getSize().y / 2);
+    defeatLabel->setTextSize(28);
+    defeatLabel->setTextStyle(sf::Text::Bold);
+    defeatLabel->setTextColor(tgui::Color(255, 10, 10));
+
+    // Enter name label
+    tgui::Label::Ptr nameLabel = tgui::Label::copy(tempLabel);
+    nameLabel->setText("Enter name:");
+    nameLabel->setTextSize(24);
+
+    // Edit box
+    tgui::EditBox::Ptr nameEditBox = theme->load("EditBox");
+    nameEditBox->setDefaultText("Enter name...");
+    nameEditBox->setMaximumCharacters(20);
+
+    // Return to menu button
+    tgui::Button::Ptr returnToMenu = theme->load("Button");
+    returnToMenu->setText("Return to menu...");
+    returnToMenu->connect("pressed", [&] {
+        machine->configWindow.getMenuGUI()->removeAllWidgets();
+        machine->setCurrentState(StateMachine::stateID::MENU);
+        returnToMenuCheck = false;
+    });
+
+
+    defeatTitleLayout->addSpace();
+    defeatTitleLayout->add(defeatLabel);
+    defeatTitleLayout->addSpace();
+
+
+    // Adds every widget to layout map
+    tempLayout->add(defeatTitleLayout);
+    tempLayout->addSpace();
+    tempLayout->add(nameLabel);
+    tempLayout->add(nameEditBox, "Enter name...");
+    tempLayout->addSpace(0.5);
+    tempLayout->add(returnToMenu);
+    tempLayout->setRatio(0, 3);
+
+    mapLayouts.emplace(layouts::DEFEAT, tempLayout);
+}
+
 void ConfigMenu::createSlider(buttonID sliderType) {
     // Temporary slider
     tgui::Slider::Ptr tempSlider = theme->load("Slider");
     mapSliders.emplace(sliderType, tempSlider);
+}
+
+void ConfigMenu::defeatTitleLabel() {
+    allAlpacasDead = theme->load("Label");
+    allAlpacasDead->setText("");
+    allAlpacasDead->setPosition(machine->configWindow.getWindow().getSize().x / 5,machine->configWindow.getWindow().getSize().y /5);
+    allAlpacasDead->setTextSize(32);
+    allAlpacasDead->setTextColor(sf::Color::Red);
+    allAlpacasDead->setSize(500, 1200);
+    allAlpacasDead->setTextStyle(sf::Text::Bold);
+    farmerDead = tgui::Label::copy(allAlpacasDead);
+    farmerDead->setText("");
+
 }
 

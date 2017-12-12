@@ -15,6 +15,9 @@ void StateMenu::goNext(StateMachine &stateMachine) {
 
     window->setMouseCursorVisible(true);
 
+    machine->configMenu->returnToMenuCheck = true;
+
+
     while (pollMenu()) {
         drawMenu();
     }

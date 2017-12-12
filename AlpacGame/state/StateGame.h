@@ -38,6 +38,8 @@ public:
     // Accessing DayCycle variables
     DayCycle *dayCycle;
 
+    bool deadCheck = true;
+
 private:
 
     /// Pointers
@@ -69,6 +71,13 @@ private:
     void mousePressedHandler(sf::Event event);
 
     void keyPressedHandler(sf::Event event);
+
+    /**
+     * Checks if the player is dead or there is less than two alpacas
+     * if this is true, there will pop up a defeat screen.
+     * the player enters a name and the score will be saved in the higscore
+     */
+    void checkDefeat();
 };
 
 
