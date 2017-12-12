@@ -1,7 +1,3 @@
-//
-// Created by Trong on 07/12/2017.
-//
-
 #include "Sun.h"
 #include "../../Resources/ConfigGame.h"
 

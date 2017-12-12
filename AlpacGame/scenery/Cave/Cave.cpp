@@ -8,7 +8,7 @@ Cave::Cave(ConfigGame *configGame, float width, float height) {
 
     sf_Shape = new sf::RectangleShape(sf::Vector2f(width, height));
     sf_Shape->setOrigin(width/2, height);
-    sf_Shape->setTexture(&configGame->trapOpenTexture);
+    sf_Shape->setTexture(&configGame->wolfCaveTexture);
 
     configGame->sceneries->push_back(this);
 }

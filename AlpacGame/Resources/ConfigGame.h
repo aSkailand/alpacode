@@ -55,9 +55,30 @@ public:
     float sunRadius = 300.f;
     float planetRadius = 700.f;
 
+    float treeHighWidth = 250.f;
+    float treeHighHeight = 500.f;
+    float treeHighAngle = 90.f;
+    int treeHighAmount = 5;
+
+    float treeMediumWidth = 250.f;
+    float treeMediumHeight = 500.f;
+    float treeMediumAngle = 120.f;
+    int treeMediumAmount = 5;
+
+    float treeLowWidth = 250.f;
+    float treeLowHeight = 400.f;
+    float treeLowAngle = 330.f;
+    int treeLowAmount = 5;
+
+    float stoneWidth = 115.f;
+    float stoneHeight = 80.f;
+    float stoneAngle = 0.f;
+    int stoneAmount = 5;
+
 
     Scenery* sun = nullptr;
     Scenery* sky = nullptr;
+    Scenery* cave = nullptr;
 
     bool newGame = true;
     bool isPaused = false;
@@ -66,7 +87,7 @@ public:
     Entity* planet = nullptr;
     Entity* farmer = nullptr;
 
-    Scenery* cave;
+
 
     void reset();
 
@@ -163,6 +184,13 @@ public:
 
     sf::Texture alertSteakTexture;
     sf::Texture alertFlagTexture;
+
+    sf::Texture treeHighTexture;
+    sf::Texture treeMediumTexture;
+    sf::Texture treeLowTexture;
+    sf::Texture stoneTexture;
+
+    sf::Texture wolfCaveTexture;
 
     // Texture Vectors
     std::vector<sf::Texture> bulletIndicatorTextures;

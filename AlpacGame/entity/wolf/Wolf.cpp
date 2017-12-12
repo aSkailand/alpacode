@@ -598,13 +598,6 @@ void Wolf::renderDebugMode() {
         label_ID.setRotation(sf_ShapeEntity->getRotation());
         configGame->window->draw(label_ID);
 
-        // todo: Fix this
-        // Draw debug: Base
-        wolfDen_Debug->setOutlineThickness(2);
-        wolfDen_Debug->setOutlineColor(sf::Color::Cyan);
-        configGame->window->draw(*wolfDen_Debug);
-
-
     } else {
         sf_ShapeEntity->setOutlineThickness(0);
     }

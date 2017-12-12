@@ -75,7 +75,6 @@ private:
     enum class Behavior{HUNTING, CHASING, RETREATING};
     Behavior currentBehavior = Behavior::HUNTING;
     sf::RectangleShape alertSteakIndicator;
-    sf::CircleShape *wolfDen_Debug = nullptr;
 
     /** HUNTING
     *  1. Moves to one direction (Random) until an entity is detected
