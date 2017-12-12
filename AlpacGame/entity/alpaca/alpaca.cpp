@@ -44,7 +44,7 @@ Alpaca::Alpaca(ConfigGame *configGame, bool isAdult, float x, float y)
     // Detection sensor
     b2CircleShape b2Shape_3;
     b2FixtureDef fixtureDef_detection;
-    b2Shape_3.m_radius = (radius + 300) / SCALE;
+    b2Shape_3.m_radius = (radius + detectionRadius) / SCALE;
     fixtureDef_detection.shape = &b2Shape_3;
     fixtureDef_detection.isSensor = true;
     fixtureDef_detection.filter.categoryBits = (uint16) ID::ALPACA;
@@ -104,9 +104,9 @@ Alpaca::Alpaca(ConfigGame *configGame, bool isAdult, float x, float y)
     currentBehavior = Behavior::NORMAL;
 
     /// Paint sensor
-    sf_DebugDetection = new sf::CircleShape(radius + 300);
+    sf_DebugDetection = new sf::CircleShape(radius + detectionRadius);
     sf_DebugDetection->setFillColor(sf::Color::Transparent);
-    sf_DebugDetection->setOrigin(radius + 300, radius + 300);
+    sf_DebugDetection->setOrigin(radius + detectionRadius, radius + detectionRadius);
 
     /// Initialize clocks
     randomActionClock.reset(true);
@@ -183,14 +183,6 @@ void Alpaca::switchAction() {
             if (behaviorClock.getElapsedTime().asSeconds() >= awareActionTick) {
                 currentBehavior = Behavior::AFRAID;
 
-                if (currentDirection == Direction::LEFT) {
-                    currentDirection = Direction::RIGHT;
-                    sf_ShapeEntity->setScale(1.f, 1.f);
-                } else {
-                    currentDirection = Direction::LEFT;
-                    sf_ShapeEntity->setScale(-1.f, 1.f);
-                }
-
                 // Reset defaults to false
                 behaviorClock.reset(true);
             }
@@ -198,6 +190,33 @@ void Alpaca::switchAction() {
         }
         case Behavior::AFRAID: {
             currentAction = Action::WALKING;
+
+            if(!currentDetectedEntity.empty()){
+                b2Vec2 temp;
+                if(currentDirection == Direction ::RIGHT) temp= b2Vec2(10, 10);
+                else temp = b2Vec2(-10, 10);
+
+                for(auto &detectedEntity : currentDetectedEntity){
+                    b2Vec2 currentVector = body->GetLocalPoint(detectedEntity->getBody()->GetWorldCenter());
+                    float length_1 = currentVector.LengthSquared();
+                    float length_2 = temp.LengthSquared();
+
+                    if(length_1 < length_2){
+                        temp = currentVector;
+                    }
+                }
+
+                // Set current direction away from the closest target
+                if(temp.x < 0){
+                    currentDirection = Direction ::RIGHT;
+                    sf_ShapeEntity->setScale(1.f, 1.f);
+                } else {
+                    currentDirection = Direction  ::LEFT;
+                    sf_ShapeEntity->setScale(-1.f, 1.f);
+                }
+            }
+
+
             if (behaviorClock.getElapsedTime().asSeconds() >= afraidActionTick) {
                 currentBehavior = Behavior::NORMAL;
                 currentAction = Action::IDLE;
@@ -373,6 +392,10 @@ void Alpaca::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
 void Alpaca::startContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getEntity_ID()) {
         case ID::WOLF: {
+            if(otherCollision == CollisionID::HIT){
+                currentDetectedEntity.push_back(contactEntity);
+            }
+
             if (otherCollision == CollisionID::HIT) {
 
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
@@ -388,18 +411,11 @@ void Alpaca::startContact_detection(Entity::CollisionID otherCollision, Entity *
                     }
                 }
 
-                if (currentBehavior == Behavior::AFRAID) {
-                    if (delta.x > 0) {
-                        sf_ShapeEntity->setScale(-1.f, 1.f);
-                        currentDirection = Direction::LEFT;
-                    } else {
-                        sf_ShapeEntity->setScale(1.f, 1.f);
-                        currentDirection = Direction::RIGHT;
-                    }
-                }
+
 
                 // Clock Resets
                 behaviorClock.reset(true);
+
             }
             break;
         }
@@ -435,6 +451,18 @@ void Alpaca::endContact_body(Entity::CollisionID otherCollision, Entity *contact
 
 void Alpaca::endContact_detection(Entity::CollisionID otherCollision, Entity *contactEntity) {
     switch (contactEntity->getEntity_ID()) {
+        case ID::FARMER:{
+
+        }
+
+        case ID::WOLF:{
+            if(otherCollision == CollisionID::HIT){
+                currentDetectedEntity.remove(contactEntity);
+            }
+
+        }
+
+
         default:
             break;
     }

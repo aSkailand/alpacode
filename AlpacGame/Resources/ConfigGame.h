@@ -159,6 +159,14 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
+    bool spawnWolves = false;
+
+    float maxWolves = 0.f;
+    float currentWolves = 0.f;
+
+    /// Chrono Clock timer to
+    sftools::Chronometer wolfSpawnTimer;
+
 private:
 
     /**
@@ -192,6 +200,12 @@ private:
      * Load all sprites and then map them in categorized fashion.
      */
     void loadAllTextures();
+
+
+
+
+    void isSpawningWolves();
+
 
 };
 

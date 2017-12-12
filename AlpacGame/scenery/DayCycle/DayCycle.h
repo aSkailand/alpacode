@@ -83,7 +83,7 @@ private:
     unsigned int cycleFrame;
 
     // One whole revolution in seconds
-    float revolution = 30.f;
+    float revolution = 15.f;
 
     // Time for each background transition (Calculated)
     float cycleTime;
