@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <list>
 
 #include "../../state/StateMachine.h"
 #include "../../Resources/ConfigGame.h"
@@ -54,20 +55,13 @@ public:
 
 private:
 
-//    void switchCurrentTexture() override;
-
-
-private:
-
     sf::RectangleShape sf_fertileHeart;
-
 
     /// AI Behavior
     enum class Behavior {
         NORMAL, AWARE, AFRAID, FOLLOWING
     };
     Behavior currentBehavior;
-
 
 private:
 
@@ -78,16 +72,12 @@ private:
     float friction = 1.0f;
     float restitution = 0.0f;
 
-    uint16 categoryBits = (uint16) ID::ALPACA;
-
-    uint16 maskBits = (uint16) ID::PLANET
-                      | (uint16) ID::WOLF
-                      | (uint16) ID::BULLET;
-
     float walkForce = 5.f;
     float walkAngle = 70.f;   // Right, Degrees
 
     float runForce = 7.f;
+
+    float detectionRadius = 300.f;
 
     /// Movement tools
     /**
@@ -98,14 +88,15 @@ private:
     /**
      * The time for Alpaca to change behaviors
      */
-    float awareActionTick = 1.0f;
+    float awareActionTick = 0.5f;
     float afraidActionTick = 3.0f;
-
 
     /**
      * The time before next movement is permitted to be performed (in seconds).
      */
     float moveAvailableTick = 0.5f;
+
+
 
 
     /// Functions
@@ -131,7 +122,17 @@ public:
 
 private:
 
+    std::list<Entity * > currentDetectedEntity;
+
+    uint16 categoryBits = (uint16) ID::ALPACA;
+
+    uint16 maskBits = (uint16) ID::PLANET
+                      | (uint16) ID::WOLF
+                      | (uint16) ID::BULLET;
+
     std::map<EntityWarm::Action, SpriteInfo> alpacaMapPtr;
+
+    sftools::Chronometer behaviorClock;
 
 public:
 

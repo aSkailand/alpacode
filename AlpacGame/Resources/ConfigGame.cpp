@@ -183,7 +183,7 @@ void ConfigGame::loadAllTextures() {
     for (int i = 0; i < 5; ++i) {
         auto *tempTexture = new sf::Texture();
         tempTexture->loadFromFile("entity/cooldown/cooldown.png",
-                                 sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
+                                  sf::IntRect(i * cooldownWidth, 0, cooldownWidth, cooldownHeight));
         cooldownTextures.push_back(tempTexture);
     }
 
@@ -193,7 +193,7 @@ void ConfigGame::loadAllTextures() {
     for (int i = 0; i < 3; ++i) {
         auto tempTexture = sf::Texture();
         tempTexture.loadFromFile("entity/Shotgun/shotgun-bullet.png",
-                                  sf::IntRect(i * indicatorWidth, 0, indicatorWidth, indicatorHeight));
+                                 sf::IntRect(i * indicatorWidth, 0, indicatorWidth, indicatorHeight));
         bulletIndicatorTextures.push_back(tempTexture);
     }
 
@@ -372,9 +372,17 @@ void ConfigGame::initiateNewDay() {
 }
 
 void ConfigGame::initiateNight() {
+    spawnWolves = true;
+    wolfSpawnTimer.reset(true);
+    maxWolves = numOfDay * 2;
 
     // Spawn wolves
-    for (int i = 0; i < numOfDay * 2; ++i) {
-        entities->push_back(new Wolf(this, 40, 150, 100, wolfDenPos.x, wolfDenPos.y));
-    }
+//    for (int i = 0; i < numOfDay * 2; ++i) {
+//        entities->push_back(new Wolf(this, wolfDenPos.x, wolfDenPos.y));
+//    }
+}
+
+void ConfigGame::isSpawningWolves() {
+
+
 }

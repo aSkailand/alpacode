@@ -1,6 +1,6 @@
 #include "Wolf.h"
 
-Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y)
+Wolf::Wolf(ConfigGame *configGame, float x, float y)
         : id(nextId++), Mob(id) {
 
     /// Assign Pointers
@@ -52,7 +52,7 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     // Fixture: Detection
     b2CircleShape b2Shape3;
     b2FixtureDef fixtureDef_detection;
-    b2Shape3.m_radius = (radius + 300) / SCALE;
+    b2Shape3.m_radius = (radius + detectionRadius) / SCALE;
     fixtureDef_detection.shape = &b2Shape3;
     fixtureDef_detection.isSensor = true;
     fixtureDef_detection.filter.categoryBits = (uint16) getEntity_ID();
@@ -85,8 +85,8 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
     sf_DebugHit->setFillColor(sf::Color::Transparent);
 
     // Debug Shape: Detection
-    sf_DebugDetection = new sf::CircleShape(radius + 300);
-    sf_DebugDetection->setOrigin(sf_DebugDetection->getRadius(), sf_DebugDetection->getRadius());
+    sf_DebugDetection = new sf::CircleShape(radius + detectionRadius);
+    sf_DebugDetection->setOrigin(radius + detectionRadius, radius + detectionRadius);
     sf_DebugDetection->setFillColor(sf::Color::Transparent);
 
     // Create HitPoint barometer
@@ -97,6 +97,8 @@ Wolf::Wolf(ConfigGame *configGame, float radius, float width, float height, floa
 
     // todo: Determine where to put this chunk of code
     /// WolfBase
+
+
     // Wolf Den is placed on an angle with planets radius.
     // 180 degrees because farmer position is at 0 degrees.
     wolfDen_Debug = new sf::CircleShape(10);
@@ -123,29 +125,6 @@ void Wolf::switchAction() {
     // Cancel Early if entity is not alive or stunned
     if (currentHealth != Health::ALIVE || isStunned)
         return;
-
-//    // TODO: Hunting when wolves spawn at night. Temporarily is set to input "M"
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-//        currentAction = Action::WALKING;
-//        currentBehavior = Behavior ::HUNTING;
-//
-//        currentDirection = (Direction) randomNumberGenerator(0, 1);
-//        switch (currentDirection) {
-//            case Wolf::Direction::LEFT: {
-//                sf_ShapeEntity->setScale(-1.f, 1.f);
-//                break;
-//            }
-//            case Wolf::Direction::RIGHT: {
-//                sf_ShapeEntity->setScale(1.f, 1.f);
-//                break;
-//            }
-//        }
-//    }
-
-//    // TODO: Wolves runs home when night is over. Temporarily set to input "N"
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-//        currentBehavior = Behavior::RETREAT;
-//    }
 
     /// Change to correct state
     switch (configGame->getCurrentCycle()) {
@@ -232,7 +211,7 @@ void Wolf::switchAction() {
         }
         case Behavior::RETREATING: {
 
-            if(behaviorClock.isRunning()){
+            if(homeTimer.isRunning()){
 
                 // Set to idling
                 currentAction = Action::IDLE;
@@ -257,7 +236,7 @@ void Wolf::switchAction() {
 
                 // Check if destination is reached
                 if(temp.Length() < 3.0f){
-                    behaviorClock.reset(true);
+                    homeTimer.reset(true);
                     removeEntityCollision();
                     renderFadeOut();
                 }
@@ -291,13 +270,6 @@ void Wolf::performAction() {
         }
     }
 
-    // todo: move this to h file
-    /** HUNTING
-     *  1. Moves to one direction (Random) until an entity is detected
-     *  2. Adds the entity in a list<Entity *>
-     *  3. Iterates list, finds the lowest Length() value and follows it
-     */
-
 }
 
 void Wolf::render(sf::RenderWindow *window) {
@@ -314,7 +286,7 @@ void Wolf::render(sf::RenderWindow *window) {
         window->draw(*sf_ShapeGhost);
     }
 
-    if(behaviorClock.isRunning()){
+    if(homeTimer.isRunning()){
         renderFadeOut();
     }
 
@@ -338,7 +310,7 @@ bool Wolf::deadCheck() {
 
     // Wolf is queued up for deletion if the ghost have been lurking for long enough OR has retreated home.
     bool dead = currentHealth == Health::GHOST && !deathClock.isRunning();
-    bool home = currentBehavior == Behavior::RETREATING && behaviorClock.getElapsedTime().asSeconds() > enteringDenTick;
+    bool home = currentBehavior == Behavior::RETREATING && homeTimer.getElapsedTime().asSeconds() > enteringDenTick;
     return dead || home;
 }
 
@@ -634,14 +606,14 @@ void Wolf::renderDebugMode() {
 void Wolf::pause() {
     movementTriggerClock.pause();
     randomActionClock.pause();
-    behaviorClock.pause();
+    homeTimer.pause();
     deathClock.pause();
 }
 
 void Wolf::resume() {
     movementTriggerClock.resume();
     randomActionClock.resume();
-    behaviorClock.resume();
+    homeTimer.resume();
 
     if (currentHealth != Health::ALIVE) {
         deathClock.resume();
