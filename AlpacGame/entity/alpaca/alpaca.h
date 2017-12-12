@@ -54,17 +54,12 @@ public:
 
 private:
 
-//    void switchCurrentTexture() override;
-
-
-private:
-
     sf::RectangleShape sf_fertileHeart;
 
 
     /// AI Behavior
     enum class Behavior {
-        NORMAL, AWARE, AFRAID, FOLLOWING
+        NORMAL, AWARE, AFRAID
     };
     Behavior currentBehavior;
 

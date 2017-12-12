@@ -124,29 +124,6 @@ void Wolf::switchAction() {
     if (currentHealth != Health::ALIVE || isStunned)
         return;
 
-//    // TODO: Hunting when wolves spawn at night. Temporarily is set to input "M"
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-//        currentAction = Action::WALKING;
-//        currentBehavior = Behavior ::HUNTING;
-//
-//        currentDirection = (Direction) randomNumberGenerator(0, 1);
-//        switch (currentDirection) {
-//            case Wolf::Direction::LEFT: {
-//                sf_ShapeEntity->setScale(-1.f, 1.f);
-//                break;
-//            }
-//            case Wolf::Direction::RIGHT: {
-//                sf_ShapeEntity->setScale(1.f, 1.f);
-//                break;
-//            }
-//        }
-//    }
-
-//    // TODO: Wolves runs home when night is over. Temporarily set to input "N"
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-//        currentBehavior = Behavior::RETREAT;
-//    }
-
     /// Change to correct state
     switch (configGame->getCurrentCycle()) {
         case ConfigGame::Cycle::DAY: {
