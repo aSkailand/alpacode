@@ -203,6 +203,7 @@ void ConfigGame::loadAllTextures() {
 
     // Alert Wolf Indicator
     alertSteakTexture.loadFromFile("entity/Wolf/steak1.png");
+    alertFlagTexture.loadFromFile("entity/Wolf/flag.png");
 
     // HitPoint
     healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
@@ -365,6 +366,8 @@ void ConfigGame::initiateNewDay() {
             alpacaPtr->HP = alpacaPtr->max_HP;
         }
     }
+
+    dynamic_cast<Farmer*>(farmer)->HP = dynamic_cast<Farmer*>(farmer)->max_HP;
 
     // Update wolf den position
     std::uniform_int_distribution<int> distribution(0, 359);

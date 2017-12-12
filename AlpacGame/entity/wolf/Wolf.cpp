@@ -283,12 +283,21 @@ void Wolf::render(sf::RenderWindow *window) {
     window->draw(*sf_ShapeEntity);
 
     // Draw Wolf Indicator
-    if(currentHealth == Health::ALIVE && currentBehavior == Behavior::CHASING){
-        alertSteakIndicator.setPosition(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
-                                        getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE);
-        alertSteakIndicator.setRotation(sf_ShapeEntity->getRotation());
-        alertSteakIndicator.setTexture(&configGame->alertSteakTexture);
-        window->draw(alertSteakIndicator);
+    if (currentHealth == Health::ALIVE) {
+        if (currentBehavior == Behavior::CHASING) {
+            alertSteakIndicator.setPosition(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+                                            getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE);
+            alertSteakIndicator.setRotation(sf_ShapeEntity->getRotation());
+            alertSteakIndicator.setTexture(&configGame->alertSteakTexture);
+            window->draw(alertSteakIndicator);
+        }
+        else if(currentBehavior == Behavior::RETREATING){
+            alertSteakIndicator.setPosition(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+                                            getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE);
+            alertSteakIndicator.setRotation(sf_ShapeEntity->getRotation());
+            alertSteakIndicator.setTexture(&configGame->alertFlagTexture);
+            window->draw(alertSteakIndicator);
+        }
     }
 
     // Draw Hit Point Barometer

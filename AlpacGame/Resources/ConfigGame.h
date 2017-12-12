@@ -31,7 +31,7 @@ public:
     unsigned int numOfAliveAlpacas = 0;
 
     /**
-     * Initiated every new day (per 2 revolution.
+     * Initiated every new day (per 2 revolution).
      */
     void initiateNewDay();
     void initiateNight();
@@ -151,6 +151,7 @@ public:
     sf::Texture alertYellowTexture;
 
     sf::Texture alertSteakTexture;
+    sf::Texture alertFlagTexture;
 
     // Texture Vectors
     std::vector<sf::Texture> bulletIndicatorTextures;

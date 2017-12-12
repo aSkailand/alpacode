@@ -65,7 +65,7 @@ Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, 
     sf_DebugHit->setOrigin(radius, radius);
 
     // Set HP
-    HP = 10;
+    HP = max_HP;
 
     // Create HitPoint barometer
     hitPointBarometer = new HitPointBarometer(this->configGame, HP, 25.f, 25.f);
