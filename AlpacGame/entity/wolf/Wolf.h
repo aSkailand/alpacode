@@ -74,7 +74,7 @@ private:
     /// Behavior
     enum class Behavior{HUNTING, CHASING, RETREATING};
     Behavior currentBehavior = Behavior::HUNTING;
-
+    sf::RectangleShape alertSteakIndicator;
     sf::CircleShape *wolfDen_Debug = nullptr;
 
     /** HUNTING

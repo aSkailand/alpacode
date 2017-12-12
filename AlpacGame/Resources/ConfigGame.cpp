@@ -197,6 +197,13 @@ void ConfigGame::loadAllTextures() {
         bulletIndicatorTextures.push_back(tempTexture);
     }
 
+    // Alert Indicator
+    alertRedTexture.loadFromFile("entity/Alpaca/redAlert.png");
+    alertYellowTexture.loadFromFile("entity/Alpaca/yellowAlert.png");
+
+    // Alert Wolf Indicator
+    alertSteakTexture.loadFromFile("entity/Wolf/steak1.png");
+
     // HitPoint
     healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
 
@@ -376,13 +383,5 @@ void ConfigGame::initiateNight() {
     wolfSpawnTimer.reset(true);
     maxWolves = numOfDay * 2;
 
-    // Spawn wolves
-//    for (int i = 0; i < numOfDay * 2; ++i) {
-//        entities->push_back(new Wolf(this, wolfDenPos.x, wolfDenPos.y));
-//    }
 }
 
-void ConfigGame::isSpawningWolves() {
-
-
-}

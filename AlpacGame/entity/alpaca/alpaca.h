@@ -61,7 +61,8 @@ private:
     enum class Behavior {
         NORMAL, AWARE, AFRAID
     };
-    Behavior currentBehavior;
+    Behavior currentBehavior = Behavior::NORMAL;
+    sf::RectangleShape alertIndicatorShape;
 
 private:
 

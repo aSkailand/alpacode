@@ -147,6 +147,11 @@ public:
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
+    sf::Texture alertRedTexture;
+    sf::Texture alertYellowTexture;
+
+    sf::Texture alertSteakTexture;
+
     // Texture Vectors
     std::vector<sf::Texture> bulletIndicatorTextures;
     std::vector<sf::Texture> sunTextures;
@@ -200,11 +205,6 @@ private:
      * Load all sprites and then map them in categorized fashion.
      */
     void loadAllTextures();
-
-
-
-
-    void isSpawningWolves();
 
 
 };

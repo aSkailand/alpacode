@@ -95,23 +95,12 @@ Wolf::Wolf(ConfigGame *configGame, float x, float y)
     // Create ID text
     label_ID = configGame->createLabel(&this->configGame->fontID, 20, std::to_string(id));
 
-    // todo: Determine where to put this chunk of code
-    /// WolfBase
-
-
-    // Wolf Den is placed on an angle with planets radius.
-    // 180 degrees because farmer position is at 0 degrees.
-    wolfDen_Debug = new sf::CircleShape(10);
-    wolfDen_Debug->setFillColor(sf::Color::Transparent);
-    wolfDen_Debug->setOrigin(10, 10);
-    float tmp_X = configGame->calcX(180.f, configGame->planetRadius);
-    float tmp_Y = configGame->calcY(180.f, configGame->planetRadius);
-
-    wolfDen_Debug->setPosition(tmp_X, tmp_Y);
-    b2Vec2(tmp_X / SCALE, tmp_Y / SCALE);
 
     randomActionClock.reset(true);
     movementTriggerClock.reset(true);
+
+    alertSteakIndicator.setSize(sf::Vector2f(50.f, 50.f));
+
 
 }
 
@@ -292,6 +281,15 @@ void Wolf::render(sf::RenderWindow *window) {
 
     // Draw entity shape
     window->draw(*sf_ShapeEntity);
+
+    // Draw Wolf Indicator
+    if(currentHealth == Health::ALIVE && currentBehavior == Behavior::CHASING){
+        alertSteakIndicator.setPosition(getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).x * SCALE,
+                                        getBody()->GetWorldPoint(b2Vec2(0.f, -3.f)).y * SCALE);
+        alertSteakIndicator.setRotation(sf_ShapeEntity->getRotation());
+        alertSteakIndicator.setTexture(&configGame->alertSteakTexture);
+        window->draw(alertSteakIndicator);
+    }
 
     // Draw Hit Point Barometer
     if (currentHealth == Health::ALIVE && !configGame->isPaused && currentlyMousedOver) {
