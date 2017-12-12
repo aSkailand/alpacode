@@ -54,7 +54,7 @@ protected:
      */
     sftools::Chronometer randomActionClock{};
 
-    sftools::Chronometer behaviorClock;
+
 
 private:
 

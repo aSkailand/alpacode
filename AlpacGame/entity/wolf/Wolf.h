@@ -14,6 +14,28 @@
 class Trap;
 
 class Wolf : public Mob{
+
+private:
+    /// Entity Properties
+    const int id;
+    float radius = 40.f;
+    float width = 150.f;
+    float height = 100.f;
+
+    float density = 1.0f;
+    float friction = 1.0f;
+    float restitution = 0.0f;
+
+    float walkForce = 5.f;
+    float walkAngle = 30.f;   // Right, Degrees
+
+    float attackForce = 8.f;
+    float attackAngle = 25.f;
+
+    float enteringDenTick = 2.f;
+
+    float detectionRadius = 200.f;
+
 public:
 
     void pause() override;
@@ -30,7 +52,7 @@ public:
      * @param x the x-coordinate of the origin of the wolf, in pixels.
      * @param y the y-coordinate of the origin of the wolf, in pixels.
      */
-    Wolf(ConfigGame *configGame, float radius, float width, float height, float x, float y);
+    Wolf(ConfigGame *configGame, float x, float y);
 
     static int nextId;
 
@@ -44,23 +66,7 @@ public:
     void performStun();
     void removeStun();
 
-private:
-    /// Entity Properties
-    const int id;
-    float density = 1.0f;
-    float friction = 1.0f;
-    float restitution = 0.0f;
-
-    float walkForce = 5.f;
-    float walkAngle = 30.f;   // Right, Degrees
-
-    float attackForce = 8.f;
-    float attackAngle = 25.f;
-
-    float enteringDenTick = 2.f;
-
-public:
-
+    /// Render Debug
     void renderDebugMode() override;
 
 private:
@@ -68,9 +74,14 @@ private:
     /// Behavior
     enum class Behavior{HUNTING, CHASING, RETREATING};
     Behavior currentBehavior = Behavior::HUNTING;
-
+    sf::RectangleShape alertSteakIndicator;
     sf::CircleShape *wolfDen_Debug = nullptr;
 
+    /** HUNTING
+    *  1. Moves to one direction (Random) until an entity is detected
+    *  2. Adds the entity in a list<Entity *>
+    *  3. Iterates list, finds the lowest Length() value and follows it
+    */
     /// Wolf AttackVector
     std::list<Entity *> currentlyDetectedEntities;
 
@@ -105,6 +116,9 @@ private:
     /// Animation tools
     bool spriteSwitch = false;
     std::map<EntityWarm::Action , SpriteInfo> wolfTextureMap;
+
+    /// Chrono Clock
+    sftools::Chronometer homeTimer;
 
 
 public:

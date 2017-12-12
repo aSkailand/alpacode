@@ -145,6 +145,22 @@ void StateGame::goNext(StateMachine &stateMachine) {
             entities->push_back(babyAlpaca);
         }
 
+        /// Spawn Wolves
+        if(configGame->spawnWolves){
+            if(configGame->wolfSpawnTimer.getElapsedTime().asSeconds() > 1.f){
+
+                entities->push_back(new Wolf(configGame, configGame->wolfDenPos.x, configGame->wolfDenPos.y));
+
+                configGame->currentWolves += 1.f;
+                configGame->wolfSpawnTimer.reset(true);
+
+                if(configGame->currentWolves >= configGame->maxWolves){
+
+                    configGame->spawnWolves = false;
+                    configGame->currentWolves = 0.f;
+                }
+            }
+        }
 
         unsigned int numAliveAlpacas = 0;
 
@@ -275,7 +291,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::Num2: {
-            entities->emplace_back(new Wolf(configGame, 40, 150, 100, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(new Wolf(configGame, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::Num3: {

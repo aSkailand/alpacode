@@ -195,9 +195,17 @@ void ConfigGame::loadAllTextures() {
     for (int i = 0; i < 3; ++i) {
         auto tempTexture = sf::Texture();
         tempTexture.loadFromFile("entity/Shotgun/shotgun-bullet.png",
-                                  sf::IntRect(i * indicatorWidth, 0, indicatorWidth, indicatorHeight));
+                                 sf::IntRect(i * indicatorWidth, 0, indicatorWidth, indicatorHeight));
         bulletIndicatorTextures.push_back(tempTexture);
     }
+
+    // Alert Indicator
+    alertRedTexture.loadFromFile("entity/Alpaca/redAlert.png");
+    alertYellowTexture.loadFromFile("entity/Alpaca/yellowAlert.png");
+
+    // Alert Wolf Indicator
+    alertSteakTexture.loadFromFile("entity/Wolf/steak1.png");
+    alertFlagTexture.loadFromFile("entity/Wolf/flag.png");
 
     // HitPoint
     healthTexture.loadFromFile("entity/HitPoint/HealthCross.png");
@@ -394,6 +402,8 @@ void ConfigGame::initiateNewDay() {
         }
     }
 
+    dynamic_cast<Farmer*>(farmer)->HP = dynamic_cast<Farmer*>(farmer)->max_HP;
+
     // Update wolf den position
     std::uniform_int_distribution<int> distribution(0, 359);
     wolfDenAngle = (float) distribution(generator);
@@ -407,10 +417,9 @@ void ConfigGame::initiateNewDay() {
 }
 
 void ConfigGame::initiateNight() {
+    spawnWolves = true;
+    wolfSpawnTimer.reset(true);
+    maxWolves = numOfDay * 2;
 
-    // Spawn wolves
-    for (int i = 0; i < numOfDay * 2; ++i) {
-        entities->push_back(new Wolf(this, 40, 150, 100, wolfDenPos.x, wolfDenPos.y));
-    }
 }
 

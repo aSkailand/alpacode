@@ -28,6 +28,8 @@ public:
 
     ~Farmer() override;
 
+    int max_HP = 5;
+
     void switchCurrentTexture() override;
 
     void renderDebugMode() override;

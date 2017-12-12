@@ -42,7 +42,7 @@ public:
     unsigned int numOfAliveAlpacas = 0;
 
     /**
-     * Initiated every new day (per 2 revolution.
+     * Initiated every new day (per 2 revolution).
      */
     void initiateNewDay();
     void initiateNight();
@@ -158,6 +158,12 @@ public:
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
 
+    sf::Texture alertRedTexture;
+    sf::Texture alertYellowTexture;
+
+    sf::Texture alertSteakTexture;
+    sf::Texture alertFlagTexture;
+
     // Texture Vectors
     std::vector<sf::Texture> bulletIndicatorTextures;
     std::vector<sf::Texture> sunTextures;
@@ -170,6 +176,13 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
+    bool spawnWolves = false;
+
+    float maxWolves = 0.f;
+    float currentWolves = 0.f;
+
+    /// Wolf spawn cooldown
+    sftools::Chronometer wolfSpawnTimer;
 
 private:
 
@@ -212,6 +225,7 @@ private:
      * Load all sprites and then map them in categorized fashion.
      */
     void loadAllTextures();
+
 
 };
 
