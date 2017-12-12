@@ -1,7 +1,3 @@
-//
-// Created by Trong on 07/12/2017.
-//
-
 #ifndef ALPACGAME_SUN_H
 #define ALPACGAME_SUN_H
 

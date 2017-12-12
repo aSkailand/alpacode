@@ -36,6 +36,10 @@ public:
     // todo: Necessary?
     Scenery* sun = nullptr;
     Scenery* sky = nullptr;
+    Scenery* treeHigh = nullptr;
+    Scenery* treeMedium = nullptr;
+    Scenery* treeLow = nullptr;
+
 
     bool newGame = true;
     bool isPaused = false;
@@ -132,6 +136,11 @@ public:
 
     sf::Texture shotgunHeldTexture;
     sf::Texture shotgunDropTexture;
+
+    sf::Texture treeHighTexture;
+    sf::Texture treeMediumTexture;
+    sf::Texture treeLowTexture;
+
 
     // Texture Vectors
     std::vector<sf::Texture> bulletIndicatorTextures;

@@ -6,6 +6,9 @@
 #include "../entity/planet/planet.h"
 #include "../scenery/Sun/Sun.h"
 #include "../scenery/Sky/Sky.h"
+#include "../scenery/Trees/TreeHigh.h"
+#include "../scenery/Trees/TreeMedium.h"
+#include "../scenery/Trees/TreeLow.h"
 
 void ConfigGame::run(sf::RenderWindow &window) {
 
@@ -149,6 +152,13 @@ void ConfigGame::loadAllTextures() {
     planetTextures.push_back(earth_11);
     planetTextures.push_back(earth_12);
 
+    // Trees
+    int treeWidth = 128;
+    int treeHeight = 272;
+    treeHighTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(0, 0, treeWidth, treeHeight));
+    treeMediumTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(treeWidth, 0, treeWidth, treeHeight));
+    treeLowTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(2*treeWidth, 0, treeWidth, treeHeight));
+
     // Sun/Moon
     sf::Texture sun_1;
     sf::Texture sun_2;
@@ -283,6 +293,18 @@ void ConfigGame::reset() {
     delete sun;
     sun = new Sun(this, sunRadius, calcX(0.f, sunRadius), calcY(0.f, sunRadius), 0.f);
     sceneries->push_back(sun);
+
+    delete treeHigh;
+    treeHigh = new TreeHigh(this, 250.f, 500.f, 360.f);
+    sceneries->push_back(treeHigh);
+
+    delete treeMedium;
+    treeMedium = new TreeMedium(this, 250.f, 500.f, 30.f);
+    sceneries->push_back(treeMedium);
+
+    delete treeLow;
+    treeLow = new TreeLow(this, 250.f, 500.f, 60.f);
+    sceneries->push_back(treeLow);
 
     // Initiate dayCycle
     delete dayCycle;
