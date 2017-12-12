@@ -44,6 +44,7 @@ private:
     StateMachine *machine;
     ConfigGame *configGame;
     sf::RenderWindow *window;
+    tgui::Gui *menuGUI;
 
     /// Box2D Variables
     b2World* world;

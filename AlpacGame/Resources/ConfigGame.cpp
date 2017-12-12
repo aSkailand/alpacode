@@ -21,6 +21,7 @@ void ConfigGame::run(sf::RenderWindow &window) {
     loadAllTextures();
     loadAllFonts();
 
+    scoreTextLabel();
 }
 
 
@@ -305,4 +306,15 @@ sf::Text ConfigGame::createLabel(sf::Font *font, unsigned int fontSize, const st
     label.setString(text);
     label.setOrigin(label.getLocalBounds().width / 2.f, label.getLocalBounds().height / 2.f);
     return label;
+}
+
+void ConfigGame::scoreTextLabel() {
+    scoreLabel->setPosition(10,10);
+    scoreLabel->setFont(this->fontID);
+    scoreLabel->setText("Score: ");
+    scoreLabel->setTextSize(100);
+}
+
+tgui::Label::Ptr ConfigGame::getScoreLabel() {
+    return scoreLabel;
 }

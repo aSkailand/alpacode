@@ -6,6 +6,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
+    menuGUI = machine->configWindow.getMenuGUI();
+    menuGUI->removeAllWidgets();
+
 
     /// Reset Game
     if (configGame->newGame) {
@@ -36,6 +39,8 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setFillColor(sf::Color::Red);
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
+
+    menuGUI->add(machine->configGame.scoreLabel);
 
     /// Poll game
     while (pollGame()) {
@@ -202,6 +207,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             window->setView(view);
         }
 
+        menuGUI->draw();
         /// Update View
         window->display();
 

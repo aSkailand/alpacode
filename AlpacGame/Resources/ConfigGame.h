@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <Box2D/Dynamics/b2Body.h>
 #include <queue>
+#include <TGUI/TGUI.hpp>
 
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
@@ -144,7 +145,13 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
+    tgui::Label::Ptr scoreLabel;
+
+    tgui::Label::Ptr getScoreLabel();
+
 private:
+
+    void scoreTextLabel();
 
     Cycle currentCycle = Cycle::DAY;
 
