@@ -42,7 +42,6 @@ public:
     void setCurrentCycle(Cycle currentCycle);
     DayCycle *dayCycle = nullptr;
     unsigned int numOfDay = 1;
-
     unsigned int numOfAliveAlpacas = 0;
 
     ///  Control
@@ -95,6 +94,7 @@ public:
     Scenery* cave = nullptr;
 
     bool newGame = true;
+    bool defeated = true;
     bool isPaused = false;
 
     b2World* world = nullptr;
@@ -226,7 +226,7 @@ public:
     /// Wolf Spawn
     bool spawnWolves = false;
     float maxWolves = 0.f;
-    float currentWolves = 0.f;
+    unsigned int currentWolves = 0;
     sftools::Chronometer wolfSpawnTimer;
 
     /// Map of control keys.

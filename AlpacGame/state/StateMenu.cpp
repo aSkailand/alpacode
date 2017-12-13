@@ -20,8 +20,14 @@ void StateMenu::goNext(StateMachine &stateMachine) {
 
     window->setMouseCursorVisible(true);
 
-    machine->configMenu->returnToMenuCheck = true;
-
+    // Disable resume button if defeated
+    if(machine->configGame.defeated){
+        machine->configMenu->mapButtons[ConfigMenu::buttonID::RESUME]->disable();
+        machine->configMenu->mapButtons[ConfigMenu::buttonID::RESUME]->setOpacity(0.5f);
+    } else{
+        machine->configMenu->mapButtons[ConfigMenu::buttonID::RESUME]->enable();
+        machine->configMenu->mapButtons[ConfigMenu::buttonID::RESUME]->setOpacity(1.f);
+    }
 
     while (pollMenu()) {
         drawMenu();

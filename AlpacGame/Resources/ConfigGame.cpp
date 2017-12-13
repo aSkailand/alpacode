@@ -387,6 +387,8 @@ void ConfigGame::reset() {
     // Reset Game Stats
     numOfDay = 1;
     numOfAliveAlpacas = 4;
+    newGame = false;
+    defeated = false;
 
 }
 
@@ -470,7 +472,7 @@ void ConfigGame::initiateNewDay() {
         }
     }
 
-    if(farmer != nullptr){
+    if(!defeated){
         dynamic_cast<Farmer *>(farmer)->HP = dynamic_cast<Farmer *>(farmer)->max_HP;
     }
 

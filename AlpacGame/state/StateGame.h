@@ -38,7 +38,7 @@ public:
     // Accessing DayCycle variables
     DayCycle *dayCycle;
 
-    bool deadCheck = true;
+
 
 private:
 

@@ -788,7 +788,6 @@ void ConfigMenu::defeatScreenLayout() {
     returnToMenu->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
         machine->setCurrentState(StateMachine::stateID::MENU);
-        returnToMenuCheck = false;
     });
 
 

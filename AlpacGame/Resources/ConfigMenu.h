@@ -19,8 +19,6 @@ class StateMachine;
 class ConfigMenu {
 public:
 
-    bool returnToMenuCheck = true;
-
     /// Enums
     enum class layouts {
         MAINMENU,

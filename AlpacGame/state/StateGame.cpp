@@ -14,8 +14,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
     menuGUI->add(machine->configGame.getDayLabel());
     menuGUI->add(machine->configGame.getAlpacaLabel());
 
-    deadCheck = true;
-
     /// Reset Game
     if (configGame->newGame) {
 
@@ -29,8 +27,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
         farmer = dynamic_cast<Farmer *> (configGame->farmer);
         dayCycle = configGame->dayCycle;
         dayCycle->initiateClock();
-
-        configGame->newGame = false;
 
         /// View
         view = sf::View(window->getDefaultView());
@@ -71,7 +67,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         /// Save current input
         configGame->currentCommand = ConfigGame::ControlName::NOTHING;
         for (auto &MapControlKey : configGame->MapControlKeys) {
-            if(sf::Keyboard::isKeyPressed(MapControlKey.second)){
+            if (sf::Keyboard::isKeyPressed(MapControlKey.second)) {
                 configGame->currentCommand = MapControlKey.first;
                 break;
             }
@@ -104,19 +100,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         }
 
-
         /// Box2D World Step
         world->Step(timeStep, velocityIterations, positionIterations);
 
+        /// Day Cycle Step
         dayCycle->proceed();
-
-        /// Render Phase
-        window->clear(sf::Color::Blue);
-
-        /// Draw Background;
-        for (Scenery *s : *configGame->sceneries) {
-            s->render(window);
-        }
 
         /// Delete Dead Entities
         for (auto entityIter = entities->begin(); entityIter != entities->end(); ++entityIter) {
@@ -135,6 +123,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+
         /// Spawn Alpacas
         while (!configGame->queue.empty()) {
             b2Vec2 babySpawnPos = configGame->queue.front();
@@ -148,18 +137,19 @@ void StateGame::goNext(StateMachine &stateMachine) {
         }
 
         /// Spawn Wolves
-        if(configGame->spawnWolves){
-            if(configGame->wolfSpawnTimer.getElapsedTime().asSeconds() > 1.f){
+        if (configGame->spawnWolves) {
+            if (configGame->wolfSpawnTimer.getElapsedTime().asSeconds() > 1.f) {
 
                 entities->push_back(new Wolf(configGame, configGame->wolfDenPos.x, configGame->wolfDenPos.y));
 
-                configGame->currentWolves += 1.f;
+                configGame->currentWolves++;
                 configGame->wolfSpawnTimer.reset(true);
 
-                if(configGame->currentWolves >= configGame->maxWolves){
+                if (configGame->currentWolves >= configGame->maxWolves) {
 
+                    configGame->wolfSpawnTimer.reset(false);
                     configGame->spawnWolves = false;
-                    configGame->currentWolves = 0.f;
+                    configGame->currentWolves = 0;
                 }
             }
         }
@@ -180,6 +170,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
                 warm_e->currentlyMousedOver = warm_e->get_sf_ShapeEntity()->getGlobalBounds().contains(
                         window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
 
+                // Count alpacas
                 if (warm_e->getEntity_ID() == Entity::ID::ALPACA &&
                     warm_e->currentHealth == EntityWarm::Health::ALIVE) {
                     numAliveAlpacas++;
@@ -195,11 +186,22 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
+        /// Check if defeat has been achieved
+        if (!configGame->defeated) checkDefeat();
+
+        /// Render Phase
+        window->clear(sf::Color::Blue);
+
+        /// Draw Background;
+        for (Scenery *s : *configGame->sceneries) {
+            s->render(window);
+        }
+
         /// Draw aim
         mouseAim.setPosition(configGame->mouseXpos, configGame->mouseYpos);
         window->draw(mouseAim);
 
-        // Adjust SFML shape to Box2D body's position and rotation, then draw it.
+        /// Adjust SFML shape to Box2D body's position and rotation, then draw it.
         for (Entity *e : *entities) {
             e->render(window);
         }
@@ -208,7 +210,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         window->draw(configGame->mouseArrow);
 
         /// Check if game is over
-        if (farmer != nullptr && farmer->currentHealth == EntityWarm::Health::ALIVE) {
+        if (!configGame->defeated) {
 
             // Finding angle of farmer
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - farmer->getBody()->GetWorldCenter();
@@ -226,10 +228,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
             // Activate view
             window->setView(view);
         }
-
-        checkDefeat();
-
-        menuGUI->draw();
 
         /// Update View
         menuGUI->draw();
@@ -262,12 +260,11 @@ bool StateGame::pollGame() {
                 break;
             }
             default: {
-                return machine->configMenu->returnToMenuCheck;
             }
         }
     }
 
-    return !configGame->newGame;
+    return !configGame->newGame || machine->getCurrentState() == StateMachine::stateID::SINGLEPLAYER;
 
 }
 
@@ -284,16 +281,17 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::F3: {
-            entities->emplace_back(new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+            entities->emplace_back(
+                    new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
-        case sf::Keyboard::F4:{
+        case sf::Keyboard::F4: {
             entities->emplace_back(new Trap(configGame, 150, 75, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::F8: {
             // todo: determine if necessary with this if statement
-            if(!configGame->isPaused){
+            if (!configGame->isPaused) {
                 configGame->newGame = true;
             }
             break;
@@ -311,7 +309,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         default: {
-            if(event.key.code == configGame->MapControlKeys[ConfigGame::ControlName::ZOOM]){
+            if (event.key.code == configGame->MapControlKeys[ConfigGame::ControlName::ZOOM]) {
                 if (zoomed) {
                     zoomed = false;
                     view = sf::View(window->getDefaultView());
@@ -348,27 +346,25 @@ void StateGame::mousePressedHandler(sf::Event event) {
 }
 
 void StateGame::checkDefeat() {
-    if (deadCheck) {
-        if (farmer->currentHealth != EntityWarm::Health::ALIVE) {
-            machine->configMenu->farmerDead->setText(
-                    "\t\t\t\tDefeat!\n\t\t\t  You died!\n \t\tDays survived: " + std::to_string(machine->configGame.numOfDay));
+    if (farmer->currentHealth != EntityWarm::Health::ALIVE) {
+        machine->configMenu->farmerDead->setText(
+                "\t\t\t\tDefeat!\n\t\t\t  You died!\n \t\tDays survived: " +
+                std::to_string(machine->configGame.numOfDay));
 
-            menuGUI->add(machine->configMenu->farmerDead);
-            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
-            window->setMouseCursorVisible(true);
-            deadCheck = false;
-        }
-        else if (machine->configGame.numOfAliveAlpacas < 2) {
-            machine->configMenu->allAlpacasDead->setText(
-                    "\t\t\t\tDefeat!\nAlpacas have gone extinct!\n \t\tDays survived: " +
-                    std::to_string(machine->configGame.numOfDay));
+        menuGUI->add(machine->configMenu->farmerDead);
+        menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+        window->setMouseCursorVisible(true);
+        configGame->defeated = true;
+    } else if (configGame->numOfAliveAlpacas < 2) {
+        machine->configMenu->allAlpacasDead->setText(
+                "\t\t\t\tDefeat!\nAlpacas have gone extinct!\n \t\tDays survived: " +
+                std::to_string(machine->configGame.numOfDay));
 
-            menuGUI->add(machine->configMenu->allAlpacasDead);
-            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
-            window->setMouseCursorVisible(true);
-            farmer->HP = 0;
-            deadCheck = false;
-        }
+        menuGUI->add(machine->configMenu->allAlpacasDead);
+        menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+        farmer->HP = 0;
+        window->setMouseCursorVisible(true);
+        configGame->defeated = true;
     }
 }
 
