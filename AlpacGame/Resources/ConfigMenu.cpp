@@ -95,14 +95,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  [&] {
                      insideControlSetting = true;
                      optionInsideSwitcher();
-
-                     if (!changesMadeControls) {
-                         mapButtons[buttonID::APPLY_SETTINGS]->disable();
-                         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
-                     } else {
-                         mapButtons[buttonID::APPLY_SETTINGS]->enable();
-                         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
-                     }
+                     defaultKeysCheck();
 
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
@@ -110,7 +103,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::CONTROLS]);
                      mapButtons[buttonID::APPLY_SETTINGS]->setText("Default");
 
-                     defaultKeysCheck();
+
 
                  });
 
@@ -368,7 +361,6 @@ void ConfigMenu::videoSettingsLayout() {
     hori->addSpace(5);
     videoSettingsLayout->add(hori);
     videoSettingsLayout->addSpace(5);
-    videoSettingsLayout->add(mapButtons[buttonID::APPLY_SETTINGS]);
     mapLayouts.emplace(layouts::VIDEO, videoSettingsLayout);
 }
 
@@ -837,7 +829,7 @@ void ConfigMenu::applyChanges() {
         mapButtons[buttonID::APPLY_SETTINGS]->disable();
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
     }
-    if (changesMadeControls) {
+    else if (changesMadeControls) {
         moveLeftKey->setText("A");
         moveRightKey->setText("D");
         jumpKey->setText("W");
@@ -845,11 +837,14 @@ void ConfigMenu::applyChanges() {
         zoomKey->setText("Z");
 
         machine->configGame.addDefaultKeysToMap();
-
+        changesMadeControls = false;
+        defaultKeysCheck();
+        //mapButtons[buttonID::APPLY_SETTINGS]->disable();
+        //mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
 
     }
 
-    if (changesMadeSound) {
+    else if (changesMadeSound) {
 
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
@@ -929,14 +924,14 @@ void ConfigMenu::optionInsideSwitcher() {
 
 void ConfigMenu::defaultKeysCheck() {
 
-    if (machine->configGame.MapControlKeys.find(ConfigGame::ControlName::LEFT)->second == sf::Keyboard::A &&
-        machine->configGame.MapControlKeys.find(ConfigGame::ControlName::RIGHT)->second == sf::Keyboard::D &&
-        machine->configGame.MapControlKeys.find(ConfigGame::ControlName::JUMP)->second == sf::Keyboard::W &&
-        machine->configGame.MapControlKeys.find(ConfigGame::ControlName::GRASP)->second == sf::Keyboard::E &&
-        machine->configGame.MapControlKeys.find(ConfigGame::ControlName::ZOOM)->second == sf::Keyboard::Z
-            ) {
-        machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->disable();
-        machine->configMenu->mapButtons[ConfigMenu::buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+    changesMadeControls = !(machine->configGame.MapControlKeys == machine->configGame.MapDefaultKeys);
+
+    if (!changesMadeControls) {
+        mapButtons[buttonID::APPLY_SETTINGS]->disable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
+    } else {
+        mapButtons[buttonID::APPLY_SETTINGS]->enable();
+        mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(1);
     }
 }
 

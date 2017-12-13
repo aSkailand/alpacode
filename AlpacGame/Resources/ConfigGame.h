@@ -230,7 +230,8 @@ public:
     sftools::Chronometer wolfSpawnTimer;
 
     /// Map of control keys.
-    std::map<ConfigGame::ControlName, sf::Keyboard::Key > MapControlKeys;
+    std::map<ConfigGame::ControlName, sf::Keyboard::Key> MapControlKeys;
+    std::map<ConfigGame::ControlName, sf::Keyboard::Key> MapDefaultKeys;
     std::map<ConfigGame::ControlName, tgui::Button::Ptr> mapKeyBinding;
 
     /// Key mapping assigns.
@@ -241,6 +242,7 @@ public:
      * Creating and adding all default control key into map.
      */
     void addDefaultKeysToMap();
+    void defaultKeysCheck();
 
 private:
 

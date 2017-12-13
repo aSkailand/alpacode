@@ -30,6 +30,7 @@ void ConfigGame::run(sf::RenderWindow &window, ConfigSound &configSound) {
     loadAllFonts();
 
     addDefaultKeysToMap();
+    MapDefaultKeys = MapControlKeys;
 
     dayCounterLabel();
     alpacaCounterLabel();
@@ -296,6 +297,7 @@ void ConfigGame::addDefaultKeysToMap() {
     MapControlKeys[ControlName::ZOOM] = sf::Keyboard::Z;
 
 }
+
 
 void ConfigGame::reset() {
 
