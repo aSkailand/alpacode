@@ -226,8 +226,9 @@ void Shotgun::update() {
 
 
 void Shotgun::pause() {
+    reloadClock.pause();
 }
 
 void Shotgun::resume() {
-
+    reloadClock.resume();
 }
