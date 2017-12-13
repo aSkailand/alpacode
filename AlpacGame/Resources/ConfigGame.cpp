@@ -468,7 +468,9 @@ void ConfigGame::initiateNewDay() {
         }
     }
 
-    dynamic_cast<Farmer *>(farmer)->HP = dynamic_cast<Farmer *>(farmer)->max_HP;
+    if(farmer != nullptr){
+        dynamic_cast<Farmer *>(farmer)->HP = dynamic_cast<Farmer *>(farmer)->max_HP;
+    }
 
     // Update wolf den position
     std::uniform_int_distribution<int> distribution(0, 359);
