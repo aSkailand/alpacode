@@ -224,10 +224,12 @@ void Wolf::switchAction() {
                 }
 
                 // Check if destination is reached
-                if(temp.Length() < 3.0f){
+                withinDenArea = temp.LengthSquared() < 3.0f;
+
+                if(withinDenArea){
                     homeTimer.reset(true);
                     removeEntityCollision();
-                    renderFadeOut();
+
                 }
 
             }
@@ -240,7 +242,6 @@ void Wolf::switchAction() {
 }
 
 void Wolf::performAction() {
-
     // Cancel Early if entity is not alive or stunned
     if (currentHealth != Health::ALIVE || isStunned)
         return;
@@ -608,12 +609,14 @@ void Wolf::pause() {
     randomActionClock.pause();
     homeTimer.pause();
     deathClock.pause();
+
 }
 
 void Wolf::resume() {
     movementTriggerClock.resume();
     randomActionClock.resume();
-    homeTimer.resume();
+    if(withinDenArea && currentBehavior == Behavior::RETREATING)homeTimer.resume();
+
 
     if (currentHealth != Health::ALIVE) {
         deathClock.resume();

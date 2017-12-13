@@ -36,6 +36,8 @@ private:
 
     float detectionRadius = 200.f;
 
+    bool withinDenArea = false;
+
 public:
 
     void pause() override;
