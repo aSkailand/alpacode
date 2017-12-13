@@ -13,6 +13,8 @@ int main()
     // Initiating StateMachine
     StateMachine stateMachine;
 
+
+
     // Proceed if StateMachine is still on
     while (stateMachine.isRunning){
         std::cout << "Machine is Proceeding:" << std::endl;

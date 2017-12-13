@@ -1,10 +1,15 @@
+
 #include "Farmer.h"
+
 #include "../alpaca/alpaca.h"
 #include "../trap/Trap.h"
 
-Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y) {
+Farmer::Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x,
+               float y) {
 
+    /// Assigning Pointers
     this->configGame = configGame;
+    this->configSound = configSound;
     farmerSpriteMapPtr = configGame->farmerSprites;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);
@@ -119,22 +124,26 @@ void Farmer::switchAction() {
     }
 
     // Handle Input
-    switch (configGame->currentInput) {
-        case sf::Keyboard::W: {
-            currentAction = Action::JUMP;
+    switch (configGame->currentCommand) {
+        case ConfigGame::ControlName::NOTHING: {
+            currentAction = Action::IDLE;
             break;
         }
-        case sf::Keyboard::D: {
-            currentAction = Action::WALKING;
-            currentDirection = Direction::RIGHT;
-            break;
-        }
-        case sf::Keyboard::A: {
+        case ConfigGame::ControlName::LEFT: {
             currentAction = Action::WALKING;
             currentDirection = Direction::LEFT;
             break;
         }
-        case sf::Keyboard::E: {
+        case ConfigGame::ControlName::RIGHT: {
+            currentAction = Action::WALKING;
+            currentDirection = Direction::RIGHT;
+            break;
+        }
+        case ConfigGame::ControlName::JUMP:{
+            currentAction = Action::JUMP;
+            break;
+        }
+        case ConfigGame::ControlName::GRASP:{
             if (isCooldownTriggered(&graspClock, graspCooldown)) {
                 if (currentGrasp == Grasp::EMPTY) {
                     if (!currentlyTouchingEntities.empty()) {
@@ -146,10 +155,8 @@ void Farmer::switchAction() {
             }
             break;
         }
-        default: {
-            currentAction = Action::IDLE;
-            break;
-        }
+
+        case ConfigGame::ControlName::ZOOM: break;
     }
 
     // Flip accordingly to mouse placement
@@ -168,6 +175,7 @@ void Farmer::performAction() {
         switch (currentAction) {
 
             case Action::WALKING: {
+                configSound->mapSounds[ConfigSound::soundsID::STEPPING].play();
                 forcePushBody((int) Action::WALKING, getBody(), walkForce, currentDirection);
                 break;
             }
@@ -177,6 +185,7 @@ void Farmer::performAction() {
                 } else {
                     forcePushBody((int) Action::JUMP, getBody(), jumpForce, Direction::RIGHT);
                 }
+                configSound->mapSounds[ConfigSound::soundsID::JUMP].play();
                 break;
             }
             case Action::IDLE: {

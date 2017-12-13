@@ -5,7 +5,7 @@
 #include <list>
 
 #include "../../Resources/ConfigGame.h"
-
+#include "../../Resources/ConfigSound.h"
 #include "../EntityWarm.h"
 
 class Farmer : public EntityWarm {
@@ -24,7 +24,7 @@ public:
      * @param x the x-position of the farmer's origin, in pixels.
      * @param y the y-position of the farmer's origin, in pixels.
      */
-    Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y);
+    Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x, float y);
 
     ~Farmer() override;
 
@@ -90,6 +90,9 @@ private:
      * Switch current action and direction accordingly to the current inputs.
      */
     void switchAction() override;
+
+    /// Pointers
+    ConfigSound *configSound = nullptr;
 
     /// Animation
     bool spriteSwitch = false;

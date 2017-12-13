@@ -27,7 +27,7 @@
 
 class StateGame : public State{
 public:
-
+    bool testDefeat = false;
     void goNext(StateMachine &stateMachine) override;
 
     std::vector<Entity*> *entities;
@@ -45,6 +45,8 @@ private:
     /// Pointers
     StateMachine *machine;
     ConfigGame *configGame;
+    ConfigSound *configSound;
+
     sf::RenderWindow *window;
     tgui::Gui *menuGUI;
 

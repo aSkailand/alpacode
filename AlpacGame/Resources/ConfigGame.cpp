@@ -14,9 +14,10 @@
 #include "../scenery/Stone/Stone.h"
 
 
-void ConfigGame::run(sf::RenderWindow &window) {
+void ConfigGame::run(sf::RenderWindow &window, ConfigSound &configSound) {
 
     this->window = &window;
+    this->configSound = &configSound;
 
     planetCenter = sf::Vector2f(window.getSize().x / 2, window.getSize().y);
 
@@ -27,12 +28,16 @@ void ConfigGame::run(sf::RenderWindow &window) {
 
     loadAllTextures();
     loadAllFonts();
+
+    addDefaultKeysToMap();
+
     dayCounterLabel();
     alpacaCounterLabel();
 
     // Randomize number generator
     long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
     generator = std::default_random_engine(seed);
+
 
 }
 
@@ -63,6 +68,7 @@ void ConfigGame::loadAllFonts() {
 
 void ConfigGame::loadTexture(std::string filename,
                              std::map<EntityWarm::Action, SpriteInfo> &spriteMap,
+
                              int width,
                              int height,
                              int top,
@@ -167,7 +173,7 @@ void ConfigGame::loadAllTextures() {
     int treeHeight = 272;
     treeHighTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(0, 0, treeWidth, treeHeight));
     treeMediumTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(treeWidth, 0, treeWidth, treeHeight));
-    treeLowTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(2*treeWidth, 0, treeWidth, treeHeight));
+    treeLowTexture.loadFromFile("scenery/Trees/trees.png", sf::IntRect(2 * treeWidth, 0, treeWidth, treeHeight));
 
     //Stone
     stoneTexture.loadFromFile("scenery/Stone/stone.png");
@@ -282,6 +288,15 @@ void ConfigGame::loadAllTextures() {
 
 }
 
+void ConfigGame::addDefaultKeysToMap() {
+    MapControlKeys[ControlName::LEFT] = sf::Keyboard::A;
+    MapControlKeys[ControlName::RIGHT] = sf::Keyboard::D;
+    MapControlKeys[ControlName::JUMP] = sf::Keyboard::W;
+    MapControlKeys[ControlName::GRASP] = sf::Keyboard::E;
+    MapControlKeys[ControlName::ZOOM] = sf::Keyboard::Z;
+
+}
+
 void ConfigGame::reset() {
 
     // Initiating World (With no innate gravitation)
@@ -295,7 +310,7 @@ void ConfigGame::reset() {
 
     farmer = nullptr;
     delete farmer;
-    farmer = new Farmer(this, 30, 100, 100, calcX(0), calcY(0));
+    farmer = new Farmer(this, configSound, 30, 100, 100, calcX(0), calcY(0));
 
     /// Create Vectors
     delete entities;
@@ -303,7 +318,7 @@ void ConfigGame::reset() {
     entities->push_back(planet);
     entities->push_back(farmer);
 
-    entities->push_back(new Shotgun(this, 100, 25, calcX(5.f), calcY(5.f)));
+    entities->push_back(new Shotgun(this, configSound, 100, 25, calcX(5.f), calcY(5.f)));
     entities->push_back(new Trap(this, 150, 75, calcY(-5.f), calcY(-5.f)));
     entities->push_back(new Trap(this, 150, 75, calcY(-10.f), calcY(-10.f)));
 
@@ -339,24 +354,24 @@ void ConfigGame::reset() {
 
 
     for (int i = 0; i < treeMediumAmount; i++) {
-    treeMediumAngle = (float) distribution(generator);
-    sceneries->push_back(new TreeMedium(this, treeMediumWidth, treeMediumHeight, treeMediumAngle));
+        treeMediumAngle = (float) distribution(generator);
+        sceneries->push_back(new TreeMedium(this, treeMediumWidth, treeMediumHeight, treeMediumAngle));
     }
 
 
-    for(int i = 0; i<treeLowAmount; i++) {
+    for (int i = 0; i < treeLowAmount; i++) {
         treeLowAngle = (float) distribution(generator);
         sceneries->push_back(new TreeLow(this, treeLowWidth, treeLowHeight, treeLowAngle));
     }
 
-    for(int i = 0; i< stoneAmount; i++){
+    for (int i = 0; i < stoneAmount; i++) {
         stoneAngle = (float) distribution(generator);
-        sceneries->push_back(new Stone(this,stoneWidth,stoneHeight,stoneAngle));
+        sceneries->push_back(new Stone(this, stoneWidth, stoneHeight, stoneAngle));
     }
 
-
+    delete cave;
     cave = new Cave(this, 200.f, 150.f);
-    dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
+    dynamic_cast<Cave *>(cave)->reposition(wolfDenAngle);
     sceneries->push_back(cave);
 
     // Initiate dayCycle
@@ -369,6 +384,7 @@ void ConfigGame::reset() {
 
     // Reset Game Stats
     numOfDay = 1;
+    numOfAliveAlpacas = 4;
 
 }
 
@@ -434,16 +450,16 @@ void ConfigGame::initiateNewDay() {
     numOfDay++;
 
     /// Morning alpaca check
-    for(Entity* entity : *entities){
-        if(entity->getEntity_ID() == Entity::ID::ALPACA){
+    for (Entity *entity : *entities) {
+        if (entity->getEntity_ID() == Entity::ID::ALPACA) {
 
             // Retrieve alpaca
-            auto *alpacaPtr =  dynamic_cast<Alpaca*>(entity);
+            auto *alpacaPtr = dynamic_cast<Alpaca *>(entity);
 
             // Fertilize and grow alpacas
-            if(alpacaPtr->isAdult){
+            if (alpacaPtr->isAdult) {
                 alpacaPtr->isFertile = true;
-            } else{
+            } else {
                 alpacaPtr->adultify();
             }
 
@@ -452,7 +468,7 @@ void ConfigGame::initiateNewDay() {
         }
     }
 
-    dynamic_cast<Farmer*>(farmer)->HP = dynamic_cast<Farmer*>(farmer)->max_HP;
+    dynamic_cast<Farmer *>(farmer)->HP = dynamic_cast<Farmer *>(farmer)->max_HP;
 
     // Update wolf den position
     std::uniform_int_distribution<int> distribution(0, 359);
@@ -462,7 +478,7 @@ void ConfigGame::initiateNewDay() {
             calcY(wolfDenAngle));
 
     // Spawn Cave
-    dynamic_cast<Cave*>(cave)->reposition(wolfDenAngle);
+    dynamic_cast<Cave *>(cave)->reposition(wolfDenAngle);
 
 }
 

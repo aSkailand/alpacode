@@ -2,16 +2,20 @@
 #ifndef ALPACGAME_CONFIGGAME_H
 #define ALPACGAME_CONFIGGAME_H
 
+#include <queue>
+#include <random>
+
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-#include <Box2D/Dynamics/b2Body.h>
-#include <queue>
 #include <TGUI/TGUI.hpp>
-#include <random>
+#include <Box2D/Dynamics/b2Body.h>
 
 #include "../entity/Entity.h"
 #include "../entity/EntityWarm.h"
+
+#include "../Resources/ConfigSound.h"
 #include "../Resources/SpriteInfo.h"
+
 #include "../scenery/Scenery.h"
 #include "../scenery/DayCycle/DayCycle.h"
 
@@ -40,6 +44,16 @@ public:
     unsigned int numOfDay = 1;
 
     unsigned int numOfAliveAlpacas = 0;
+
+    ///  Control
+    enum class ControlName{
+        NOTHING,
+        LEFT,
+        RIGHT,
+        JUMP,
+        GRASP,
+        ZOOM,
+    };
 
     /**
      * Initiated every new day (per 2 revolution).
@@ -89,15 +103,19 @@ public:
 
 
 
+
     void reset();
 
     sf::RenderWindow *window = nullptr;
+
+    ConfigSound *configSound;
 
     std::vector<Entity*> *entities = nullptr;
     std::queue<b2Vec2> queue;
 
     sf::CircleShape mouseArrow;
     std::vector<Scenery*> *sceneries = nullptr;
+
 
     /**
      * Show in-game labels or not.
@@ -115,6 +133,7 @@ public:
      * determine which direction the farmer walks towards.
      */
     sf::Keyboard::Key currentInput = sf::Keyboard::Unknown;
+    ControlName currentCommand = ControlName::NOTHING;
 
     /**
      * Mouse Coordinates.
@@ -128,7 +147,7 @@ public:
      * Run the given configurations.
      * @param window the shared window.
      */
-    void run(sf::RenderWindow &window);
+    void run(sf::RenderWindow &window, ConfigSound &configSound);
 
     /**
      * Calculates the x position on the circle's outline given by the angle.
@@ -204,17 +223,28 @@ public:
     std::map<EntityWarm::Action, SpriteInfo> alpacaSprites;
     std::map<EntityWarm::Action, SpriteInfo> farmerSprites;
 
+    /// Wolf Spawn
     bool spawnWolves = false;
-
     float maxWolves = 0.f;
     float currentWolves = 0.f;
-
-    /// Wolf spawn cooldown
     sftools::Chronometer wolfSpawnTimer;
+
+    /// Map of control keys.
+    std::map<ConfigGame::ControlName, sf::Keyboard::Key > MapControlKeys;
+    std::map<ConfigGame::ControlName, tgui::Button::Ptr> mapKeyBinding;
+
+    /// Key mapping assigns.
+    ControlName controlToAssign = ControlName::NOTHING;
+    std::string lastString = "";
+
+    /**
+     * Creating and adding all default control key into map.
+     */
+    void addDefaultKeysToMap();
 
 private:
 
-    /// TGUI lables
+    /// TGUI labels
     tgui::Label::Ptr dayLabel;
     tgui::Label::Ptr alpacaCounter;
 

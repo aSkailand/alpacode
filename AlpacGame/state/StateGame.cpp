@@ -2,10 +2,11 @@
 #include "StateGame.h"
 
 void StateGame::goNext(StateMachine &stateMachine) {
-
     /// Assign pointers
     machine = &stateMachine;
     configGame = &machine->configGame;
+    configSound = &machine->configSound;
+
     menuGUI = machine->configWindow.getMenuGUI();
     menuGUI->removeAllWidgets();
 
@@ -45,6 +46,11 @@ void StateGame::goNext(StateMachine &stateMachine) {
     mouseAim.setOutlineColor(sf::Color::Black);
     mouseAim.setOutlineThickness(5);
 
+    /// Play music
+    if (!machine->configSound.isGameMusicPlaying) {
+        machine->configSound.playGameMusic(true);
+    }
+
     /// Poll game
     while (pollGame()) {
 
@@ -63,16 +69,12 @@ void StateGame::goNext(StateMachine &stateMachine) {
         configGame->mouseInLeftSide = mouse < center;
 
         /// Save current input
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            configGame->currentInput = sf::Keyboard::W;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            configGame->currentInput = sf::Keyboard::A;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            configGame->currentInput = sf::Keyboard::D;
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-            configGame->currentInput = sf::Keyboard::E;
-        } else {
-            configGame->currentInput = sf::Keyboard::Unknown;
+        configGame->currentCommand = ConfigGame::ControlName::NOTHING;
+        for (auto &MapControlKey : configGame->MapControlKeys) {
+            if(sf::Keyboard::isKeyPressed(MapControlKey.second)){
+                configGame->currentCommand = MapControlKey.first;
+                break;
+            }
         }
 
         /// Box2D Physics Calculations
@@ -230,6 +232,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
         menuGUI->draw();
 
         /// Update View
+        menuGUI->draw();
         window->display();
 
     }
@@ -237,7 +240,7 @@ void StateGame::goNext(StateMachine &stateMachine) {
 }
 
 bool StateGame::pollGame() {
-    sf::Event event;
+    sf::Event event{};
     while (window->pollEvent(event)) {
         menuGUI->handleEvent(event);
         switch (event.type) {
@@ -247,9 +250,6 @@ bool StateGame::pollGame() {
             }
             case sf::Event::KeyPressed: {
                 if (event.key.code == sf::Keyboard::Escape) {
-                    machine->setCurrentState(StateMachine::stateID::MENU);
-                    return false;
-                } else if (event.key.code == sf::Keyboard::P) {
                     machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
                 } else {
@@ -273,49 +273,55 @@ bool StateGame::pollGame() {
 
 
 void StateGame::keyPressedHandler(sf::Event event) {
+
     switch (event.key.code) {
-        case sf::Keyboard::I: {
-            configGame->showDebugMode = !configGame->showDebugMode;
-            std::cout << "Number of alive alpacas: " << configGame->numOfAliveAlpacas << std::endl;
+        case sf::Keyboard::F1: {
+            entities->emplace_back(new Alpaca(configGame, true, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
-        case sf::Keyboard::R: {
-            if (!configGame->isPaused) {
+        case sf::Keyboard::F2: {
+            entities->emplace_back(new Wolf(configGame, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::F3: {
+            entities->emplace_back(new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::F4:{
+            entities->emplace_back(new Trap(configGame, 150, 75, configGame->mouseXpos, configGame->mouseYpos));
+            break;
+        }
+        case sf::Keyboard::F8: {
+            // todo: determine if necessary with this if statement
+            if(!configGame->isPaused){
                 configGame->newGame = true;
             }
             break;
         }
-
-        case sf::Keyboard::Num1: {
-            entities->emplace_back(new Alpaca(configGame, true, configGame->mouseXpos, configGame->mouseYpos));
+        case sf::Keyboard::F9: {
+            configGame->showDebugMode = !configGame->showDebugMode;
             break;
         }
-        case sf::Keyboard::Num2: {
-            entities->emplace_back(new Wolf(configGame, configGame->mouseXpos, configGame->mouseYpos));
-            break;
-        }
-        case sf::Keyboard::Num3: {
-            entities->emplace_back(new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
-            break;
-        }
-        case sf::Keyboard::Num4: {
-            entities->emplace_back(
-                    new Trap(configGame, 150, 75, configGame->mouseXpos, configGame->mouseYpos));
-            break;
-        }
-        case sf::Keyboard::Z: {
-            if (zoomed) {
-                zoomed = false;
-                view = sf::View(window->getDefaultView());
-                view.zoom(viewNonZoomed);
-            } else {
-                zoomed = true;
-                view = sf::View(window->getDefaultView());
-                view.zoom(viewZoomed);
-            }
+        case sf::Keyboard::P: {
+            printf("X pos: %f\n", configGame->mouseXpos);
+            printf("Y pos: %f\n\n", configGame->mouseYpos);
+            menuGUI->removeAllWidgets();
+            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+            testDefeat = !testDefeat;
             break;
         }
         default: {
+            if(event.key.code == configGame->MapControlKeys[ConfigGame::ControlName::ZOOM]){
+                if (zoomed) {
+                    zoomed = false;
+                    view = sf::View(window->getDefaultView());
+                    view.zoom(viewNonZoomed);
+                } else {
+                    zoomed = true;
+                    view = sf::View(window->getDefaultView());
+                    view.zoom(viewZoomed);
+                }
+            }
             break;
         }
     }

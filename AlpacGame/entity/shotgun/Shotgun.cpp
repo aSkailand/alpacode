@@ -2,10 +2,11 @@
 #include "Shotgun.h"
 #include "Bullet.h"
 
-Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, float y) {
+Shotgun::Shotgun(ConfigGame *configGame, ConfigSound *configSound, float length, float height, float x, float y) {
 
     // Assign pointers
     this->configGame = configGame;
+    this->configSound = configSound;
     this->world = configGame->world;
     this->length = length;
     this->bulletIndicatorTextures = configGame->bulletIndicatorTextures;
@@ -136,6 +137,9 @@ void Shotgun::use() {
         // Shoot bullets
         shootBullets(20.f, 10.f, 5);
 
+        // Plays a shotgun sound
+        configSound->mapSounds[ConfigSound::soundsID::SHOTGUN].play();
+
         // Decrement number of bullets
         numCurrentBullets--;
 
@@ -150,7 +154,6 @@ void Shotgun::use() {
     } else {
         // todo: Add a sound for empty barrels
     }
-
 
 }
 
