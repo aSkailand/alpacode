@@ -784,7 +784,7 @@ void ConfigMenu::defeatScreenLayout() {
 
     // Return to menu button
     tgui::Button::Ptr returnToMenu = theme->load("Button");
-    returnToMenu->setText("Return to menu...");
+    returnToMenu->setText("Return to Main Menu");
     returnToMenu->connect("pressed", [&] {
         machine->configWindow.getMenuGUI()->removeAllWidgets();
         machine->setCurrentState(StateMachine::stateID::MENU);

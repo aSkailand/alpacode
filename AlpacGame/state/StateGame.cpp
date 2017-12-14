@@ -264,7 +264,7 @@ bool StateGame::pollGame() {
         }
     }
 
-    return !configGame->newGame || machine->getCurrentState() == StateMachine::stateID::SINGLEPLAYER;
+    return !configGame->newGame && machine->getCurrentState() == StateMachine::stateID::SINGLEPLAYER;
 
 }
 
@@ -330,9 +330,17 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
     switch (event.mouseButton.button) {
         case sf::Mouse::Left: {
-            if (!configGame->isPaused && dynamic_cast<Usable *>(farmer->holdingEntity)) {
-                dynamic_cast<Usable *>(farmer->holdingEntity)->use();
+
+            // Disable if game if defeated
+            if(!configGame->defeated && !configGame->isPaused){
+
+                // Use held item if item is usable
+                if (dynamic_cast<Usable *>(farmer->holdingEntity)) {
+                    dynamic_cast<Usable *>(farmer->holdingEntity)->use();
+                }
+
             }
+
             break;
         }
         case sf::Mouse::Right: {
