@@ -37,6 +37,13 @@ Planet::Planet(ConfigGame *configGame, float radius, float x, float y) {
     sf_ShapeEntity->setOrigin(radius + offset, radius + offset);
     sf_ShapeEntity->setTexture(&this->configGame->planetTextures[0]);
     sf_ShapeEntity->setOutlineColor(sf::Color::Black);
+    sf_ShapeEntity->setOutlineThickness(0);
+
+    sf_DebugBody = new sf::CircleShape(radius);
+    sf_DebugBody->setOrigin(radius, radius);
+    sf_DebugBody->setFillColor(sf::Color::Transparent);
+    sf_DebugBody->setOutlineColor(sf::Color::Black);
+    sf_DebugBody->setOutlineThickness(2);
 
     shapeBackground = sf::CircleShape(radius + offset);
     shapeBackground.setOrigin(radius + offset, radius + offset);
@@ -45,8 +52,10 @@ Planet::Planet(ConfigGame *configGame, float radius, float x, float y) {
     // Set fixed position
     float shape_x = getBody()->GetPosition().x * SCALE;
     float shape_y = getBody()->GetPosition().y * SCALE;
+
     sf_ShapeEntity->setPosition(shape_x, shape_y);
     shapeBackground.setPosition(shape_x, shape_y);
+    sf_DebugBody->setPosition(shape_x, shape_y);
 
 }
 
@@ -58,25 +67,27 @@ void Planet::render(sf::RenderWindow *window) {
         shapeBackground.setFillColor(shapeBackground.getFillColor() + sf::Color(0,0,0,2));
     }
 
-    if (configGame->showDebugMode) {
+    // Draw Planet
+    window->draw(shapeBackground);
+    window->draw(*sf_ShapeEntity);
 
-        sf_ShapeEntity->setOutlineThickness(2);
+    // Draw if debug mode is on
+    if (configGame->showDebugMode) {
 
         // Draw debug vertices to split planet in six slices
         for (int i = 0; i < 6; ++i) {
             sf::Vertex line[2];
             line[0] = sf::Vertex(sf::Vector2f(configGame->planetCenter), sf::Color::Black);
-            line[1] = sf::Vertex(sf::Vector2f(configGame->calcX(60.f * i, 1500.f), configGame->calcY(60.f * i, 1500.f)));
+            line[1] = sf::Vertex(sf::Vector2f(configGame->calcX(60.f * i, 1500.f), configGame->calcY(60.f * i, 1500.f)), sf::Color::Black);
 
             window->draw(line, 2 , sf::Lines);
         }
 
-    } else {
-        sf_ShapeEntity->setOutlineThickness(0);
+        // Debug draw
+        window->draw(*sf_DebugBody);
+
     }
 
-    window->draw(shapeBackground);
-    window->draw(*sf_ShapeEntity);
 
 }
 

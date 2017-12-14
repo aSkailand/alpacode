@@ -5,6 +5,7 @@ Wolf::Wolf(ConfigGame *configGame, float x, float y)
 
     /// Assign Pointers
     this->configGame = configGame;
+    this->configSound = configGame->configSound;
 
     /// Define entity info
     // Set entity ID
@@ -368,6 +369,9 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 && !isStunned
                 && otherCollision == CollisionID::HIT) {
 
+                configSound->mapSounds[ConfigSound::soundsID::FARMER_HURT].play();
+                dynamic_cast<EntityWarm *>(contactEntity)->dealDamage(1);
+
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
 
                 /// Self sensor hits contact sensor
@@ -384,7 +388,8 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 contactEntity->getBody()->SetLinearVelocity(b2Vec2(0, 0));
                 contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * attackForce * dir, true);
 
-                dynamic_cast<EntityWarm *>(contactEntity)->dealDamage(1);
+
+
             }
             break;
 
@@ -395,6 +400,7 @@ void Wolf::startContact_hit(Entity::CollisionID otherCollision, Entity *contactE
                 && !isStunned
                 && otherCollision == CollisionID::HIT) {
 
+                configSound->mapSounds[ConfigSound::soundsID::ALPACA_HURT].play();
                 b2Vec2 delta = getBody()->GetLocalPoint(contactEntity->getBody()->GetWorldCenter());
                 /// Self sensor hits contact sensor
                 float mass = contactEntity->getBody()->GetMass();

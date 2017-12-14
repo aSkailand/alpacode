@@ -7,9 +7,6 @@ Alpaca::Alpaca(ConfigGame *configGame, bool isAdult, float x, float y)
     this->configGame = configGame;
     alpacaMapPtr = this->configGame->alpacaSprites;
 
-//    // Add Alpaca count
-//    configGame->numOfAliveAlpacas += 1;
-
     // Convert angle and store unit vectors
     convertAngleToVectors((int) Action::WALKING, walkAngle);
 
@@ -393,7 +390,7 @@ void Alpaca::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
                     forcePushBody((int) Action::WALKING, contactAlpaca->getBody(), 10.f, Direction::RIGHT);
 
                     b2Vec2 babySpawnPos = getBody()->GetWorldCenter();
-                    configGame->queue.push(babySpawnPos);
+                    configGame->alpacaSpawnCoords.push(babySpawnPos);
 
                 }
             }

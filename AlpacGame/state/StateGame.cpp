@@ -1,6 +1,5 @@
 
 #include "StateGame.h"
-#include "../scenery/Cave/Cave.h"
 
 void StateGame::goNext(StateMachine &stateMachine) {
     /// Assign pointers
@@ -126,9 +125,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
 
         /// Spawn Alpacas
-        while (!configGame->queue.empty()) {
-            b2Vec2 babySpawnPos = configGame->queue.front();
-            configGame->queue.pop();
+        while (!configGame->alpacaSpawnCoords.empty()) {
+            b2Vec2 babySpawnPos = configGame->alpacaSpawnCoords.front();
+            configGame->alpacaSpawnCoords.pop();
             auto *babyAlpaca = new Alpaca(configGame, false, babySpawnPos.x * SCALE, babySpawnPos.y * SCALE);
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - babyAlpaca->getBody()->GetWorldCenter();
             delta.Normalize();
@@ -301,7 +300,7 @@ void StateGame::keyPressedHandler(sf::Event event) {
         }
         case sf::Keyboard::F3: {
             entities->emplace_back(
-                    new Shotgun(configGame, configSound, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
+                    new Shotgun(configGame, 100, 25, configGame->mouseXpos, configGame->mouseYpos));
             break;
         }
         case sf::Keyboard::F4: {

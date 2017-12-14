@@ -10,7 +10,7 @@ class ConfigSound {
 public:
 
     enum class soundsID {
-        SHOTGUN, STEPPING, JUMP
+        SHOTGUN, STEPPING, JUMP, MORNING, NIGHT, OPEN_TRAP, CLOSE_TRAP, NO_AMMO, RELOAD, FARMER_HURT, WOLF_HURT, ALPACA_HURT
     };
 
     /**
@@ -79,11 +79,28 @@ private:
     sf::SoundBuffer tempStepBuffer;
     sf::SoundBuffer tempJumpBuffer;
     sf::SoundBuffer tempShotgunBuffer;
+    sf::SoundBuffer tempMorningBuffer;
+    sf::SoundBuffer tempNightBuffer;
+    sf::SoundBuffer tempOpenTrapBuffer;
+    sf::SoundBuffer tempCloseTrapBuffer;
+    sf::SoundBuffer tempNoAmmoBuffer;
+    sf::SoundBuffer tempReloadBuffer;
+    sf::SoundBuffer tempFarmerHurtBuffer;
+    sf::SoundBuffer tempWolfHurtBuffer;
+    sf::SoundBuffer tempAlpacaHurtBuffer;
 
     sf::Sound jumpSound;
     sf::Sound stepSound;
     sf::Sound shotgunSound;
-
+    sf::Sound morningSound;
+    sf::Sound nightSound;
+    sf::Sound openTrapSound;
+    sf::Sound closeTrapSound;
+    sf::Sound noAmmoSound;
+    sf::Sound reloadSound;
+    sf::Sound farmerHurtSound;
+    sf::Sound wolfHurtSound;
+    sf::Sound alpacaHurtSound;
 
 };
 

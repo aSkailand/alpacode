@@ -44,6 +44,9 @@ public:
     unsigned int numOfDay = 1;
     unsigned int numOfAliveAlpacas = 0;
     unsigned int numOfAliveWolves = 0;
+    std::queue<b2Vec2> alpacaSpawnCoords;
+
+    sf::CircleShape mouseArrow;
 
     ///  Control
     enum class ControlName{
@@ -109,12 +112,10 @@ public:
 
     sf::RenderWindow *window = nullptr;
 
-    ConfigSound *configSound;
+    ConfigSound *configSound = nullptr;
 
     std::vector<Entity*> *entities = nullptr;
-    std::queue<b2Vec2> queue;
 
-    sf::CircleShape mouseArrow;
     std::vector<Scenery*> *sceneries = nullptr;
 
 

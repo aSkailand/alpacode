@@ -20,7 +20,7 @@ public:
     bool isAdult = false;
     bool isFertile = false;
     float radius = 40.f;
-    sf::Vector2f sizeAdult = sf::Vector2f(100.f, 100.f);
+    sf::Vector2f sizeAdult = sf::Vector2f(120.f, 120.f);
     sf::Vector2f sizeKid   = sf::Vector2f(70.f, 70.f);
 
     int max_HP = 3;

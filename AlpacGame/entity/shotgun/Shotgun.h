@@ -37,11 +37,9 @@ public:
 
     float length;
 
-    ConfigSound *configSound;
-
     b2World *world = nullptr;
 
-    Shotgun(ConfigGame *configGame, ConfigSound *configSound, float length, float height, float x, float y);
+    Shotgun(ConfigGame *configGame, float length, float height, float x, float y);
 
     void render(sf::RenderWindow *window) override;
 

@@ -24,7 +24,7 @@ public:
      * @param x the x-position of the farmer's origin, in pixels.
      * @param y the y-position of the farmer's origin, in pixels.
      */
-    Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x, float y);
+    Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y);
 
     ~Farmer() override;
 

@@ -2,14 +2,12 @@
 #include "Farmer.h"
 
 #include "../alpaca/alpaca.h"
-#include "../trap/Trap.h"
 
-Farmer::Farmer(ConfigGame *configGame, ConfigSound *configSound, float radius, float width, float height, float x,
-               float y) {
+Farmer::Farmer(ConfigGame *configGame, float radius, float width, float height, float x, float y) {
 
     /// Assigning Pointers
     this->configGame = configGame;
-    this->configSound = configSound;
+    this->configSound = configGame->configSound;
     farmerSpriteMapPtr = configGame->farmerSprites;
 
     convertAngleToVectors((int) Action::WALKING, walkAngle);

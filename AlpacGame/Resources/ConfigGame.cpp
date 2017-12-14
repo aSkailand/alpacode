@@ -312,7 +312,7 @@ void ConfigGame::reset() {
 
     farmer = nullptr;
     delete farmer;
-    farmer = new Farmer(this, configSound, 30, 100, 100, calcX(0), calcY(0));
+    farmer = new Farmer(this, 30, 100, 100, calcX(0), calcY(0));
 
     /// Create Vectors
     delete entities;
@@ -320,7 +320,7 @@ void ConfigGame::reset() {
     entities->push_back(planet);
     entities->push_back(farmer);
 
-    entities->push_back(new Shotgun(this, configSound, 100, 25, calcX(5.f), calcY(5.f)));
+    entities->push_back(new Shotgun(this, 100, 25, calcX(5.f), calcY(5.f)));
     entities->push_back(new Trap(this, 150, 75, calcY(-5.f), calcY(-5.f)));
     entities->push_back(new Trap(this, 150, 75, calcY(-10.f), calcY(-10.f)));
 
@@ -450,6 +450,8 @@ tgui::Label::Ptr ConfigGame::getAlpacaLabel() {
 
 void ConfigGame::initiateNewDay() {
 
+    configSound->mapSounds[ConfigSound::soundsID::MORNING].play();
+
     // Increment days
     numOfDay++;
 
@@ -483,6 +485,9 @@ void ConfigGame::initiateNewDay() {
 }
 
 void ConfigGame::initiateNight() {
+
+    configSound->mapSounds[ConfigSound::soundsID::NIGHT].play();
+
     spawnWolves = true;
     wolfSpawnTimer.reset(true);
     maxWolves = numOfDay * 2;

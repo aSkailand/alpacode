@@ -2,11 +2,11 @@
 #include "Shotgun.h"
 #include "Bullet.h"
 
-Shotgun::Shotgun(ConfigGame *configGame, ConfigSound *configSound, float length, float height, float x, float y) {
+Shotgun::Shotgun(ConfigGame *configGame, float length, float height, float x, float y) {
 
     // Assign pointers
     this->configGame = configGame;
-    this->configSound = configSound;
+    this->configSound = configGame->configSound;
     this->world = configGame->world;
     this->length = length;
     this->bulletIndicatorTextures = configGame->bulletIndicatorTextures;
@@ -152,7 +152,7 @@ void Shotgun::use() {
         farmerBody->ApplyLinearImpulseToCenter(10.f * mass * -toTarget, true);
 
     } else {
-        // todo: Add a sound for empty barrels
+        configSound->mapSounds[ConfigSound::soundsID::NO_AMMO].play();
     }
 
 }
@@ -217,6 +217,7 @@ void Shotgun::update() {
             reloadClock.reset(false);
         }
         else if(reloadClock.getElapsedTime().asSeconds() > reloadTick){
+            configSound->mapSounds[ConfigSound::soundsID::RELOAD].play();
             numCurrentBullets++;
             reloadClock.reset(false);
         }

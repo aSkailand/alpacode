@@ -10,6 +10,7 @@
 #include <SFML/Chronometer.hpp>
 
 class ConfigGame;
+class ConfigSound;
 
 /**
  * The abstract, base class for all entities.
@@ -150,6 +151,7 @@ protected:
     ID entity_ID = ID::VOID;
 
     ConfigGame *configGame = nullptr;
+    ConfigSound *configSound = nullptr;
 
     b2Body *body = nullptr;
 

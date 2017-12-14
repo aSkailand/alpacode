@@ -3,7 +3,9 @@
 #include "../wolf/Wolf.h"
 
 Trap::Trap(ConfigGame *configGame, float length, float height, float x, float y) {
+
     this->configGame = configGame;
+    this->configSound = configGame->configSound;
 
     // Create Body
     b2BodyDef bodyDef;
@@ -191,10 +193,9 @@ void Trap::update() {
             } else{
 
                 if (trapClock.getElapsedTime().asSeconds() >= openTick) {
+                    configSound->mapSounds[ConfigSound::soundsID::OPEN_TRAP].play();
                     currentMode = Mode::OPEN;
                     trapClock.reset(false);
-
-
                     printf("Open!\n");
                 }
             }
@@ -207,6 +208,8 @@ void Trap::update() {
 
             // If trap is currently touching wolves
             if (!currentlyTouchingWolves.empty()) {
+
+                configSound->mapSounds[ConfigSound::soundsID::CLOSE_TRAP].play();
 
                 // Select target and stun it
                 stunnedTarget = currentlyTouchingWolves.front();

@@ -38,8 +38,6 @@ public:
     // Accessing DayCycle variables
     DayCycle *dayCycle;
 
-
-
 private:
 
     /// Pointers

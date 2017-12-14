@@ -1,6 +1,3 @@
-//
-// Created by Trong on 09/11/2017.
-//
 
 #include "Bullet.h"
 #include "../EntityWarm.h"
@@ -8,6 +5,7 @@
 Bullet::Bullet(b2World *world, ConfigGame *configGame, float radius, b2Vec2 position){
 
     this->configGame = configGame;
+    this->configSound = configGame->configSound;
 
     // Create Body
     b2BodyDef bodyDef;
@@ -82,9 +80,11 @@ Bullet::startContact(Entity::CollisionID selfCollision, Entity::CollisionID othe
             b2Vec2 force = contactEntity->getBody()->GetWorldVector(b2Vec2(0, -2.f));
             float32 mass = contactEntity->getBody()->GetMass();
             contactEntity->getBody()->ApplyLinearImpulseToCenter(mass * force, true);
+            configSound->mapSounds[ConfigSound::soundsID::ALPACA_HURT].play();
             break;
         }
         case ID::WOLF: {
+            configSound->mapSounds[ConfigSound::soundsID::WOLF_HURT].play();
             dynamic_cast<EntityWarm *> (contactEntity)->dealDamage(1);
             b2Vec2 force = contactEntity->getBody()->GetWorldVector(b2Vec2(0, -2.f));
             float32 mass = contactEntity->getBody()->GetMass();
