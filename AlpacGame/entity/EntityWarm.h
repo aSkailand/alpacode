@@ -103,7 +103,7 @@ public:
      *      Dead:   Check if it is time to change to ghost state.
      *      Ghost:  Check if it is time to stop death clock.
      */
-    void handleHealth(unsigned int* numOfAlpacas = nullptr) {
+    void handleHealth() {
 
         switch (currentHealth) {
 
@@ -112,10 +112,6 @@ public:
                 if (HP <= 0) {
 
                     removeEntityCollision();
-
-                    if(entity_ID == ID::ALPACA){
-                        *numOfAlpacas -= 1;
-                    }
 
                     // Proceed state
                     currentHealth = Health::DEAD;

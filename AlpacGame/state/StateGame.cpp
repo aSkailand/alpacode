@@ -1,5 +1,6 @@
 
 #include "StateGame.h"
+#include "../scenery/Cave/Cave.h"
 
 void StateGame::goNext(StateMachine &stateMachine) {
     /// Assign pointers
@@ -154,10 +155,14 @@ void StateGame::goNext(StateMachine &stateMachine) {
             }
         }
 
-        unsigned int numAliveAlpacas = 0;
-
         /// Activate all warm entities
+
+        // Count alpacas and wolves
+        unsigned int numAliveAlpacas = 0;
+        unsigned int numAliveWolves = 0;
+
         for (Entity *e : *entities) {
+
             // Check if current entity is an warm entity
             auto warm_e = dynamic_cast<EntityWarm *> (e);
             if (warm_e != nullptr) {
@@ -171,12 +176,20 @@ void StateGame::goNext(StateMachine &stateMachine) {
                         window->mapPixelToCoords(sf::Mouse::getPosition(*window)));
 
                 // Count alpacas
-                if (warm_e->getEntity_ID() == Entity::ID::ALPACA &&
-                    warm_e->currentHealth == EntityWarm::Health::ALIVE) {
-                    numAliveAlpacas++;
+                if(warm_e->currentHealth == EntityWarm::Health::ALIVE){
+                    if (warm_e->getEntity_ID() == Entity::ID::ALPACA) {
+                        numAliveAlpacas++;
+                    } else if(warm_e->getEntity_ID() == Entity::ID::WOLF){
+                        numAliveWolves++;
+                    }
                 }
+
             }
         }
+
+        // Update alpacas and wolves count
+        configGame->numOfAliveAlpacas = numAliveAlpacas;
+        configGame->numOfAliveWolves = numAliveWolves;
 
         /// Update all cold entities
         for (Entity *e : *entities) {
@@ -184,6 +197,12 @@ void StateGame::goNext(StateMachine &stateMachine) {
             if (cold_e != nullptr) {
                 cold_e->update();
             }
+        }
+
+        /// Relocate wolf den
+        if(numAliveWolves == 0 && !configGame->wolfDenRelocated && !configGame->spawnWolves){
+            configGame->switchWolfDenLocation();
+            configGame->wolfDenRelocated = true;
         }
 
         /// Check if defeat has been achieved

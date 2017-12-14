@@ -472,9 +472,23 @@ void ConfigGame::initiateNewDay() {
         }
     }
 
+    // Heal up farmer back to full health
     if(!defeated){
         dynamic_cast<Farmer *>(farmer)->HP = dynamic_cast<Farmer *>(farmer)->max_HP;
     }
+
+    // Make then wolf den able to relocate again
+    wolfDenRelocated = false;
+
+}
+
+void ConfigGame::initiateNight() {
+    spawnWolves = true;
+    wolfSpawnTimer.reset(true);
+    maxWolves = numOfDay * 2;
+}
+
+void ConfigGame::switchWolfDenLocation() {
 
     // Update wolf den position
     std::uniform_int_distribution<int> distribution(0, 359);
@@ -485,13 +499,5 @@ void ConfigGame::initiateNewDay() {
 
     // Spawn Cave
     dynamic_cast<Cave *>(cave)->reposition(wolfDenAngle);
-
-}
-
-void ConfigGame::initiateNight() {
-    spawnWolves = true;
-    wolfSpawnTimer.reset(true);
-    maxWolves = numOfDay * 2;
-
 }
 

@@ -43,6 +43,7 @@ public:
     DayCycle *dayCycle = nullptr;
     unsigned int numOfDay = 1;
     unsigned int numOfAliveAlpacas = 0;
+    unsigned int numOfAliveWolves = 0;
 
     ///  Control
     enum class ControlName{
@@ -244,6 +245,9 @@ public:
     void addDefaultKeysToMap();
     void defaultKeysCheck();
 
+    void switchWolfDenLocation();
+    bool wolfDenRelocated = false;
+
 private:
 
     /// TGUI labels
@@ -285,6 +289,7 @@ private:
      * Load all sprites and then map them in categorized fashion.
      */
     void loadAllTextures();
+
 
 
 };

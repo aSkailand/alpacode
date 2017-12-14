@@ -28,7 +28,7 @@ public:
     CooldownBarometer *trapCooldownBarometer = nullptr;
     sftools::Chronometer trapClock;
     float stunTick = 10.0f;
-    float openTick = 5.0f;
+    float openTick = 3.0f;
 
     /// EntityCold Functions
     void render(sf::RenderWindow *window) override;
