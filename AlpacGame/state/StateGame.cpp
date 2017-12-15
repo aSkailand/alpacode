@@ -270,7 +270,9 @@ bool StateGame::pollGame() {
                     machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
                 } else {
-                    keyPressedHandler(event);
+                    if(!configGame->defeated){
+                        keyPressedHandler(event);
+                    }
                 }
                 break;
             }

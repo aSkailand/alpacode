@@ -804,6 +804,8 @@ void ConfigMenu::defeatScreenLayout() {
         std::string name = nameEditBox->getText();
         std::string score = std::to_string(machine->configGame.finalScore);
 
+        if(name == "") name = "Unknown";
+
         // Reset Box
         nameEditBox->setText("");
 
