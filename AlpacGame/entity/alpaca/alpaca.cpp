@@ -390,7 +390,7 @@ void Alpaca::startContact_hit(Entity::CollisionID otherCollision, Entity *contac
                     forcePushBody((int) Action::WALKING, contactAlpaca->getBody(), 10.f, Direction::RIGHT);
 
                     b2Vec2 babySpawnPos = getBody()->GetWorldCenter();
-                    configGame->alpacaSpawnCoords.push(babySpawnPos);
+                    configGame->alpacaSpawnCoordinates.push(babySpawnPos);
 
                 }
             }

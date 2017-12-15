@@ -65,11 +65,13 @@ void StateGame::goNext(StateMachine &stateMachine) {
         configGame->mouseInLeftSide = mouse < center;
 
         /// Save current input
-        configGame->currentCommand = ConfigGame::ControlName::NOTHING;
-        for (auto &MapControlKey : configGame->MapControlKeys) {
-            if (sf::Keyboard::isKeyPressed(MapControlKey.second)) {
-                configGame->currentCommand = MapControlKey.first;
-                break;
+        if(!configGame->defeated){
+            configGame->currentCommand = ConfigGame::ControlName::NOTHING;
+            for (auto &MapControlKey : configGame->MapControlKeys) {
+                if (sf::Keyboard::isKeyPressed(MapControlKey.second)) {
+                    configGame->currentCommand = MapControlKey.first;
+                    break;
+                }
             }
         }
 
@@ -125,9 +127,9 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
 
         /// Spawn Alpacas
-        while (!configGame->alpacaSpawnCoords.empty()) {
-            b2Vec2 babySpawnPos = configGame->alpacaSpawnCoords.front();
-            configGame->alpacaSpawnCoords.pop();
+        while (!configGame->alpacaSpawnCoordinates.empty()) {
+            b2Vec2 babySpawnPos = configGame->alpacaSpawnCoordinates.front();
+            configGame->alpacaSpawnCoordinates.pop();
             auto *babyAlpaca = new Alpaca(configGame, false, babySpawnPos.x * SCALE, babySpawnPos.y * SCALE);
             b2Vec2 delta = planet->getBody()->GetWorldCenter() - babyAlpaca->getBody()->GetWorldCenter();
             delta.Normalize();
@@ -188,7 +190,6 @@ void StateGame::goNext(StateMachine &stateMachine) {
 
         // Update alpacas and wolves count
         configGame->numOfAliveAlpacas = numAliveAlpacas;
-        configGame->numOfAliveWolves = numAliveWolves;
 
         /// Update all cold entities
         for (Entity *e : *entities) {
@@ -265,7 +266,7 @@ bool StateGame::pollGame() {
                 return false;
             }
             case sf::Event::KeyPressed: {
-                if (event.key.code == sf::Keyboard::Escape) {
+                if (!configGame->defeated && event.key.code == sf::Keyboard::Escape) {
                     machine->setCurrentState(StateMachine::stateID::PAUSE);
                     return false;
                 } else {
@@ -308,7 +309,6 @@ void StateGame::keyPressedHandler(sf::Event event) {
             break;
         }
         case sf::Keyboard::F8: {
-            // todo: determine if necessary with this if statement
             if (!configGame->isPaused) {
                 configGame->newGame = true;
             }
@@ -318,16 +318,8 @@ void StateGame::keyPressedHandler(sf::Event event) {
             configGame->showDebugMode = !configGame->showDebugMode;
             break;
         }
-        case sf::Keyboard::P: {
-            printf("X pos: %f\n", configGame->mouseXpos);
-            printf("Y pos: %f\n\n", configGame->mouseYpos);
-            menuGUI->removeAllWidgets();
-            menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
-            testDefeat = !testDefeat;
-            break;
-        }
         default: {
-            if (event.key.code == configGame->MapControlKeys[ConfigGame::ControlName::ZOOM]) {
+            if (!configGame->defeated && event.key.code == configGame->MapControlKeys[ConfigGame::ControlName::ZOOM]) {
                 if (zoomed) {
                     zoomed = false;
                     view = sf::View(window->getDefaultView());
@@ -373,21 +365,25 @@ void StateGame::mousePressedHandler(sf::Event event) {
 
 void StateGame::checkDefeat() {
     if (farmer->currentHealth != EntityWarm::Health::ALIVE) {
+        configGame->finalScore = configGame->numOfDay;
         machine->configMenu->farmerDead->setText(
                 "\t\t\t\tDefeat!\n\t\t\t  You died!\n \t\tDays survived: " +
-                std::to_string(machine->configGame.numOfDay));
+                std::to_string(configGame->finalScore));
 
         menuGUI->add(machine->configMenu->farmerDead);
         menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+        machine->configMenu->nameEditBox->focus();
         window->setMouseCursorVisible(true);
         configGame->defeated = true;
     } else if (configGame->numOfAliveAlpacas < 2) {
+        configGame->finalScore = configGame->numOfDay;
         machine->configMenu->allAlpacasDead->setText(
                 "\t\t\t\tDefeat!\nAlpacas have gone extinct!\n \t\tDays survived: " +
-                std::to_string(machine->configGame.numOfDay));
+                std::to_string(configGame->finalScore));
 
         menuGUI->add(machine->configMenu->allAlpacasDead);
         menuGUI->add(machine->configMenu->mapLayouts[ConfigMenu::layouts::DEFEAT]);
+        machine->configMenu->nameEditBox->focus();
         farmer->HP = 0;
         window->setMouseCursorVisible(true);
         configGame->defeated = true;

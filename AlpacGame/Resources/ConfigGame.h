@@ -43,8 +43,9 @@ public:
     DayCycle *dayCycle = nullptr;
     unsigned int numOfDay = 1;
     unsigned int numOfAliveAlpacas = 0;
-    unsigned int numOfAliveWolves = 0;
-    std::queue<b2Vec2> alpacaSpawnCoords;
+    std::queue<b2Vec2> alpacaSpawnCoordinates;
+
+    unsigned int finalScore = 0;
 
     sf::CircleShape mouseArrow;
 

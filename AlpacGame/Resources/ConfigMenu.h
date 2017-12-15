@@ -112,17 +112,9 @@ public:
     tgui::Label::Ptr allAlpacasDead;
     tgui::Label::Ptr farmerDead;
 
-private:
+    tgui::EditBox::Ptr nameEditBox;
 
-    /// Variables for the loadHighscore function
-    bool alternateHighscoreWindow = true;
-    int spaces;
-    int scoreSpaces;
-    int rank = 1;
-    std::string line;
-    std::string tempString;
-    std::string rankString;
-    std::ifstream file;
+private:
 
     /// Pointers
     StateMachine *machine = nullptr;
@@ -137,6 +129,7 @@ private:
     tgui::Layout windowHeight;
     tgui::TextBox::Ptr textBoxHighscore;
     tgui::Label::Ptr labelScoreHUD;
+
 
     /// CheckBox
     bool checkBoxMuteChecked = false;

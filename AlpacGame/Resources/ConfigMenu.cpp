@@ -25,7 +25,7 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                  [&] {
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
                      machine->configWindow.getMenuGUI()->add(getPictureMenu());
-                     ConfigMenu::loadHighscore("Resources/highscore.txt");
+                     loadHighscore("Resources/highscore.txt");
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::HIGHSCORE]);
                  });
 
@@ -60,16 +60,6 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                          machine->configGame.lastString = "";
                      }
                      machine->configWindow.getMenuGUI()->removeAllWidgets();
-//                     machine->setCurrentState(StateMachine::stateID::MENU);
-
-                 });
-
-    createButton(buttonID::HIGHSCORE, "Highscore", "pressed",
-                 [&] {
-                     machine->configWindow.getMenuGUI()->removeAllWidgets();
-                     machine->configWindow.getMenuGUI()->add(getPictureMenu());
-                     ConfigMenu::loadHighscore("Resources/highscore.txt");
-                     machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::HIGHSCORE]);
                  });
     createButton(buttonID::VIDEO, "Video", "pressed",
                  [&] {
@@ -102,7 +92,6 @@ void ConfigMenu::run(StateMachine &stateMachine) {
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::SETTINGS]);
                      machine->configWindow.getMenuGUI()->add(mapLayouts[layouts::CONTROLS]);
                      mapButtons[buttonID::APPLY_SETTINGS]->setText("Default");
-
 
 
                  });
@@ -695,53 +684,76 @@ void ConfigMenu::highscoreLayout() {
 }
 
 void ConfigMenu::loadHighscore(std::string highScoreFile) {
-    rank = 1;
-    textBoxHighscore->setText("");
-    file.open(highScoreFile);
-    //Loads the names and scores from a file and prints them in a text box
-    if (file.is_open()) {
-        while (std::getline(file, line)) {
-            // First reads name, appens a #rank to that name
-            if (alternateHighscoreWindow) {
-                // rankString is what the rank to the player highscore is #1-10
-                rankString = std::to_string(rank) + ".";
-                // Appends spaces to the string so that the alignment of the highscore text looks nice.
-                if (rank == 10) {
-                    rankString.append(6, ' ');
-                } else {
-                    rankString.append(7, ' ');
-                }
-                spaces = 9 - (int) line.size();
-                // Inserts the #rank of the player in the string
-                line.insert(0, rankString);
-                line.append(spaces, ' ');
-                tempString = line;
 
-                // This boolean is required because of how the format of the highscore.txt file is formatted,
-                // first line is name, second line is the highscore to that name,
-                // third line is name, fourth line is score, and so on...
-                alternateHighscoreWindow = !alternateHighscoreWindow;
-                // rank increment
-                rank++;
-                // Appends the score to the name
-            } else {
-                scoreSpaces = 20 - (int) line.size();
-                // Appends spaces to the string so that the alignment of the highscore text looks nice.
-                tempString.append(" ");
-                tempString.append(scoreSpaces, ' ');
-                if (rank == 11) {
-                    tempString.append(line);
-                } else {
-                    tempString.append(line + "\n");
-                }
-                // Adds the formatted string to the text box
-                textBoxHighscore->addText(tempString);
-                alternateHighscoreWindow = !alternateHighscoreWindow;
-            }
-        }
-        file.close();
-    } else {
+    /// FILE INPUT
+    // Read in file
+    std::ifstream file;
+    file.open(highScoreFile);
+    if (!file.is_open()) {
         std::cout << "COULD NOT READ FILE!" << std::endl;
+        return;
+    }
+
+    // Create map that auto-sorts
+    std::multimap<unsigned int, std::string> tempHighScoreMap;
+
+    // Put elements to map which auto-sort
+    std::string nameBuffer;
+    std::string scoreBuffer;
+    while (std::getline(file, nameBuffer) && std::getline(file, scoreBuffer)) {
+        auto score = static_cast<unsigned int>(std::stoi(scoreBuffer));
+        tempHighScoreMap.insert(std::make_pair(score, nameBuffer));
+    }
+
+    // Close file
+    file.close();
+
+    /// PRINT OUT TO HIGH SCORE MENU
+    int rank = 1;
+    textBoxHighscore->setText("");
+
+    for (auto rit = tempHighScoreMap.rbegin(); rit != tempHighScoreMap.rend(); ++rit) {
+        if (rank <= 10) {
+
+            // Buffer for the high score string in the high score table
+            std::string highScoreLine;
+
+            // Retrieve info
+            std::pair<unsigned int, std::string> scoreElementPair = *rit;
+            std::string name = scoreElementPair.second;
+            std::string score = std::to_string(scoreElementPair.first);
+
+            // Append rank
+            highScoreLine = std::to_string(rank) + ".";
+
+            // Append spaces for correct alignment
+            if (rank == 10) {
+                highScoreLine.append(6, ' ');
+            } else {
+                highScoreLine.append(7, ' ');
+            }
+            auto spaces = static_cast<unsigned int>(9 - (int) name.size());
+            highScoreLine.append(spaces, ' ');
+
+            // Append name
+            highScoreLine.append(name);
+
+            // Append more spaces
+            auto scoreSpaces = static_cast<unsigned int>(20 - (int) score.size());
+            highScoreLine.append(" ");
+            highScoreLine.append(scoreSpaces, ' ');
+
+            // Appends the score to the name
+            highScoreLine.append(score + "\n");
+
+            // Adds the formatted string to the text box
+            textBoxHighscore->addText(highScoreLine);
+
+            rank++;
+
+        } else {
+            break;
+        }
     }
 }
 
@@ -778,16 +790,34 @@ void ConfigMenu::defeatScreenLayout() {
     nameLabel->setTextSize(24);
 
     // Edit box
-    tgui::EditBox::Ptr nameEditBox = theme->load("EditBox");
+    nameEditBox = theme->load("EditBox");
     nameEditBox->setDefaultText("Enter name...");
-    nameEditBox->setMaximumCharacters(20);
+    nameEditBox->setMaximumCharacters(9);
+
 
     // Return to menu button
     tgui::Button::Ptr returnToMenu = theme->load("Button");
     returnToMenu->setText("Return to Main Menu");
     returnToMenu->connect("pressed", [&] {
+
+        // Get strings
+        std::string name = nameEditBox->getText();
+        std::string score = std::to_string(machine->configGame.finalScore);
+
+        // Reset Box
+        nameEditBox->setText("");
+
+        // Save to file
+        std::ofstream file;
+        file.open("Resources/highscore.txt", std::ios_base::app);
+        file << name << "\n";
+        file << score << "\n";
+        file.close();
+
+        // Switch state
         machine->configWindow.getMenuGUI()->removeAllWidgets();
         machine->setCurrentState(StateMachine::stateID::MENU);
+
     });
 
 
@@ -827,8 +857,7 @@ void ConfigMenu::applyChanges() {
         }
         mapButtons[buttonID::APPLY_SETTINGS]->disable();
         mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
-    }
-    else if (changesMadeControls) {
+    } else if (changesMadeControls) {
         moveLeftKey->setText("A");
         moveRightKey->setText("D");
         jumpKey->setText("W");
@@ -841,9 +870,7 @@ void ConfigMenu::applyChanges() {
         //mapButtons[buttonID::APPLY_SETTINGS]->disable();
         //mapButtons[buttonID::APPLY_SETTINGS]->setOpacity(0.5f);
 
-    }
-
-    else if (changesMadeSound) {
+    } else if (changesMadeSound) {
 
         machine->configSound.setMasterVolume(mapSliders[buttonID::MASTER_SLIDER]->getValue());
         machine->configSound.setMusicVolume(mapSliders[buttonID::MUSIC_SLIDER]->getValue());
